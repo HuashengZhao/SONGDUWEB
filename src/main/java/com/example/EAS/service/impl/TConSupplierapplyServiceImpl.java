@@ -491,7 +491,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         }
         String[] split = dencrypt.split("&&");
         String personNum = split[1];
-        String person = mapper.selectCreator(personNum);
+        PersonsVO person = mapper.selectCreator(personNum);
 //        提交之前保存附件与单据关联
         if (vo.getAttachmentsVOS() != null && vo.getAttachmentsVOS().size() > 0) {
             List<AttachmentsVO> attachmentsVOS = vo.getAttachmentsVOS();

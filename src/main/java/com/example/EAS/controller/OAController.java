@@ -7,6 +7,8 @@ import com.example.EAS.mapper.TConSupplierapplyMapper;
 import com.example.EAS.service.impl.TConSupplierapplyServiceImpl;
 import com.example.EAS.util.*;
 import com.example.EAS.vo.LoginVO;
+import com.example.EAS.vo.OrgVO;
+import com.example.EAS.vo.PersonsVO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -73,7 +76,7 @@ public class OAController {
             String s = String.valueOf(sb.append(org).append("&&").append(person));
             String token = RSAUtil.encrypt(s, "pub.key");
 //调用缓存工具类 存放token
-            redisUtil.set(redisUtil.generateKey(CacheKeyConstant.WEB_LOGIN_TOKEN,person),token,1000*3600*24*100);
+            redisUtil.set(redisUtil.generateKey(CacheKeyConstant.WEB_LOGIN_TOKEN, person), token, 1000 * 3600 * 24 * 100);
 //          返回link拼接
             String type = null;
             if (Util.isNotEmpty(vo.getType())) {
@@ -105,37 +108,40 @@ public class OAController {
     public R getLoginData(@RequestBody String body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         LoginVO vo = BodyDecodeUtil.decodeBody(body, LoginVO.class);
-        LoginVO loginVO = new LoginVO();
+        PersonsVO personsVO = null;
         if (Util.isNotEmpty(vo.getToken())) {
             String token = RequestHolder.getCurrentUser().getToken();
-//            String token = vo.getToken();
-//             token = URLDecoder.decode(token,"utf-8");
             String dencrypt = RSAUtil.dencrypt(token, "pri.key");
             String[] split = dencrypt.split("&&");
             String org = split[0];
             String person = split[1];
-            List<LoginVO> vos = mapper.selectIFExist(org, person);
-//            验证测试后打开
-//            if (vos==null||vos.size()==0){
-//                result.put("msg", UtilMessage.ERROR_DEPT_PERSON);
-//                result.put("code", "101");
-//                return R.error(result);
-//            }
-            String orgName = mapper.selectDeptName(org);
-            String orgId = mapper.selectDeptId(org);
-            String personName = mapper.selectCreator(person);
-            loginVO.setPerson(person);
-            loginVO.setPersonName(personName);
-            loginVO.setOrg(org);
-            loginVO.setOrgId(orgId);
-            loginVO.setOrgName(orgName);
+            personsVO = mapper.selectCreator(person);
+//            根据OA用户编码获取EAS对应的公司信息
+            List<String> longNumbers = mapper.selectOrgInfoByPerson(person);
+//            获取所有财务实体组织
+            List<OrgVO> orgVOList = new ArrayList<>();
+            List<OrgVO> orgVOS = mapper.selectOrgList();
+            if (orgVOS != null && orgVOS.size() > 0) {
+                for (OrgVO orgVO : orgVOS) {
+                    if (longNumbers != null && longNumbers.size() > 0) {
+                        for (String longNumber : longNumbers) {
+                            if (longNumber.contains(orgVO.getLongNumber())
+                                    && Util.isEmpty(orgVO.getParentId())) {
+                                orgVOList.add(orgVO);
+                            }
+                        }
+                    }
+                }
+            }
+            if (Util.isNotEmpty(personsVO)) {
+                personsVO.setOrgVOList(orgVOList);
+            }
         }
-        result.put("data", loginVO);
+        result.put("data", personsVO);
         result.put("msg", UtilMessage.GET_MSG_SUCCESS);
         result.put("code", HttpStatus.SC_OK);
         return R.ok(result);
     }
-
 
 
     /**

@@ -105,8 +105,8 @@
     <select id="selectOaid" resultType="java.lang.String">
         select oaid from oaidrecord where billId=#{id}
     </select>
-    <select id="selectCreator" resultType="java.lang.String">
-        select FNAME_L2  from T_PM_USER where FNUMBER = #{creatorNum}
+    <select id="selectCreator" resultType="com.example.EAS.vo.PersonsVO">
+        select FNAME_L2 as personName,fnumber as person  from T_PM_USER where FNUMBER = #{creatorNum}
     </select>
     <select id="selectDeptName" resultType="java.lang.String">
         select FNAME_L2 as orgName from  T_ORG_BASEUNIT where FNUMBER = #{orgNum}
@@ -140,15 +140,21 @@
     <select id="selectAttachmentsByNum" resultType="com.example.EAS.vo.AttachmentsVO">
          select a.url as fileUrl,a.fileType,a.fileSize as fileSize,a.fileNum as num,a.weburl as webUrl,a.createTime as createTime,a.personName,a.filename as title from webattachment a where fileNum=#{num}
     </select>
-    <select id="selectOrgInfoByPerson" resultType="com.example.EAS.vo.PersonsVO">
-        select FNAME_L2 as personName from t_pm_user
-        where FNUMBER=#{person}
+    <select id="selectOrgInfoByPerson" resultType="java.lang.String">
+    select flongnumber from T_ORG_BaseUnit where fid in
+  (select FAdminOrgUnitID from  T_ORG_Position where fid in
+  (select FPositionID  from  T_ORG_PositionMember where FPersonID =
+  (select FPersonId from t_pm_user where fnumber=#{person})))
     </select>
     <select id="selectUUIDByOriName" resultType="java.lang.String">
         select fileUUID from webAttachment where fileNum=#{fileNum}
     </select>
     <select id="selecWEBURLByOriName" resultType="java.lang.String">
          select webUrl from webAttachment where fileNum=#{fileNum}
+    </select>
+    <select id="selectOrgList" resultType="com.example.EAS.vo.OrgVO">
+        select un.fid as id,un.flongnumber as longNumber,un.fname_l2 as title,un.fnumber as num from  t_org_baseunit un
+       left join  T_ORG_OUPartFI fi on fi.fid=un.FPartFIID where fisbizunit=1
     </select>
 
     <insert id="insertAttachMent" parameterType="com.example.EAS.vo.AttachmentsVO">

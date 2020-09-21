@@ -15,7 +15,8 @@ import java.util.List;
 public class PersonsVO {
 
     private String personName;
-    private String personNumber;
+//   编号
+    private String person;
     private String zwName;
 //    行政组织
     private String orgName;

@@ -8,7 +8,7 @@ import java.util.List;
 public class OrgVO {
 
     private String id;
-//    成本中心组织单元扩展id
+    //    成本中心组织单元扩展id
     private String cbid;
     private String parentId;
     private Integer isLeaf;
@@ -19,8 +19,10 @@ public class OrgVO {
     private String description;
     private Long flevel;
     private Integer isCost;
-//    是否包含下级 0否1是
+    //    是否包含下级 0否1是
     private Integer hasNext;
+    //    是否实体组织
+    private Integer isBizUnit;
 
     private List<OrgVO> orgVOList;
     private List<OrgVO> children;

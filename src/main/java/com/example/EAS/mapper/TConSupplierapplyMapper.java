@@ -2,10 +2,7 @@ package com.example.EAS.mapper;
 
 import com.example.EAS.model.TConSupplierapply;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.example.EAS.vo.AttachmentsVO;
-import com.example.EAS.vo.LoginVO;
-import com.example.EAS.vo.PersonsVO;
-import com.example.EAS.vo.SupplierApplyVO;
+import com.example.EAS.vo.*;
 
 import java.util.List;
 
@@ -49,7 +46,7 @@ public interface TConSupplierapplyMapper extends BaseMapper<TConSupplierapply> {
 
     String selectOaid(String id);
 
-    String selectCreator(String creatorNum);
+    PersonsVO selectCreator(String creatorNum);
 
     String selectDeptName(String orgNum);
 
@@ -86,11 +83,14 @@ public interface TConSupplierapplyMapper extends BaseMapper<TConSupplierapply> {
 
     void updateCreatorId(String creatorId,String id);
 
-    PersonsVO selectOrgInfoByPerson(String person);
+    List<String> selectOrgInfoByPerson(String person);
 
     String selectUUIDByOriName(String fileNum);
 
-
     String selecWEBURLByOriName(String fileNum);
+
+    List<OrgVO> selectOrgList();
+
+
 }
 
