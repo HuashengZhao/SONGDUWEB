@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.EAS.mapper.TOrgBaseunitMapper">
+
+    <select id="selectDatas" resultType="com.example.EAS.vo.OrgVO">
+        select fid as id,FNAME_L2 as title,FDESCRIPTION_L2 as description,fnumber as num,
+        FLONGNUMBER as longNumber,flevel,FPartCostCenterID as cbid,FISLEAF as isLeaf
+        from T_ORG_BASEUNIT
+        <where>
+            FISADMINORGUNIT=1
+            <if test="id!=null and id!=''">
+                and fid=#{id}
+            </if>
+            <if test="title!=null and title!=''">
+                and fname_l2 like CONCAT(CONCAT('%',#{title}),'%')
+            </if>
+            <if test="num!=null and num!=''">
+                and fnumber like CONCAT(CONCAT('%',#{num}),'%')
+            </if>
+            <if test="isCompany!=null">
+                and fid in (select fid from T_ORG_Company)
+            </if>
+            <if test="isCost!=null">
+                and cbid in (select fid from T_ORG_CostCenter)
+            </if>
+        </where>
+        order by FLONGNUMBER
+    </select>
+    <select id="selectByOrgId" resultType="java.lang.Integer">
+        select FIsBizUnit as unit from T_ORG_Company where fid=#{id}
+    </select>
+    <select id="selectIsCost" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select fisbizunit as unit from T_ORG_CostCenter where fid=#{id,jdbcType=VARCHAR}
+    </select>
+    <select id="selectNexts" resultType="com.example.EAS.vo.OrgVO">
+        select fid as id,FNAME_L2 as title,FDESCRIPTION_L2 as description,fnumber as num,
+        FLONGNUMBER as longNumber,flevel,FPartCostCenterID as cbid
+        from T_ORG_BASEUNIT
+        <where>
+            FISADMINORGUNIT=1
+            and FParentID=#{id,jdbcType=VARCHAR}
+        </where>
+        order by flongnumber
+    </select>
+    <select id="selectNextIds" resultType="java.lang.String">
+        select fid as id
+        from T_ORG_BASEUNIT
+        <where>
+            FISADMINORGUNIT=1
+            and FParentID=#{id,jdbcType=VARCHAR}
+        </where>
+        order by flongnumber
+    </select>
+
+</mapper>

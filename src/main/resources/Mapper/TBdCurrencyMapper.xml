@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.EAS.mapper.TBdCurrencyMapper">
+
+    <select id="selectDatas" resultType="com.example.EAS.vo.CurrencyVO">
+        select fid as id,fnumber as num,fname_l2 as title,FDescription_l2 as description,FBaseUnit_l2 baseUnit
+         from T_BD_Currency where FDeletedStatus=1
+         order by FNUMBER
+    </select>
+</mapper>

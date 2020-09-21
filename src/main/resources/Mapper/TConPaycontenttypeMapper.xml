@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.EAS.mapper.TConPaycontenttypeMapper">
+
+    <select id="selectDatas" resultType="com.example.EAS.vo.PayContentTypeVO">
+        select m.fid as id,m.fname_l2 as title,m.fdescription_l2 as description,
+        m.fnumber as num,m.flevel as flevel,m.fisenabled as isEnabled
+        from T_CON_PayContentType m
+        left join T_BD_PayContentTypeEntry e on e.FPayContentTypeId=m.FID
+        <where>
+            e.fheadid=#{contractTypeId} and m.FIsEnabled=1
+            <if test="title!=null and title!=''">
+                and m.fname_l2 like CONCAT(CONCAT('%',#{title}),'%')
+            </if>
+            <if test="num!=null and num!=''">
+                and m.fnumber like CONCAT(CONCAT('%',#{num}),'%')
+            </if>
+        </where>
+        order by m.fnumber
+    </select>
+</mapper>

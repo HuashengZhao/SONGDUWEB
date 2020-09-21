@@ -1,0 +1,61 @@
+package com.example.EAS.service.impl;
+
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.EAS.mapper.TFdcCostaccountMapper;
+import com.example.EAS.model.TFdcCostaccount;
+import com.example.EAS.service.ITFdcCostaccountService;
+import com.example.EAS.util.Util;
+import com.example.EAS.vo.CostAccountVO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+/**
+ * <p>
+ * 服务实现类
+ * </p>
+ *
+ * @author watson
+ * @since 2020-08-31
+ */
+@Service
+public class TFdcCostaccountServiceImpl extends ServiceImpl<TFdcCostaccountMapper, TFdcCostaccount> implements ITFdcCostaccountService {
+
+    @Autowired
+    private TFdcCostaccountMapper mapper;
+
+    @Override
+    public CostAccountVO getCostAccount(CostAccountVO vo) {
+        if (Util.isEmpty(vo.getMarketId())) {
+            return null;
+        }
+        List<CostAccountVO> costAccountVOList = mapper.selectDatas(vo);
+        if (costAccountVOList != null && costAccountVOList.size() > 0) {
+            for (CostAccountVO costAccountVO : costAccountVOList) {
+                String longNumber = costAccountVO.getLongNumber();
+                if (longNumber != null) {
+                    costAccountVO.setLongNumber(longNumber
+                            .replace("!", ".")
+                            .replace("-", "."));
+                }
+            }
+            vo.setCostAccountVOList(costAccountVOList);
+        }
+        return vo;
+    }
+
+
+    @Override
+    public List<CostAccountVO> unUseCostAccount(CostAccountVO vo) {
+        String marketId = vo.getMarketId();
+        if (Util.isEmpty(marketId)) {
+            return null;
+        }
+        List<CostAccountVO> costAccountVOS = mapper.selectUnUseCostAccount(marketId);
+        if (costAccountVOS==null||costAccountVOS.size()==0){
+            return null;
+        }
+        return costAccountVOS;
+    }
+}

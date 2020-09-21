@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.EAS.mapper.TBcOperationtypeMapper">
+
+    <select id="selectDatas" resultType="com.example.EAS.vo.OperationTypeVO">
+        select fid as id,fnumber as num,fname_l2 as title,FISENABLE
+         from T_BC_OperationType
+         where FISENABLE=1
+         order by fnumber
+    </select>
+</mapper>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.EAS.mapper.TInvTenderaccepterresultMapper">
+
+    <select id="selectDatas" resultType="com.example.EAS.vo.TenderAccepterVO">
+        select e.FIsLowest isLowest,e.FTotalSeq seq,e.FVotes votes,e.FBidAmount bidAmount,
+        e.FAfterFixAmount afterFixAmount,e.FLastAmount lastAmount,m.FNUMBER as num
+        e.FSupplierID,e.FCostOfContruction consCost,m.FNAME title,s.fname_l2 as supplierName
+        from T_INV_TenderAccepterResultE e
+        left join T_INV_TenderAccepterResult m on m.fid=e.fparentId
+        left join T_FDC_SupplierStock s on s.fid=e.FSupplierID
+        <where>
+            m.FOrgUnitID=#{orgId}
+            <if test="num!=null and num!=''">
+                and m.fnumber like '%num%'
+            </if>
+            <if test="title!=null and title!=''">
+                and m.fname like '%title%'
+            </if>
+            <if test="seq!=null and seq!=''">
+                and e.FTotalSeq like '%seq%'
+            </if>
+            <if test="votes!=null and votes!=''">
+                and e.FVotes like '%votes%'
+            </if>
+            <if test="supplierName!=null and supplierName!=''">
+                and s.fname_l2 like '%supplierName%'
+            </if>
+            <if test="lastAmount!=null and lastAmount!=''">
+                and e.FLastAmount like '%lastAmount%'
+            </if>
+            <if test="afterFixAmount!=null and afterFixAmount!=''">
+                and e.FAfterFixAmount like '%afterFixAmount%'
+            </if>
+            <if test="bidAmount!=null and bidAmount!=''">
+                and e.FBidAmount like '%bidAmount%'
+            </if>
+            <if test="consCost!=null and consCost!=''">
+                and e.FCostOfContruction like '%consCost%'
+            </if>
+        </where>
+        order by m.fnumber
+    </select>
+</mapper>

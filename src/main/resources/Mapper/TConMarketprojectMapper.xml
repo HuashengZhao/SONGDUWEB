@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.EAS.mapper.TConMarketprojectMapper">
+
+    <select id="selectDatas" resultType="com.example.EAS.vo.MarketProjectVO">
+        select m.fid as id,m.fnumber as num,m.FNAME as title,
+        m.fstate as state,m.fissub as isSub,m.FAmount as amount,
+        m.fcreatetime as createTime,m.fcreatorid as creatorId,
+        m.fauditorid as auditorId,m.fbizdate as bizDate,m.FAuditTime as auditTime,
+        u.FNAME_L2 as creator,u.FNUMBER as creatorNum,
+        u2.FNAME_L2 as auditor,u2.FNUMBER as auditorNum
+          from T_CON_MarketProject m
+          left join t_pm_user u on u.fid=m.FCREATORID
+          left join t_pm_user u2 on u2.fid=m.FAUDITORID
+          <where>
+              m.FORGUNITID=#{orgId}
+              <if test="title!=null and title!=''">
+                  m.FNAME like CONCAT(CONCAT('%',#{title}),'%')
+              </if>
+              <if test="num!=null and num!=''">
+                  m.fnumber like CONCAT(CONCAT('%',#{num}),'%')
+              </if>
+          </where>
+          order by m.fnumber
+    </select>
+</mapper>

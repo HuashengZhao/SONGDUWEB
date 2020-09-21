@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.EAS.mapper.TFdcContractsourceMapper">
+
+    <select id="selectDatas" resultType="com.example.EAS.vo.MadeWayVO">
+        select fid as id,fname_l2 as title,fnumber as num,
+        fdescription_l2 as description, fisenabled as isEnabled
+        from T_FDC_ContractSource
+        <where>
+            FIsEnabled=1
+            <if test="title!=null and title!=''">
+                and fname_l2 like CONCAT(CONCAT('%',#{title}),'%')
+            </if>
+            <if test="num!=null and num!=''">
+                and fnumber like CONCAT(CONCAT('%',#{num}),'%')
+            </if>
+        </where>
+        order by fnumber
+    </select>
+</mapper>

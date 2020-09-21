@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.EAS.mapper.TBcExpensetypeMapper">
+
+    <select id="selectDatas" resultType="com.example.EAS.vo.ExpenseTypeVO">
+        select e.fid as id,e.fnumber as num,e.ftypename_l2 title,u.fname_l2 unitName,
+        e.ftypesimplename_l2 as typeSimplename
+        from T_BC_ExpenseType e
+        left join T_ORG_BaseUnit u on e.fcontrolunitid=u.fid
+        <where>
+            e.FIsStart=1
+            <if test="operationTypeId!=null and operationTypeId !=''">
+                and e.FOPERATIONTYPEID=#{operationTypeId}
+            </if>
+
+            <if test="title!=null and title!=''">
+                and e.ftypename_l2 like '%${title}%'
+            </if>
+            <if test="num!=null and num!=''">
+                and e.fnumber like '%${num}%'
+            </if>
+            order by e.fnumber
+        </where>
+    </select>
+</mapper>

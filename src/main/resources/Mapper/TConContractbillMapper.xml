@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.EAS.mapper.TConContractbillMapper">
+
+    <select id="selectDatas" resultType="com.example.EAS.vo.ContractVO">
+        select cb.FID id,cb.fbookeddate bizDate,cb.FState state,cb.FHasSettled hasSettled,ct.fname_l2 as conTypeName,
+        cb.fnumber num,cb.FNAME as conName,pc.fname_l2 as hygh,cb.fmaincontractnumber as mainNumber,
+        cur.fname_l2 curName,cb.FSrcAmount srcAmount,cb.FOriginalAmount originalAmount,cb.famount amount,
+        supb.fname_l2 as partB,supc.fname_l2 as partC,cs.fname_l2 as csName,
+        cb.fsigndate signDate,oa.fname_l2 as deptName,p.fname_l2 as personName,oaa.FNAME_L2 creatDept,
+        ldp.fname_l2 as partA,cb.FCostProperty costProperty,cb.FContractPropert contractNature,
+        cb.FIsArchived isArchived, u.fname_l2 auditor,cb.FLastUpdateTime lastAuditTime,uc.fname_l2 as creator,
+        cb.fcreatetime createTime,cb.FIsRespite isRespite,cb.FCONTRACTTYPEID as conTypeId
+        from T_CON_ContractBill cb left join T_FDC_ContractType ct on cb.FContractTypeID=ct.fid
+        left join T_CON_ProgrammingContract pc on pc.fid=cb.FProgrammingContract
+        left join T_BD_Currency cur on cur.fid=cb.FCurrencyID
+        left join T_BD_Supplier supb on supb.fid=cb.FPartBID
+        left join T_BD_Supplier supc on supc.fid=cb.FPartCID
+        left join T_FDC_ContractSource cs on cs.fid=cb.FContractSourceId
+        left join T_BD_Person p on p.fid=cb.FRespPersonID
+        left join T_ORG_Admin oa on oa.fid=cb.FRespDeptID
+        left join T_ORG_Admin oaa on oaa.fid=cb.FCreateDeptID
+        left join T_FDC_LandDeveloper ldp on ldp.fid=cb.FLandDeveloperID
+        left join T_PM_User u on u.fid=cb.FAuditorID
+        left join T_PM_USER uc on uc.fid=cb.FCreatorID
+        <where>
+            cb.FControlUnitID=#{orgId}
+
+            <if test="projectIds != null and projectIds.size > 0">
+                and cb.FCurProjectID in
+                <foreach item="item" collection="projectIds" index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="num!=null and num!=''">
+                and t.fnumber like CONCAT(CONCAT('%',#{num}),'%')
+            </if>
+            <if test="bizDate!=null and bizDate!=''">
+                and cb.FBizDate like CONCAT(CONCAT('%',#{bizDate}),'%')
+            </if>
+            <if test="state!=null and state!=''">
+                and cb.FState like CONCAT(CONCAT('%',#{state}),'%')
+            </if>
+            <if test="conTypeName!=null and conTypeName!=''">
+                and ct.fname_l2 like CONCAT(CONCAT('%',#{conTypeName}),'%')
+            </if>
+            <if test="conTypeIdList != null and conTypeIdList.size > 0">
+                and ct.fid in
+                <foreach item="item" collection="conTypeIdList" index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="conName!=null and conName!=''">
+                and cb.fname like CONCAT(CONCAT('%',#{conName}),'%')
+            </if>
+            <if test="partB!=null and partB!=''">
+                and supb.fname_l2 like CONCAT(CONCAT('%',#{partB}),'%')
+            </if>
+            <if test="personName!=null and personName!=''">
+                and p.fname_l2 like CONCAT(CONCAT('%',#{personName}),'%')
+            </if>
+            <if test="deptName!=null and deptName!=''">
+                and oa.fname_l2 like CONCAT(CONCAT('%',#{deptName}),'%')
+            </if>
+            <if test="creator!=null and creator!=''">
+                and uc.fname_l2 like CONCAT(CONCAT('%',#{creator}),'%')
+            </if>
+            <if test="creatDept!=null and creatDept!=''">
+                and oaa.FNAME_L2 like CONCAT(CONCAT('%',#{creatDept}),'%')
+            </if>
+        </where>
+    </select>
+    <select id="selectProject" resultType="java.lang.String">
+        select FParentID from T_FDC_CurProject where fid=#{projectId}
+    </select>
+    <select id="selectProjectIds" resultType="java.lang.String">
+        select fid from T_FDC_CurProject where FPARENTID=#{projectId}
+    </select>
+    <select id="selectConTypeById" resultType="java.lang.String">
+        select fid from T_FDC_ContractType where fparentid=#{conTypeId}
+    </select>
+    <select id="selectPersonByNum" resultType="java.lang.String">
+        select FID  from T_PM_USER where fnumber = #{number}
+    </select>
+    <select id="selectDeptByNum" resultType="java.lang.String">
+        select FID from T_ORG_BASEUNIT where FNUMBER = #{number}
+    </select>
+    <select id="selectUnionBankId" resultType="java.lang.String">
+   select fid  from  T_CON_BANKNUM  where FNUMBER = #{unionBankNum}
+    </select>
+    <select id="selectConDetailsByCT" resultType="com.example.EAS.vo.ContractDetailVO">
+       select cb.FID id,cb.fbookeddate bizDate,cb.FState state,cb.FHasSettled hasSettled,ct.fname_l2 as conTypeName,
+        cb.fnumber num,cb.FNAME as conName,pc.fname_l2 as hygh,cb.fmaincontractnumber as mainNumber,
+        cur.fname_l2 curName,cb.FSrcAmount srcAmount,cb.FOriginalAmount originalAmount,cb.famount amount,
+        supb.fname_l2 as partB,supc.fname_l2 as partC,cs.fname_l2 as csName,
+        cb.fsigndate signDate,oa.fname_l2 as deptName,p.fname_l2 as personName,oaa.FNAME_L2 creatDept,
+        ldp.fname_l2 as partA,cb.FCostProperty costProperty,cb.FContractPropert contractNature,
+        cb.FIsArchived isArchived, u.fname_l2 auditor,cb.FLastUpdateTime lastAuditTime,uc.fname_l2 as creator,
+        cb.fcreatetime createTime,cb.FIsRespite isRespite
+        from T_CON_ContractBill cb left join T_FDC_ContractType ct on cb.FContractTypeID=ct.fid
+        left join T_CON_ProgrammingContract pc on pc.fid=cb.FProgrammingContract
+        left join T_BD_Currency cur on cur.fid=cb.FCurrencyID
+        left join T_BD_Supplier supb on supb.fid=cb.FPartBID
+        left join T_BD_Supplier supc on supc.fid=cb.FPartCID
+        left join T_FDC_ContractSource cs on cs.fid=cb.FContractSourceId
+        left join T_BD_Person p on p.fid=cb.FRespPersonID
+        left join T_ORG_Admin oa on oa.fid=cb.FRespDeptID
+        left join T_ORG_Admin oaa on oaa.fid=cb.FCreateDeptID
+        left join T_FDC_LandDeveloper ldp on ldp.fid=cb.FLandDeveloperID
+        left join T_PM_User u on u.fid=cb.FAuditorID
+        left join T_PM_USER uc on uc.fid=cb.FCreatorID
+          where cb.fid=#{id}
+    </select>
+    <select id="selectSignInfos" parameterType="com.example.EAS.vo.ContractVO"
+            resultType="com.example.EAS.vo.ContractSignDetailVO">
+    select fid as id,FDetail as detail,FREMARK as description,FPARENTID as parentId,
+    FAMOUNT as amount,FRATE as rate,FTOTALAMOUNT as totalAmount
+    from T_CON_ContractBillRateEntry where FPARENTID=#{id}
+    </select>
+    <select id="selectDetails" parameterType="com.example.EAS.vo.ContractVO"
+            resultType="com.example.EAS.vo.ContractDetailVO">
+    select fid as id,FDESC as description,FDETAIL as detailInfo,
+    FCONTENT as content
+    from T_CON_CONTRACTBILLENTRY
+    where FPARENTID=#{id}
+    </select>
+
+    <select id="selectContractAdds" parameterType="com.example.EAS.vo.ContractVO"
+            resultType="com.example.EAS.vo.ContractAddVO">
+    select b.FID as id,
+     b.FNAME           as title,
+    b.FNUMBER         as num,
+    t.FNAME_L2        as contractType,
+    b.FCOSTPROPERTY   as contractNature,
+    b.FBOOKEDDATE        as bizDate,
+    s.FNAME_L2        as partB,
+    b.FORIGINALAMOUNT as originalAmount,
+    b.FAMOUNT         as amount
+    from T_CON_CONTRACTBILL b
+    left join T_FDC_ContractType t on t.fid = b.FCONTRACTTYPEID
+    left join T_BD_SUPPLIER s on s.fid = b.FPARTBID
+    where b.fid in
+    (select FPARENTID from T_CON_CONTRACTBILLENTRY where FCONTENT=#{id})
+    </select>
+
+    <select id="selectMarketCons" resultType="com.example.EAS.vo.MarketContDetailVO">
+    select FID as id,FAMOUNT as amount,FCONTENT as content,
+    FDATE as fsdate,fremark as remark
+    from T_CON_ContractMarketEntry
+    where fheadid=#{id}
+    </select>
+
+    <select id="viewContractVO" resultType="com.example.EAS.vo.ContractVO">
+    select cb.FID id,cb.fbookeddate bizDate,cb.FState state,cb.FHasSettled hasSettled,ct.fname_l2 as conTypeName,
+    cb.fnumber num,cb.FNAME as conName,pc.fname_l2 as hygh,cb.fmaincontractnumber as mainNumber,
+    cur.fname_l2 curName,cb.FSrcAmount srcAmount,cb.FOriginalAmount originalAmount,cb.famount amount,
+    supb.fname_l2 as partBName,supb.FID as partB,supc.fname_l2 as partCName,supc.fid as partC,cs.fname_l2 as csName,
+    cb.fsigndate signDate,oa.fname_l2 as deptName,p.fname_l2 as personName,oaa.FNAME_L2 creatDept,
+    ldp.fname_l2 as partAName,ldp.FID as partA,cb.FCostProperty costProperty,cb.FContractPropert contractNature,
+    cb.FIsArchived isArchived, u.fname_l2 auditor,cb.FLastUpdateTime lastAuditTime,uc.fname_l2 as creator,
+    cb.fcreatetime createTime,cb.FIsRespite isRespite,cb.FCONTRACTTYPEID as conTypeId,cb.FEXRATE as exRate,
+    cb.FCURRENCYID as currencyId,p.FNUMBER as person,cb.FCURPROJECTID as projectId,cp.FNAME_L2 as projectName,
+    cb.FORGUNITID as orgId,un.FNAME_L2 as orgName
+    from T_CON_ContractBill cb left join T_FDC_ContractType ct on cb.FContractTypeID=ct.fid
+    left join T_CON_ProgrammingContract pc on pc.fid=cb.FProgrammingContract
+    left join T_BD_Currency cur on cur.fid=cb.FCurrencyID
+    left join T_BD_Supplier supb on supb.fid=cb.FPartBID
+    left join T_BD_Supplier supc on supc.fid=cb.FPartCID
+    left join T_FDC_ContractSource cs on cs.fid=cb.FContractSourceId
+    left join T_BD_Person p on p.fid=cb.FRespPersonID
+    left join T_ORG_Admin oa on oa.fid=cb.FRespDeptID
+    left join T_ORG_Admin oaa on oaa.fid=cb.FCreateDeptID
+    left join T_FDC_LandDeveloper ldp on ldp.fid=cb.FLandDeveloperID
+    left join T_PM_User u on u.fid=cb.FAuditorID
+    left join T_FDC_CURPROJECT cp on cp.fid=cb.FCURPROJECTID
+    left join T_PM_USER uc on uc.fid=cb.FCreatorID
+    left join T_ORG_BASEUNIT un on un.fid=cb.FORGUNITID
+    where cb.FID=#{id}
+    </select>
+
+
+</mapper>

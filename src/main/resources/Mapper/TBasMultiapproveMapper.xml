@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.EAS.mapper.TBasMultiapproveMapper">
+
+    <select id="selectDatas" resultType="com.example.EAS.vo.MultiApproveVO">
+        select u.fname_l2 as uName,t.fispass as pass,t.fopinion_l2 as opinion,
+        t.FHandlerContent as content,t.fcreatetime as createTime,t.fassignmentid,
+        d.FPERSONUSERNAME_l2 userName,d.FACTDEFNAME_l2 actName
+        from  T_BAS_MultiApprove t
+        left join T_WFR_AssignDetail d on d.FASSIGNID = t.fassignmentid
+        left join T_ORG_CtrlUnit u on u.fid=t.fcontrolunitid
+        where t.fcontrolunitid=#{orgId}
+    </select>
+</mapper>

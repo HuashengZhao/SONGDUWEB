@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.EAS.mapper.TFdcContracttypeMapper">
+
+    <select id="selectData" resultType="com.example.EAS.vo.ContractTypeVO">
+        select fid as id,fiscost as isCost,fname_l2 as title,
+        forgtype orgType,fdescription_l2 as description,fisenabled as enabled,
+        FNUMBER as num ,FLONGNUMBER as longNumber
+        from T_FDC_ContractType
+        <where>
+            FIsEnabled= 1
+            <if test="num !=null and num !=''">
+                and fnumber like '%${num}%'
+            </if>
+            <if test="title !=null and title !=''">
+                and FNAME_L2 like '%${title}%'
+            </if>
+            <if test="description !=null and description !=''">
+                and FDESCRIPTION_L2 like '%${description}%'
+            </if>
+        </where>
+        order by num
+    </select>
+    <select id="selectNumberRecord" resultType="java.lang.Integer">
+        select value from oaNumberRecord where type like '%contract%'
+    </select>
+    <select id="selectOrgNumber" resultType="java.lang.String">
+        select fnumber from T_ORG_BASEUNIT where fid=#{orgId,jdbcType=VARCHAR}
+    </select>
+</mapper>

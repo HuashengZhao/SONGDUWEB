@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.EAS.mapper.TConSupplierapplyMapper">
+    <insert id="insertOaid">
+        insert into oaidrecord(billId,oaid) values(#{easid},#{oaid})
+    </insert>
+
+
+    <update id="updateNumberRecord">
+        update OANUMBERRECORD set value =#{numberRecord} where type like '%supplier%'
+    </update>
+    <update id="updateOaid">
+        update OAIDRECORD set OAID=#{oaId} where billId=#{billId}
+    </update>
+    <update id="updateFileNumrecord">
+         update fileNumRecord set value=#{numberRecord}
+    </update>
+    <update id="updateWebUrl">
+        update webattachment set weburl = #{newUrl} where easid=#{billId}
+    </update>
+    <update id="updateCreatorId">
+        update T_CON_SUPPLIERAPPLY set FCREATORID = #{creatorId} where fid=#{id}
+    </update>
+    <delete id="deleteData">
+        delete from oridrecord where billid=#{billId}
+    </delete>
+    <delete id="deletAttach">
+        delete from webattachment where easId=#{id}
+    </delete>
+    <delete id="deletNumList">
+        delete from webattachment where fileNum in
+        <foreach item="item" collection="existList" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <select id="selectDatas" resultType="com.example.EAS.vo.SupplierApplyVO">
+        select sa.fid id,sa.fnumber num,sa.fname title,sa.fstate state,sa.fdescription description,
+        sa.fcreatorid,sa.fcreatetime createTime,sa.fauditorid,sa.faudittime auditTime,
+        sa.FBANKACCOUNT bankAccount,sa.FBANK bank,sa.FTAXERQUA taxerQua,sa.FTaxerNum taxerNum,
+        u.fname_l2 as creator,u1.fname_l2 as auditor,sa.FSOURCEFUNCTION as sourceFunction,o.OAID as oaid
+        from T_CON_SupplierApply sa
+        left join T_PM_User u on u.fid=sa.fcreatorid
+        left join T_PM_User u1 on u1.fid=sa.fauditorid
+        left join oaidrecord o on o.BILLID=sa.fid
+        <where>
+            <if test="id!=null and id!=''">
+                and sa.fid=#{id}
+            </if>
+            <if test="title!=null and title!=''">
+                and sa.fname like CONCAT(CONCAT('%',#{title}),'%')
+            </if>
+            <if test="num!=null and num!=''">
+                and sa.fnumber like CONCAT(CONCAT('%',#{num}),'%')
+            </if>
+            <if test="auditor!=null and auditor!=''">
+                and u1.fname_l2 like CONCAT(CONCAT('%',#{auditor}),'%')
+            </if>
+            <if test="creator!=null and creator!=''">
+                and u.fname_l2 like CONCAT(CONCAT('%',#{creator}),'%')
+            </if>
+            <if test="description!=null and description!=''">
+                and sa.fdescription like CONCAT(CONCAT('%',#{description}),'%')
+            </if>
+            <if test="state!=null and state!=''">
+                and sa.fstate like CONCAT(CONCAT('%',#{state}),'%')
+            </if>
+        </where>
+        order by sa.fcreatetime desc,sa.fnumber
+    </select>
+    <select id="selectNumberRecord" resultType="java.lang.Integer">
+        select value from OANUMBERRECORD where type like '%supplier%'
+    </select>
+    <select id="selectCreatorId" resultType="java.lang.String">
+        select fid from T_PM_USER where FNUMBER = #{creatorNum}
+    </select>
+    <select id="selectByNum" resultType="com.example.EAS.vo.SupplierApplyVO">
+        select * from T_CON_BankNum where FNUMBER = #{sourceFunction}
+    </select>
+    <select id="selectByName" resultType="java.lang.Integer">
+        select * from T_CON_SupplierApply where FNAME =#{title}
+    </select>
+    <select id="selectByNumId" resultType="com.example.EAS.vo.SupplierApplyVO">
+        select * from T_CON_SupplierApply where FTAXERNUM=#{taxerNum} and fid !=#{id}
+    </select>
+    <select id="selectByTaxNum" resultType="com.example.EAS.vo.SupplierApplyVO">
+          select * from T_CON_SupplierApply where FTAXERNUM=#{taxerNum}
+    </select>
+    <select id="selectDataById" resultType="com.example.EAS.vo.SupplierApplyVO">
+        select sa.fid as  id ,sa.FNAME as title,sa.FNUMBER as num,
+        sa.FBANK as bank,sa.FBANKACCOUNT as bankAccount,sa.FTAXERQUA as taxerQua,
+        sa.FTAXERNUM as taxerNum,sa.FSOURCEFUNCTION as sourceFunction,
+        sa.FDESCRIPTION as description,sa.FSTATE as  state,
+        sa.FSOURCEFUNCTION as sourceFunction,
+        sa.FCREATETIME as createTime,sa.FAUDITTIME as auditTime
+        from T_CON_SupplierApply sa
+      where sa.fid=#{id}
+    </select>
+    <select id="selectEASURL" resultType="java.lang.String">
+        select url from weburl where type ='EASURL'
+    </select>
+    <select id="selectOAURL" resultType="java.lang.String">
+        select url from weburl where type ='OAURL'
+    </select>
+    <select id="selectOaid" resultType="java.lang.String">
+        select oaid from oaidrecord where billId=#{id}
+    </select>
+    <select id="selectCreator" resultType="java.lang.String">
+        select FNAME_L2  from T_PM_USER where FNUMBER = #{creatorNum}
+    </select>
+    <select id="selectDeptName" resultType="java.lang.String">
+        select FNAME_L2 as orgName from  T_ORG_BASEUNIT where FNUMBER = #{orgNum}
+    </select>
+    <select id="selectDeptId" resultType="java.lang.String">
+         select fid from  T_ORG_BASEUNIT where FNUMBER = #{orgNum}
+    </select>
+    <select id="selectIFExist" resultType="com.example.EAS.vo.LoginVO">
+    select b.FNUMBER as orgNum,u.FNUMBER as personNum from T_ORG_BASEUNIT b
+    left join T_PM_USER u on u.FCONTROLUNITID=b.fid
+    where b.FNUMBER=#{org} and u.fnumber=#{person}
+    </select>
+    <select id="selectOrgId" resultType="java.lang.String">
+        select FORGUNITID as orgId from T_CON_SUPPLIERAPPLY where fid=#{id}
+    </select>
+    <select id="selectData" resultType="java.lang.Object">
+        select * from OAIDRECORD where OAID=#{oaId} and billId=#{billId}
+    </select>
+    <select id="selectAttachments" resultType="com.example.EAS.vo.AttachmentsVO">
+        select a.fileUUID,a.contentType,a.url as fileUrl,a.fileType,a.fileSize as fileSize,a.filenum as num,a.weburl as webUrl,a.createTime as createTime,a.personName,a.filename as title from webattachment a where easid=#{easId}
+    </select>
+    <select id="selectFileNumberRecord" resultType="java.lang.Integer">
+        select value from fileNumRecord
+    </select>
+    <select id="selectPersonByNum" resultType="com.example.EAS.vo.PersonsVO">
+        select FNAME_L2 as personName from t_pm_user where FNUMBER=#{person1}
+    </select>
+    <select id="selectNumFromWebAttachment" resultType="java.lang.String">
+        select fileNum from webAttachment where easId=#{id}
+    </select>
+    <select id="selectAttachmentsByNum" resultType="com.example.EAS.vo.AttachmentsVO">
+         select a.url as fileUrl,a.fileType,a.fileSize as fileSize,a.fileNum as num,a.weburl as webUrl,a.createTime as createTime,a.personName,a.filename as title from webattachment a where fileNum=#{num}
+    </select>
+    <select id="selectOrgInfoByPerson" resultType="com.example.EAS.vo.PersonsVO">
+        select FNAME_L2 as personName from t_pm_user
+        where FNUMBER=#{person}
+    </select>
+    <select id="selectUUIDByOriName" resultType="java.lang.String">
+        select fileUUID from webAttachment where fileNum=#{fileNum}
+    </select>
+    <select id="selecWEBURLByOriName" resultType="java.lang.String">
+         select webUrl from webAttachment where fileNum=#{fileNum}
+    </select>
+
+    <insert id="insertAttachMent" parameterType="com.example.EAS.vo.AttachmentsVO">
+        insert into webattachment(originalFilename,fileUUID,contentType,fileSize,easid,fileNum,url,webUrl,filetype,createtime,personName,fileName)
+        values(#{originalFilename},#{fileUUID},#{contentType,jdbcType=VARCHAR},#{fileSize},#{easId},#{num},#{fileUrl},#{webUrl},#{fileType},#{createTime},#{personName},#{title})
+    </insert>
+</mapper>

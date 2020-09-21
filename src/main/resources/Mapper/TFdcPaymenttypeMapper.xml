@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.EAS.mapper.TFdcPaymenttypeMapper">
+
+    <select id="selectDatas" resultType="com.example.EAS.vo.PaymentTypeVO">
+        select m.fid as id,m.fname_l2 title,m.fnumber as num,m.fdescription_l2 description,
+        m.fisenabled isEnabled,e.fname_l2 type
+         from T_FDC_PaymentType m
+         left join T_FDC_Type e on e.fid=m.FPayTypeID
+         where m.FIsEnabled=1
+         order by m.fnumber
+    </select>
+</mapper>

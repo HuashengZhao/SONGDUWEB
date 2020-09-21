@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.EAS.mapper.TConProgrammingcontractMapper">
+
+    <select id="selectDatas" resultType="com.example.EAS.vo.ProgramConVO">
+        select m.fid as id, m.fnumber as num ,m.fname_l2 as title,m.FLONGNUMBER as longNumber
+        ,m.FAMOUNT as amount,m.FBALANCE as balance
+         from T_CON_ProgrammingContract m
+         left join T_CON_Programming e on e.fid=m.FProgrammingID
+         <where>
+             m.fcontracttypeid=#{contractTypeId}
+             and e.FProjectID=#{projectId}
+             and e.FIsLatest=1
+         </where>
+         order by m.flongnumber
+    </select>
+</mapper>
