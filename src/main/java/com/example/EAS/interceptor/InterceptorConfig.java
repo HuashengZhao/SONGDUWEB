@@ -26,6 +26,7 @@ public class InterceptorConfig extends WebMvcConfigurationSupport {
                 .addPathPatterns("/EAS/**")
                 //选择忽略的接口
                 .excludePathPatterns("/EAS/login/ByNameAndDept")
+//                .excludePathPatterns("/EAS/login/getLoginData")
                 .excludePathPatterns("/EAS/baseData/acceptHandle")
                 .excludePathPatterns("/EAS/baseData/downLoadAttachment");
 //                .excludePathPatterns("/EAS/**");

@@ -106,7 +106,7 @@
         select oaid from oaidrecord where billId=#{id}
     </select>
     <select id="selectCreator" resultType="com.example.EAS.vo.PersonsVO">
-        select FNAME_L2 as personName,fnumber as person  from T_PM_USER where FNUMBER = #{creatorNum}
+        select fid as id,FNAME_L2 as personName,fnumber as person  from T_PM_USER where FNUMBER = #{creatorNum}
     </select>
     <select id="selectDeptName" resultType="java.lang.String">
         select FNAME_L2 as orgName from  T_ORG_BASEUNIT where FNUMBER = #{orgNum}
@@ -154,7 +154,7 @@
     </select>
     <select id="selectOrgList" resultType="com.example.EAS.vo.OrgVO">
         select un.fid as id,un.flongnumber as longNumber,un.fname_l2 as title,un.fnumber as num from  t_org_baseunit un
-       left join  T_ORG_OUPartFI fi on fi.fid=un.FPartFIID where fisbizunit=1
+       left join  T_ORG_OUPartFI fi on fi.fid=un.FPartFIID where fisbizunit=1  order by un.fnumber
     </select>
 
     <insert id="insertAttachMent" parameterType="com.example.EAS.vo.AttachmentsVO">

@@ -18,9 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * @PackageName:com.example.EAS.controller
@@ -66,12 +64,6 @@ public class OAController {
             String sysName = vo.getSysName();
 
             List<LoginVO> vos = mapper.selectIFExist(org, person);
-//            验证测试后打开
-//            if (vos==null||vos.size()==0){
-//                json.put("code", 2);
-//                json.put("message", UtilMessage.ERROR_DEPT_PERSON);
-//                return R.error(json);
-//            }
             StringBuffer sb = new StringBuffer();
             String s = String.valueOf(sb.append(org).append("&&").append(person));
             String token = RSAUtil.encrypt(s, "pub.key");
@@ -109,6 +101,7 @@ public class OAController {
         HashMap<String, Object> result = new HashMap<>(10);
         LoginVO vo = BodyDecodeUtil.decodeBody(body, LoginVO.class);
         PersonsVO personsVO = null;
+//        String token = vo.getToken();
         if (Util.isNotEmpty(vo.getToken())) {
             String token = RequestHolder.getCurrentUser().getToken();
             String dencrypt = RSAUtil.dencrypt(token, "pri.key");
@@ -120,6 +113,7 @@ public class OAController {
             List<String> longNumbers = mapper.selectOrgInfoByPerson(person);
 //            获取所有财务实体组织
             List<OrgVO> orgVOList = new ArrayList<>();
+            Map map = new HashMap<>();
             List<OrgVO> orgVOS = mapper.selectOrgList();
             if (orgVOS != null && orgVOS.size() > 0) {
                 for (OrgVO orgVO : orgVOS) {
@@ -127,7 +121,11 @@ public class OAController {
                         for (String longNumber : longNumbers) {
                             if (longNumber.contains(orgVO.getLongNumber())
                                     && Util.isEmpty(orgVO.getParentId())) {
-                                orgVOList.add(orgVO);
+                                Object o = map.get(orgVO.getNum());
+                                if (Util.isEmpty(o)){
+                                    orgVOList.add(orgVO);
+                                }
+                                map.put(orgVO.getNum(),orgVO);
                             }
                         }
                     }

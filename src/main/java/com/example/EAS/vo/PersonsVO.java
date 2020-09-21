@@ -3,6 +3,7 @@ package com.example.EAS.vo;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @PackageName:com.example.EAS.vo
@@ -14,6 +15,7 @@ import java.util.List;
 @Data
 public class PersonsVO {
 
+    private String id;
     private String personName;
 //   编号
     private String person;
@@ -23,7 +25,6 @@ public class PersonsVO {
     private String orgLongNumber;
 //    员工类型
     private String typeName;
-    private String id;
     private String userId;
     private String company;
 //    1正常 2禁用
