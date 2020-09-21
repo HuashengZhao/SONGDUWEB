@@ -7,7 +7,6 @@ import com.example.EAS.mapper.TConSupplierapplyMapper;
 import com.example.EAS.service.impl.TConSupplierapplyServiceImpl;
 import com.example.EAS.util.*;
 import com.example.EAS.vo.LoginVO;
-import com.example.EAS.vo.PersonsVO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,7 +105,7 @@ public class OAController {
     public R getLoginData(@RequestBody String body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         LoginVO vo = BodyDecodeUtil.decodeBody(body, LoginVO.class);
-        PersonsVO personsVO=new PersonsVO();
+        LoginVO loginVO = new LoginVO();
         if (Util.isNotEmpty(vo.getToken())) {
             String token = RequestHolder.getCurrentUser().getToken();
 //            String token = vo.getToken();
@@ -115,13 +114,23 @@ public class OAController {
             String[] split = dencrypt.split("&&");
             String org = split[0];
             String person = split[1];
-
-            personsVO = mapper.selectOrgInfoByPerson(person);
-//            组织信息 todo
+            List<LoginVO> vos = mapper.selectIFExist(org, person);
+//            验证测试后打开
+//            if (vos==null||vos.size()==0){
+//                result.put("msg", UtilMessage.ERROR_DEPT_PERSON);
+//                result.put("code", "101");
+//                return R.error(result);
+//            }
+            String orgName = mapper.selectDeptName(org);
+            String orgId = mapper.selectDeptId(org);
             String personName = mapper.selectCreator(person);
-
+            loginVO.setPerson(person);
+            loginVO.setPersonName(personName);
+            loginVO.setOrg(org);
+            loginVO.setOrgId(orgId);
+            loginVO.setOrgName(orgName);
         }
-        result.put("data", personsVO);
+        result.put("data", loginVO);
         result.put("msg", UtilMessage.GET_MSG_SUCCESS);
         result.put("code", HttpStatus.SC_OK);
         return R.ok(result);
