@@ -2,6 +2,9 @@ package com.example.EAS.mapper;
 
 import com.example.EAS.model.TConChangeauditbill;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.example.EAS.vo.ChangeAuditVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +16,5 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface TConChangeauditbillMapper extends BaseMapper<TConChangeauditbill> {
 
+    List<ChangeAuditVO> selectDatas(ChangeAuditVO vo);
 }

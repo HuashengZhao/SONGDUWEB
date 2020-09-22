@@ -43,4 +43,8 @@ public class ChangeAuditVO {
     private LocalDateTime auditDate;
 
 
+    private Integer currentPage;
+    private Integer pageSize;
+
+
 }
