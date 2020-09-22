@@ -27,7 +27,7 @@ public interface TConSupplierapplyMapper extends BaseMapper<TConSupplierapply> {
 
     List<SupplierApplyVO> selectByNum(String taxerNum);
 
-    Integer selectByName(String title);
+    List<SupplierApplyVO> selectByName(String title);
 
     List<SupplierApplyVO> selectByNumId(String taxerNum, String id);
 
@@ -92,5 +92,8 @@ public interface TConSupplierapplyMapper extends BaseMapper<TConSupplierapply> {
     List<OrgVO> selectOrgList();
 
 
+    List<SupplierApplyVO> selectByNameId(String title,String id);
+
+    List<Object> selectSupplierByName(String title);
 }
 

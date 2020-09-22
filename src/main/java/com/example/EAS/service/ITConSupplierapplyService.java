@@ -30,7 +30,7 @@ public interface ITConSupplierapplyService extends IService<TConSupplierapply> {
 
     void deleteSupplierApply(SupplierApplyVO vo);
 
-    Integer whetherRepeat(SupplierApplyVO vo);
+//    Integer whetherRepeat(SupplierApplyVO vo);
 
     SupplierApplyVO supplierSubmit(SupplierApplyVO vo);
 

@@ -77,7 +77,7 @@
     <select id="selectByNum" resultType="com.example.EAS.vo.SupplierApplyVO">
         select * from T_CON_BankNum where FNUMBER = #{sourceFunction}
     </select>
-    <select id="selectByName" resultType="java.lang.Integer">
+    <select id="selectByName" resultType="com.example.EAS.vo.SupplierApplyVO">
         select * from T_CON_SupplierApply where FNAME =#{title}
     </select>
     <select id="selectByNumId" resultType="com.example.EAS.vo.SupplierApplyVO">
@@ -142,9 +142,8 @@
     </select>
     <select id="selectOrgInfoByPerson" resultType="java.lang.String">
     select flongnumber from T_ORG_BaseUnit where fid in
-  (select FAdminOrgUnitID from  T_ORG_Position where fid in
-  (select FPositionID  from  T_ORG_PositionMember where FPersonID =
-  (select FPersonId from t_pm_user where fnumber=#{person})))
+    (select FORGID from T_PM_OrgRange where FUSERID in
+    (select fid from t_pm_user where fnumber=#{person}))
     </select>
     <select id="selectUUIDByOriName" resultType="java.lang.String">
         select fileUUID from webAttachment where fileNum=#{fileNum}
@@ -155,6 +154,12 @@
     <select id="selectOrgList" resultType="com.example.EAS.vo.OrgVO">
         select un.fid as id,un.flongnumber as longNumber,un.fname_l2 as title,un.fnumber as num from  t_org_baseunit un
        left join  T_ORG_OUPartFI fi on fi.fid=un.FPartFIID where fisbizunit=1  order by un.fnumber
+    </select>
+    <select id="selectByNameId" resultType="com.example.EAS.vo.SupplierApplyVO">
+          select * from T_CON_SupplierApply where FNAME =#{title} and fid!=#{id}
+    </select>
+    <select id="selectSupplierByName" resultType="java.lang.Object">
+        select * from T_BD_SUPPLIER where FNAME_L2=#{title}
     </select>
 
     <insert id="insertAttachMent" parameterType="com.example.EAS.vo.AttachmentsVO">

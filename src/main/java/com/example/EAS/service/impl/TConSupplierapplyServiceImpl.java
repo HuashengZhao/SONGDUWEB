@@ -208,7 +208,6 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
     @Transactional(rollbackFor = RuntimeException.class)
     @Override
     public JSONObject addSupplierApply(SupplierApplyVO vo) {
-        String message = null;
         JSONObject obj = new JSONObject();
         if (Util.isNotEmpty(vo.getBankAccount())) {
             obj.put("bankAccount", vo.getBankAccount());
@@ -217,6 +216,15 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
             obj.put("bank", vo.getBank());
         }
         if (Util.isNotEmpty(vo.getTitle())) {
+            String title = vo.getTitle();
+            List<SupplierApplyVO> supplierApplyVOS  = mapper.selectByName(title);
+            if (supplierApplyVOS!=null && supplierApplyVOS.size()>0){
+                throw new ServiceException(UtilMessage.SUPPLIER_NAME_REPEAT);
+            }
+            List<Object> objs = mapper.selectSupplierByName(title);
+            if (objs!=null && objs.size()>0){
+                throw new ServiceException(UtilMessage.SUPPLIER_NAME_REPEAT);
+            }
             obj.put("name", vo.getTitle());
         }
         if (Util.isNotEmpty(vo.getNum())) {
@@ -225,10 +233,6 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         if (Util.isNotEmpty(vo.getDescription())) {
             obj.put("remark", vo.getDescription());
         }
-//        if (Util.isNotEmpty(vo.getPerson())) {
-//            String creatorId = mapper.selectCreatorId(vo.getPerson());
-//            obj.put("creator", creatorId);
-//        }
         if (Util.isNotEmpty(vo.getAuditorNum())) {
             String auditorId = mapper.selectCreatorId(vo.getAuditorNum());
             obj.put("auditor", auditorId);
@@ -243,7 +247,6 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
 //                        判断是否存在
             String sourceFunction = vo.getSourceFunction();
             List<SupplierApplyVO> supplierApplyVOS = mapper.selectByNum(sourceFunction);
-
             if (supplierApplyVOS.size() <= 0) {
                 throw new ServiceException(UtilMessage.SOURCE_FUNCATION_NOT_EXIST);
             }
@@ -264,6 +267,21 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         if (Util.isNotEmpty(vo.getOrgId())) {
             obj.put("orgId", vo.getOrgId());
         }
+        //        附件
+        JSONArray attach = new JSONArray();
+        List<AttachmentsVO> attachmentsVOS = vo.getAttachmentsVOS();
+        if (attachmentsVOS!=null && attachmentsVOS.size()>0){
+            for (AttachmentsVO attachmentsVO : attachmentsVOS) {
+                JSONObject object = new JSONObject();
+                String webUrl = attachmentsVO.getWebUrl();
+                String originalFilename = attachmentsVO.getOriginalFilename();
+                object.put("FName",originalFilename==null?"none":originalFilename);
+                object.put("FRemotePath",webUrl==null?"none":webUrl);
+                attach.add(object);
+            }
+        }
+        obj.put("attach",attach);
+
         Call call = getCall("EASURL", "saveSupplierApply");
         String result = null;
         try {
@@ -300,6 +318,15 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
             obj.put("bank", vo.getBank());
         }
         if (Util.isNotEmpty(vo.getTitle())) {
+            String title = vo.getTitle();
+            List<SupplierApplyVO> supplierApplyVOS = mapper.selectByNameId(title,id);
+            if (supplierApplyVOS!=null && supplierApplyVOS.size()>0){
+                throw new ServiceException(UtilMessage.SUPPLIER_NAME_REPEAT);
+            }
+            List<Object> objs = mapper.selectSupplierByName(title);
+            if (objs!=null && objs.size()>0){
+                throw new ServiceException(UtilMessage.SUPPLIER_NAME_REPEAT);
+            }
             obj.put("name", vo.getTitle());
         }
         if (Util.isNotEmpty(vo.getNum())) {
@@ -308,10 +335,6 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         if (Util.isNotEmpty(vo.getDescription())) {
             obj.put("remark", vo.getDescription());
         }
-//        if (Util.isNotEmpty(vo.getPerson())) {
-//            String creatorId = mapper.selectCreatorId(vo.getPerson());
-//            obj.put("creator", creatorId);
-//        }
         if (Util.isNotEmpty(vo.getAuditorNum())) {
             String auditorId = mapper.selectCreatorId(vo.getAuditorNum());
             obj.put("auditor", auditorId);
@@ -342,6 +365,21 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         if (Util.isNotEmpty(orgId)) {
             obj.put("orgId", orgId);
         }
+//        附件
+        JSONArray attach = new JSONArray();
+        List<AttachmentsVO> attachmentsVOS = vo.getAttachmentsVOS();
+        if (attachmentsVOS!=null && attachmentsVOS.size()>0){
+            for (AttachmentsVO attachmentsVO : attachmentsVOS) {
+                JSONObject object = new JSONObject();
+                String webUrl = attachmentsVO.getWebUrl();
+                String originalFilename = attachmentsVO.getOriginalFilename();
+                object.put("FName",originalFilename==null?"none":originalFilename);
+                object.put("FRemotePath",webUrl==null?"none":webUrl);
+                attach.add(object);
+            }
+        }
+        obj.put("attach",attach);
+
         Call call = getCall("EASURL", "saveSupplierApply");
         String result = null;
         try {
@@ -429,21 +467,21 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         return conNumber.toString();
     }
 
-    @Override
-    public Integer whetherRepeat(SupplierApplyVO vo) {
-        Integer repeat = 1;
-        String title = vo.getTitle();
-        Integer count = mapper.selectByName(title);
-        if (count.compareTo(0) == 1) {
-            repeat = 0;
-        }
-        String taxerNum = vo.getTaxerNum();
-        List<SupplierApplyVO> supplierApplyVOS = mapper.selectByTaxNum(taxerNum);
-        if (supplierApplyVOS != null && supplierApplyVOS.size() > 0) {
-            throw new ServiceException(UtilMessage.TAXERNUMBER_EXIST);
-        }
-        return repeat;
-    }
+//    @Override
+//    public Integer whetherRepeat(SupplierApplyVO vo) {
+//        Integer repeat = 1;
+//        String title = vo.getTitle();
+//        List<SupplierApplyVO> supplierApplyVOS= mapper.selectByName(title);
+//        if (count.compareTo(0) == 1) {
+//            repeat = 0;
+//        }
+//        String taxerNum = vo.getTaxerNum();
+//        List<SupplierApplyVO> supplierApplyVOS = mapper.selectByTaxNum(taxerNum);
+//        if (supplierApplyVOS != null && supplierApplyVOS.size() > 0) {
+//            throw new ServiceException(UtilMessage.TAXERNUMBER_EXIST);
+//        }
+//        return repeat;
+//    }
 
     /**
      * 提交供应商申请
@@ -593,7 +631,6 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
                 if (oaid != null && easid != null) {
                     oaIdUtil.getString(easid, oaid);
                 }
-
                 Call call = getCall("EASURL", "auditSupplierApply");
                 String back = null;
                 try {

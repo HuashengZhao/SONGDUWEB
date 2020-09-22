@@ -76,6 +76,7 @@ public class UtilMessage {
     public static final String BACK_ONLOAD = "身份验证已过期，请重新登录！";
 
     //    EAS
+    public static final String SUPPLIER_NAME_REPEAT = "供应商名称重复！";
     public static final String SUBMIT_FAULT = "提交失败！";
     public static final String ACCEPT_HANDLE_SUCCESS = "回调成功！";
     public static final String ACCEPT_HANDLE_FAILED = "回调失败！";
