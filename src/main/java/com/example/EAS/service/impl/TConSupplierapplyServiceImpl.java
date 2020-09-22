@@ -724,6 +724,8 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
             //TODO处理业务
 //            生产随机id 用来对应ftp存储文件名
             String fileUUID = UUID.randomUUID().toString();
+            StringBuffer sbf = new StringBuffer();
+            fileUUID = sbf.append(fileUUID).append(".").append(fileType).toString();
             boolean b1 = ftpUtil.uploadFile(filePath, fileUUID, inputStream);
 
 //            创建人
