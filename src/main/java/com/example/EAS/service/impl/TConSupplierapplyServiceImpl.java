@@ -225,10 +225,10 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         if (Util.isNotEmpty(vo.getDescription())) {
             obj.put("remark", vo.getDescription());
         }
-        if (Util.isNotEmpty(vo.getPerson())) {
-            String creatorId = mapper.selectCreatorId(vo.getPerson());
-            obj.put("creator", creatorId);
-        }
+//        if (Util.isNotEmpty(vo.getPerson())) {
+//            String creatorId = mapper.selectCreatorId(vo.getPerson());
+//            obj.put("creator", creatorId);
+//        }
         if (Util.isNotEmpty(vo.getAuditorNum())) {
             String auditorId = mapper.selectCreatorId(vo.getAuditorNum());
             obj.put("auditor", auditorId);
@@ -308,10 +308,10 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         if (Util.isNotEmpty(vo.getDescription())) {
             obj.put("remark", vo.getDescription());
         }
-        if (Util.isNotEmpty(vo.getPerson())) {
-            String creatorId = mapper.selectCreatorId(vo.getPerson());
-            obj.put("creator", creatorId);
-        }
+//        if (Util.isNotEmpty(vo.getPerson())) {
+//            String creatorId = mapper.selectCreatorId(vo.getPerson());
+//            obj.put("creator", creatorId);
+//        }
         if (Util.isNotEmpty(vo.getAuditorNum())) {
             String auditorId = mapper.selectCreatorId(vo.getAuditorNum());
             obj.put("auditor", auditorId);
