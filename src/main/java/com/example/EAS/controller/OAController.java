@@ -122,10 +122,10 @@ public class OAController {
                             if (longNumber.contains(orgVO.getLongNumber())
                                     && Util.isEmpty(orgVO.getParentId())) {
                                 Object o = map.get(orgVO.getNum());
-                                if (Util.isEmpty(o)){
+                                if (Util.isEmpty(o)) {
                                     orgVOList.add(orgVO);
                                 }
-                                map.put(orgVO.getNum(),orgVO);
+                                map.put(orgVO.getNum(), orgVO);
                             }
                         }
                     }
@@ -140,7 +140,6 @@ public class OAController {
         result.put("code", HttpStatus.SC_OK);
         return R.ok(result);
     }
-
 
     /**
      * 通过密文转为实体
