@@ -267,7 +267,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         if (Util.isNotEmpty(vo.getOrgId())) {
             obj.put("orgId", vo.getOrgId());
         }
-        //        附件
+//         EAS附件
         JSONArray attach = new JSONArray();
         List<AttachmentsVO> attachmentsVOS = vo.getAttachmentsVOS();
         if (attachmentsVOS!=null && attachmentsVOS.size()>0){
@@ -365,16 +365,19 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         if (Util.isNotEmpty(orgId)) {
             obj.put("orgId", orgId);
         }
-//        附件
+//        EAS附件
         JSONArray attach = new JSONArray();
         List<AttachmentsVO> attachmentsVOS = vo.getAttachmentsVOS();
         if (attachmentsVOS!=null && attachmentsVOS.size()>0){
-            for (AttachmentsVO attachmentsVO : attachmentsVOS) {
+            for (AttachmentsVO attachmentsVO : attachmentsVOS){
                 JSONObject object = new JSONObject();
                 String webUrl = attachmentsVO.getWebUrl();
+                String fileUUID = attachmentsVO.getFileUUID();
                 String originalFilename = attachmentsVO.getOriginalFilename();
+                StringBuffer stringBuffer = new StringBuffer();
+                String s = stringBuffer.append(webUrl).append("/").append(fileUUID).toString();
                 object.put("FName",originalFilename==null?"none":originalFilename);
-                object.put("FRemotePath",webUrl==null?"none":webUrl);
+                object.put("FRemotePath",s==null?"none":s);
                 attach.add(object);
             }
         }
@@ -397,7 +400,6 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
                 mapper.updateCreatorId(creatorId, id);
             }
         }
-
         return str;
     }
 
