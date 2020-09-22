@@ -37,6 +37,7 @@ public class ChangeAuditVO {
     private String title;
 
     private String projectId;
+    private String orgId;
 
     private String projectName;
     //    变更原因

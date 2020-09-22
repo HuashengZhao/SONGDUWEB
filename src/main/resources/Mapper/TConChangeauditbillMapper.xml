@@ -14,6 +14,10 @@
         left join T_FDC_ChangeReason cra on cra.FID=bill.FCHANGEREASONID
         left join T_PM_User pu on pu.fid=bill.FAUDITORID
         <where>
+            bill.FORGUNITID=#{orgId}
+            <if test="projectId!=null and projectId!=''">
+                and bill.FCurProjectID =#{projectId}
+            </if>
             <if test="title!=null and title!=''">
                 and bill.fname like CONCAT(CONCAT('%',#{title}),'%')
             </if>

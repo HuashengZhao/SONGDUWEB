@@ -33,6 +33,10 @@ public class TConChangeauditbillServiceImpl extends ServiceImpl<TConChangeauditb
 
     @Override
     public PageBean<ChangeAuditVO> getChangeAuditList(ChangeAuditVO vo) {
+        String orgId = vo.getOrgId();
+        if (Util.isEmpty(orgId)){
+            return null;
+        }
 //        单据状态转换
         String webState = vo.getWebState();
         if (Util.isNotEmpty(webState)) {
