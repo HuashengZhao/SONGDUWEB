@@ -16,4 +16,6 @@ import com.example.EAS.vo.ChangeAuditVO;
 public interface ITConChangeauditbillService extends IService<TConChangeauditbill> {
 
     PageBean<ChangeAuditVO> getChangeAuditList(ChangeAuditVO vo);
+
+    ChangeAuditVO viewChangeAudit(ChangeAuditVO vo);
 }

@@ -3,9 +3,9 @@
 <mapper namespace="com.example.EAS.mapper.TConChangeauditbillMapper">
 
     <select id="selectDatas" resultType="com.example.EAS.vo.ChangeAuditVO">
-        select  bill.FNAME as title ,bill.FNUMBER as num,bill.FCHANGESTATE as changeState,
+        select bill.fid as id,bill.FNAME as title ,bill.FNUMBER as num,bill.FCHANGESTATE as changeState,
         bill.FCHANGEREASONID as changeReasonId,cra.FNAME_L2 as changeReason,
-        bill.FSTATE as auditState,bill.FBIZDATE as bizDate,bill.FCURPROJECTID as  projectId,pro.FNAME_L2 as projectName,
+        bill.FSTATE as auditState,bill.FBOOKEDDATE as bizDate,bill.FCURPROJECTID as projectId,pro.FNAME_L2 as projectName,
         bill.FAUDITTYPEID as auditTypeId,ct.FNAME_L2 as auditType,bill.FTOTALCOST as totalCost,bill.FREADESC as reaDesc,
         bill.FAUDITORID as auditorId,pu.FNAME_L2 as auditor,bill.FAUDITTIME as auditTime
         from T_CON_ChangeAuditBill bill
@@ -14,8 +14,12 @@
         left join T_FDC_ChangeReason cra on cra.FID=bill.FCHANGEREASONID
         left join T_PM_User pu on pu.fid=bill.FAUDITORID
         <where>
+            bill.FORGUNITID=#{orgId}
+            <if test="projectId!=null and projectId!=''">
+                and bill.FCurProjectID =#{projectId}
+            </if>
             <if test="title!=null and title!=''">
-              and bill.fname like CONCAT(CONCAT('%',#{title}),'%')
+                and bill.fname like CONCAT(CONCAT('%',#{title}),'%')
             </if>
             <if test="num!=null and num!=''">
                 and bill.fnumber like CONCAT(CONCAT('%',#{num}),'%')
@@ -40,5 +44,40 @@
             </if>
         </where>
         order by bill.fcreatetime desc
+    </select>
+
+    <select id="selectDataById" resultType="com.example.EAS.vo.ChangeAuditVO">
+        select bill.fid as id,bill.FNAME as title ,bill.FNUMBER as num,bill.FCHANGESTATE as changeState,
+        bill.FCHANGEREASONID as changeReasonId,cra.FNAME_L2 as changeReason,
+        bill.FSTATE as auditState,bill.FBOOKEDDATE as bizDate,bill.FCURPROJECTID as projectId,pro.FNAME_L2 as projectName,
+        bill.FAUDITTYPEID as auditTypeId,ct.FNAME_L2 as auditType,bill.FTOTALCOST as totalCost,bill.FREADESC as reaDesc,
+        bill.FAUDITORID as auditorId,pu.FNAME_L2 as auditor,bill.FAUDITTIME as auditTime
+        from T_CON_ChangeAuditBill bill
+        left join T_FDC_CurProject pro on pro.fid=bill.FCURPROJECTID
+        left join T_FDC_ChangeType ct on ct.fid=bill.FAUDITTYPEID
+        left join T_FDC_ChangeReason cra on cra.FID=bill.FCHANGEREASONID
+        left join T_PM_User pu on pu.fid=bill.FAUDITORID
+        where bill.fid=#{id}
+    </select>
+
+    <select id="selectChangeContents" resultType="com.example.EAS.vo.ChangeAuditContentVO">
+        select fid as id,FCHANGECONTENT as changeContent,FISBACK as isBack,FEFFECT as effect
+        from T_CON_ChangeAuditEntry
+        where FPARENTID=#{id}
+    </select>
+
+    <select id="selectCalcuInfos" resultType="com.example.EAS.vo.CalculationInfoVO">
+        select en.fid as id,con.FNUMBER as contractNumber,con.FNAME as contractName,
+        sup.FNAME_L2 as mainSuppName,cur.FNAME_L2 as currencyName,en.FEXRATE as exRate,
+        en.FORICOSTAMOUNT as oriCostAmount,en.FCOSTAMOUNT as costAmount,en.FCOSTDESCRIPTION as description,
+        u.FNAME_L2 as reckonorName,ad.FNAME_L2 as dutyOrgName
+        from T_CON_ChangeSupplierEntry en
+        left join T_CON_ContractBill con on con.fid=en.FCONTRACTBILLID
+        left join T_BD_Supplier sup on sup.fid=en.FMAINSUPPID
+        left join T_BD_Currency cur on cur.fid=en.FCURRENCYID
+        left join T_PM_User u on u.fid=en.FRECKONORID
+        left join T_ORG_Admin ad on ad.fid=en.FDUTYORGID
+        where en.FPARENTID=#{id}
+        order by en.fseq
     </select>
 </mapper>

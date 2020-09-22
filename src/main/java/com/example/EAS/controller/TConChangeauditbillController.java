@@ -49,4 +49,22 @@ public class TConChangeauditbillController {
         result.put("code", HttpStatus.SC_OK);
         return R.ok(result);
     }
+
+    /**
+     * 查看变更审批单
+     *
+     * @param body
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/viewChangeAudit", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public R viewChangeAudit(@RequestBody String body) throws Exception {
+        HashMap<String, Object> result = new HashMap<>(10);
+        ChangeAuditVO vo = BodyDecodeUtil.decodeBody(body, ChangeAuditVO.class);
+        ChangeAuditVO changeAuditVO = service.viewChangeAudit(vo);
+        result.put("data", changeAuditVO);
+        result.put("msg", UtilMessage.GET_MSG_SUCCESS);
+        result.put("code", HttpStatus.SC_OK);
+        return R.ok(result);
+    }
 }
