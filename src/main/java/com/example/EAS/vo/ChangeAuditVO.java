@@ -1,5 +1,8 @@
 package com.example.EAS.vo;
 
+import com.example.EAS.util.DateJsonDeserializer;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -18,8 +21,9 @@ public class ChangeAuditVO {
 
     private LocalDateTime bizDate;
 
+    //    变更状态
     private String changeState;
-
+    //审批状态
     private String auditState;
 
     private String webState;
@@ -30,17 +34,23 @@ public class ChangeAuditVO {
 
     private String projectId;
     private String projectName;
-//    变更原因
-    private String reasonID;
-    private String reason;
-    private String changeType;
+    //    变更原因
+    private String changeReasonId;
+    private String changeReason;
+    //    变更类型
+    private String auditTypeId;
+    private String auditType;
+    //    测算金额汇总
     private String totalCost;
-//    变更事项说明
+    //    变更事项说明
     private String reaDesc;
-//    审批人
+    //    审批人
+    private String auditorId;
     private String auditor;
-//    审批日期
-    private LocalDateTime auditDate;
+    //    审批日期
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonDeserialize(using = DateJsonDeserializer.class)
+    private LocalDateTime auditTime;
 
 
     private Integer currentPage;

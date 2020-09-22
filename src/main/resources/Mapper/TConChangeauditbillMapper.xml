@@ -3,12 +3,42 @@
 <mapper namespace="com.example.EAS.mapper.TConChangeauditbillMapper">
 
     <select id="selectDatas" resultType="com.example.EAS.vo.ChangeAuditVO">
-        select  from T_CON_ChangeAuditBill
+        select  bill.FNAME as title ,bill.FNUMBER as num,bill.FCHANGESTATE as changeState,
+        bill.FCHANGEREASONID as changeReasonId,cra.FNAME_L2 as changeReason,
+        bill.FSTATE as auditState,bill.FBIZDATE as bizDate,bill.FCURPROJECTID as  projectId,pro.FNAME_L2 as projectName,
+        bill.FAUDITTYPEID as auditTypeId,ct.FNAME_L2 as auditType,bill.FTOTALCOST as totalCost,bill.FREADESC as reaDesc,
+        bill.FAUDITORID as auditorId,pu.FNAME_L2 as auditor,bill.FAUDITTIME as auditTime
+        from T_CON_ChangeAuditBill bill
+        left join T_FDC_CurProject pro on pro.fid=bill.FCURPROJECTID
+        left join T_FDC_ChangeType ct on ct.fid=bill.FAUDITTYPEID
+        left join T_FDC_ChangeReason cra on cra.FID=bill.FCHANGEREASONID
+        left join T_PM_User pu on pu.fid=bill.FAUDITORID
         <where>
             <if test="title!=null and title!=''">
-              and
+              and bill.fname like CONCAT(CONCAT('%',#{title}),'%')
+            </if>
+            <if test="num!=null and num!=''">
+                and bill.fnumber like CONCAT(CONCAT('%',#{num}),'%')
+            </if>
+            <if test="changeState!=null and changeState!=''">
+                and bill.fchangestate like CONCAT(CONCAT('%',#{changeState}),'%')
+            </if>
+            <if test="auditState!=null and auditState!=''">
+                and bill.fstate like CONCAT(CONCAT('%',#{auditState}),'%')
+            </if>
+            <if test="auditType!=null and auditType!=''">
+                and ct.fname_l2 like CONCAT(CONCAT('%',#{auditType}),'%')
+            </if>
+            <if test="projectName!=null and projectName!=''">
+                and pro.fname_l2 like CONCAT(CONCAT('%',#{projectName}),'%')
+            </if>
+            <if test="auditor!=null and auditor!=''">
+                and pu.FNAME_L2 like CONCAT(CONCAT('%',#{auditor}),'%')
+            </if>
+            <if test="auditTime!=null and auditTime!=''">
+                and bill.faudittime like CONCAT(CONCAT('%',#{auditTime}),'%')
             </if>
         </where>
-
+        order by bill.fcreatetime desc
     </select>
 </mapper>
