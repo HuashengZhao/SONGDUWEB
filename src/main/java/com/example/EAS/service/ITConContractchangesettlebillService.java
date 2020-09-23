@@ -16,4 +16,6 @@ import com.example.EAS.vo.ChangeSettleVO;
 public interface ITConContractchangesettlebillService extends IService<TConContractchangesettlebill> {
 
     PageBean<ChangeSettleVO> getChangeSettleList(ChangeSettleVO vo);
+
+    ChangeSettleVO viewChangeSettle(ChangeSettleVO vo);
 }

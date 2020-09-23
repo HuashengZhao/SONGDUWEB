@@ -51,4 +51,22 @@ public class TConContractchangesettlebillController {
         result.put("code", HttpStatus.SC_OK);
         return R.ok(result);
     }
+
+    /**
+     * 查看变更确认单
+     *
+     * @param body
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/viewChangeSettle", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public R viewChangeSettle(@RequestBody String body) throws Exception {
+        HashMap<String, Object> result = new HashMap<>(10);
+        ChangeSettleVO vo = BodyDecodeUtil.decodeBody(body, ChangeSettleVO.class);
+        ChangeSettleVO settleVO = service.viewChangeSettle(vo);
+        result.put("data", settleVO);
+        result.put("msg", UtilMessage.GET_MSG_SUCCESS);
+        result.put("code", HttpStatus.SC_OK);
+        return R.ok(result);
+    }
 }
