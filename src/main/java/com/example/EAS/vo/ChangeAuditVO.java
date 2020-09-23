@@ -49,6 +49,8 @@ public class ChangeAuditVO {
     private String conductDeptName;
     //提出单位
     private String conductUnitName;
+    //    提出部门/单位
+    private String conductName;
     //    是否费用审定
     private Integer isFee;
     //    费用承担单位
@@ -59,7 +61,7 @@ public class ChangeAuditVO {
     private Integer isReceipts;
     //    是否已执行
     private Integer isAlreadyDo;
-//    是否重大变更
+    //    是否重大变更
     private Integer isImportChange;
 
     //    变更原因

@@ -110,8 +110,10 @@ public class TConChangeauditbillServiceImpl extends ServiceImpl<TConChangeauditb
                 if (Util.isNotEmpty(offer)) {
                     if (offer.contains("SELFCOM")) {
                         auditVO.setOffer("我方部门");
+                        auditVO.setConductName(auditVO.getConductDeptName()==null?null:auditVO.getConductDeptName());
                     } else if (offer.contains("DESIGNCOM")) {
                         auditVO.setOffer("合作单位");
+                        auditVO.setConductName(auditVO.getConductUnitName()==null?null:auditVO.getConductUnitName());
                     }
                 }
 //                单据状态转换
