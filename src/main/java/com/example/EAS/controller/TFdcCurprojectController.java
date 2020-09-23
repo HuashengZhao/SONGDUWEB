@@ -31,7 +31,7 @@ public class TFdcCurprojectController {
 
     /**
      * get projects
-     * 获取合同类型
+     * 获取工程项目
      *
      * @param body
      * @return

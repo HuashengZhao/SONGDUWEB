@@ -28,10 +28,15 @@
         delete from webattachment where easId=#{id}
     </delete>
     <delete id="deletNumList">
-        delete from webattachment where fileNum in
-        <foreach item="item" collection="existList" index="index" open="(" separator="," close=")">
-            #{item}
-        </foreach>
+        delete from webattachment
+        <where>
+        <if test="existList != null and existList.size > 0">
+            and fileNum in
+            <foreach item="item" collection="existList" index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        </where>
     </delete>
 
     <select id="selectDatas" resultType="com.example.EAS.vo.SupplierApplyVO">

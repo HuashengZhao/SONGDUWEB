@@ -14,9 +14,12 @@
         left join T_FDC_ChangeReason cra on cra.FID=bill.FCHANGEREASONID
         left join T_PM_User pu on pu.fid=bill.FAUDITORID
         <where>
-            bill.FCONTROLUNITID=#{orgId}
-            <if test="projectId!=null and projectId!=''">
-                and bill.FCurProjectID =#{projectId}
+            and bill.FCONTROLUNITID=#{orgId}
+            <if test="projectIds != null and projectIds.size > 0">
+                and bill.FCurProjectID in
+                <foreach item="item" collection="projectIds" index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
             </if>
             <if test="title!=null and title!=''">
                 and bill.fname like CONCAT(CONCAT('%',#{title}),'%')
@@ -79,5 +82,8 @@
         left join T_ORG_Admin ad on ad.fid=en.FDUTYORGID
         where en.FPARENTID=#{id}
         order by en.fseq
+    </select>
+    <select id="selectProjectInfo" resultType="java.lang.String">
+        select fid from T_FDC_CURPROJECT where FPARENTID=#{projectId} and FIsEnabled = 1
     </select>
 </mapper>

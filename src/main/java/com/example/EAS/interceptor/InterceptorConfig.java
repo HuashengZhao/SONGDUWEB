@@ -28,7 +28,7 @@ public class InterceptorConfig extends WebMvcConfigurationSupport {
                 .excludePathPatterns("/EAS/login/ByNameAndDept")
 //                .excludePathPatterns("/EAS/login/getLoginData")
                 .excludePathPatterns("/EAS/baseData/acceptHandle")
-//                .excludePathPatterns("/EAS/baseData/viewChangeAudit")
+//                .excludePathPatterns("/EAS/baseData/getChangeAuditList")
                 .excludePathPatterns("/EAS/baseData/downLoadAttachment");
 //                .excludePathPatterns("/EAS/**");
 //                .excludePathPatterns("/EAS/baseData/addContractBill");
