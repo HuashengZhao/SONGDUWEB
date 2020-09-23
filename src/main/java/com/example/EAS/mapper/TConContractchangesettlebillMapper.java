@@ -2,6 +2,9 @@ package com.example.EAS.mapper;
 
 import com.example.EAS.model.TConContractchangesettlebill;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.example.EAS.vo.ChangeSettleVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +16,5 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface TConContractchangesettlebillMapper extends BaseMapper<TConContractchangesettlebill> {
 
+    List<ChangeSettleVO> selectDatas(ChangeSettleVO vo);
 }
