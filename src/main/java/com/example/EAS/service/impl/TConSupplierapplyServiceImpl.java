@@ -274,9 +274,12 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
             for (AttachmentsVO attachmentsVO : attachmentsVOS) {
                 JSONObject object = new JSONObject();
                 String webUrl = attachmentsVO.getWebUrl();
+                String fileUUID = attachmentsVO.getFileUUID();
                 String originalFilename = attachmentsVO.getOriginalFilename();
+                StringBuffer stringBuffer = new StringBuffer();
+                String s = stringBuffer.append(webUrl).append("/").append(fileUUID).toString();
                 object.put("FName",originalFilename==null?"none":originalFilename);
-                object.put("FRemotePath",webUrl==null?"none":webUrl);
+                object.put("FRemotePath",s==null?"none":s);
                 attach.add(object);
             }
         }

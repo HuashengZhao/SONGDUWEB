@@ -54,12 +54,21 @@
         bill.FCHANGEREASONID as changeReasonId,cra.FNAME_L2 as changeReason,
         bill.FSTATE as auditState,bill.FBOOKEDDATE as bizDate,bill.FCURPROJECTID as projectId,pro.FNAME_L2 as projectName,
         bill.FAUDITTYPEID as auditTypeId,ct.FNAME_L2 as auditType,bill.FTOTALCOST as totalCost,bill.FREADESC as reaDesc,
-        bill.FAUDITORID as auditorId,pu.FNAME_L2 as auditor,bill.FAUDITTIME as auditTime
+        bill.FAUDITORID as auditorId,pu.FNAME_L2 as auditor,bill.FAUDITTIME as auditTime,
+        org.FNAME_L2 as conductDeptName,sup.FNAME_L2 as conductUnitName,wf.FNAME_L2 as wfType,
+        bill.FISFEE as isFee,bill.FCOSTUNIT as costUnit,bill.FIsChangeContract as isChangeContract,
+        bill.FIsReceipts as isReceipts,bill.FIsImportChange as isImportChange,bill.FIsAlreadyExecuted as isAlreadyDo,
+        bill.FDESCRIPTION as description,un.FNAME_L2 as orgName
         from T_CON_ChangeAuditBill bill
         left join T_FDC_CurProject pro on pro.fid=bill.FCURPROJECTID
         left join T_FDC_ChangeType ct on ct.fid=bill.FAUDITTYPEID
         left join T_FDC_ChangeReason cra on cra.FID=bill.FCHANGEREASONID
         left join T_PM_User pu on pu.fid=bill.FAUDITORID
+        left join T_ORG_Admin org on org.fid=bill.FConductDeptID
+        left join T_BD_Supplier sup on sup.fid=bill.FCONDUCTUNITID
+        left join T_CON_ChangeWFType wf on wf.fid=bill.FWFTYPEID
+        left join T_ORG_CtrlUnit un on un.fid=bill.FCONTROLUNITID
+
         where bill.fid=#{id}
     </select>
 
