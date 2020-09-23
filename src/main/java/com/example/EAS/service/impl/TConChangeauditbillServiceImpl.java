@@ -1,15 +1,14 @@
 package com.example.EAS.service.impl;
 
-import com.example.EAS.model.TConChangeauditbill;
-import com.example.EAS.mapper.TConChangeauditbillMapper;
-import com.example.EAS.service.ITConChangeauditbillService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.EAS.mapper.TConChangeauditbillMapper;
+import com.example.EAS.model.TConChangeauditbill;
+import com.example.EAS.service.ITConChangeauditbillService;
 import com.example.EAS.util.PageBean;
 import com.example.EAS.util.Util;
 import com.example.EAS.vo.CalculationInfoVO;
 import com.example.EAS.vo.ChangeAuditContentVO;
 import com.example.EAS.vo.ChangeAuditVO;
-import com.example.EAS.vo.ContractVO;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +33,7 @@ public class TConChangeauditbillServiceImpl extends ServiceImpl<TConChangeauditb
     @Override
     public PageBean<ChangeAuditVO> getChangeAuditList(ChangeAuditVO vo) {
         String orgId = vo.getOrgId();
-        if (Util.isEmpty(orgId)){
+        if (Util.isEmpty(orgId)) {
             return null;
         }
 //        单据状态转换
@@ -59,9 +58,9 @@ public class TConChangeauditbillServiceImpl extends ServiceImpl<TConChangeauditb
         }
         String projectId = vo.getProjectId();
 //        如果是项目 获取项目下的分期id集合
-        if (Util.isNotEmpty(projectId)){
-            List<String> projectIds= mapper.selectProjectInfo(projectId);
-            if (projectIds!=null && projectIds.size()>0){
+        if (Util.isNotEmpty(projectId)) {
+            List<String> projectIds = mapper.selectProjectInfo(projectId);
+            if (projectIds != null && projectIds.size() > 0) {
                 vo.setProjectIds(projectIds);
             }
         }
@@ -98,6 +97,23 @@ public class TConChangeauditbillServiceImpl extends ServiceImpl<TConChangeauditb
         if (Util.isNotEmpty(id)) {
             auditVO = mapper.selectDataById(id);
             if (Util.isNotEmpty(auditVO)) {
+//                变更期间
+                String s = auditVO.getBizDate().toString();
+                if (Util.isNotEmpty(s)) {
+                    String year = s.split("T")[0].substring(0, 7).replace("-0", "年");
+                    StringBuffer sb = new StringBuffer();
+                    String value = sb.append(year).append("期").toString();
+                    auditVO.setChangeDates(value);
+                }
+//                  提出方
+                String offer = auditVO.getOffer();
+                if (Util.isNotEmpty(offer)) {
+                    if (offer.contains("SELFCOM")) {
+                        auditVO.setOffer("我方部门");
+                    } else if (offer.contains("DESIGNCOM")) {
+                        auditVO.setOffer("合作单位");
+                    }
+                }
 //                单据状态转换
                 String changeState = auditVO.getChangeState();
                 String auditState = auditVO.getAuditState();
