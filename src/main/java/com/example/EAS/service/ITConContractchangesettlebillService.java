@@ -2,6 +2,8 @@ package com.example.EAS.service;
 
 import com.example.EAS.model.TConContractchangesettlebill;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.example.EAS.util.PageBean;
+import com.example.EAS.vo.ChangeSettleVO;
 
 /**
  * <p>
@@ -13,4 +15,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface ITConContractchangesettlebillService extends IService<TConContractchangesettlebill> {
 
+    PageBean<ChangeSettleVO> getChangeSettleList(ChangeSettleVO vo);
+
+    ChangeSettleVO viewChangeSettle(ChangeSettleVO vo);
 }

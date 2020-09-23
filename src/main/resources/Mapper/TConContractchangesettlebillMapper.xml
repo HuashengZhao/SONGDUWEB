@@ -2,4 +2,73 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.EAS.mapper.TConContractchangesettlebillMapper">
 
+    <select id="selectDatas" resultType="com.example.EAS.vo.ChangeSettleVO">
+        select bill.fid as id,bill.FSTATE as state,bill.FNUMBER as num,bill.FNAME as title,
+        con.FNUMBER as contractNumber,con.FNAME as contractName,
+        con.FORIGINALAMOUNT as oriAmount,con.FAMOUNT as amount,
+        pro.FNAME_L2 as projectName,bill.FREPORTAMOUNT as reprortAmount,
+        bill.FALLOWAMOUNT as allowAmount,bill.FCHANGERESON as changeReason,
+        u.FNAME_L2 as auditorName,bill.FAUDITTIME auditTime,bill.FCREATETIME as createTime,
+        bill.FLASTAMOUNT as lastAmount
+        from T_CON_ContractChangeSettleBill bill
+        left join T_CON_CONTRACTBILL con on con.fid=bill.FCONTRACTBILLID
+        left join T_FDC_CURPROJECT pro on pro.fid=bill.FCURPROJECTID
+        left join T_PM_User u on u.fid=bill.FAUDITORID
+        <where>
+            and bill.FCONTROLUNITID=#{orgId}
+            <if test="projectIds != null and projectIds.size > 0">
+                and bill.FCurProjectID in
+                <foreach item="item" collection="projectIds" index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="title!=null and title!=''">
+                and bill.fname like CONCAT(CONCAT('%',#{title}),'%')
+            </if>
+            <if test="num!=null and num!=''">
+                and bill.fnumber like CONCAT(CONCAT('%',#{num}),'%')
+            </if>
+            <if test="state!=null and state!=''">
+                and bill.fstate like CONCAT(CONCAT('%',#{state}),'%')
+            </if>
+            <if test="projectName!=null and projectName!=''">
+                and pro.FNAME_L2 like CONCAT(CONCAT('%',#{projectName}),'%')
+            </if>
+            <if test="contractNumber!=null and contractNumber!=''">
+                and con.fnumber like CONCAT(CONCAT('%',#{contractNumber}),'%')
+            </if>
+            <if test="contractName!=null and contractName!=''">
+                and con.FNAME like CONCAT(CONCAT('%',#{contractName}),'%')
+            </if>
+        </where>
+        order by bill.fcreateTime desc
+    </select>
+    <select id="viewChangeSettle" resultType="com.example.EAS.vo.ChangeSettleVO">
+        select bill.fid as id,bill.FSTATE as state,bill.FNUMBER as num,bill.FNAME as title,
+        con.FNUMBER as contractNumber,con.FNAME as contractName,bill.FLASTAMOUNT as lastAmount,
+        con.FORIGINALAMOUNT as oriAmount,con.FAMOUNT as amount,
+        pro.FNAME_L2 as projectName,bill.FREPORTAMOUNT as reportAmount,
+        bill.FALLOWAMOUNT as allowAmount,bill.FCHANGERESON as changeReason,
+        u.FNAME_L2 as auditorName,u1.FNAME_L2 as creatorName,bill.FAUDITTIME auditTime,bill.FCREATETIME as createTime,
+        cb.FORIGINALAMOUNT as calOriAmount,sup.FNAME_L2 as supplierName,bill.FISFINISH as isFinish,
+        bill.FISFEE as isFee,bill.FWXCB as wxcb,bill.FBOOKEDDATE as bizDate,bill.FCOLSEDESCRIPTION as colseDesc
+        from T_CON_ContractChangeSettleBill bill
+        left join T_CON_CONTRACTBILL con  on con.fid=bill.FCONTRACTBILLID
+        left join T_FDC_CURPROJECT pro on pro.fid=bill.FCURPROJECTID
+        left join T_PM_User u on u.fid=bill.FAUDITORID
+        left join T_PM_User u1 on u1.fid=bill.FCREATORID
+        left join T_CON_ContractChangeBill cb on cb.fid=bill.FCONCHANGEBILLID
+        left join T_BD_Supplier sup on sup.fid=bill.FSUPPLIERID
+        where bill.fid=#{id}
+    </select>
+    <select id="selectAddContracts" resultType="com.example.EAS.vo.ChangeSettleVO">
+        select FSRCAMOUNT as srcAmount
+        from T_CON_CONTRACTBILL where FMainContractNumber=#{num}
+    </select>
+    <select id="selectEntryInfo" resultType="com.example.EAS.vo.ChangeSettleEntryVO">
+        select  FCHANGECONTENT as changeContent,FAMOUNT as amount,FUNIT as unit,FPRONUMBER as proNumber,
+        FREMARK as remark,FTOTALAMOUNT as totalAmount
+        from T_CON_ConChangeSettleEntry
+        where FPARENTID=#{id}
+    </select>
 </mapper>

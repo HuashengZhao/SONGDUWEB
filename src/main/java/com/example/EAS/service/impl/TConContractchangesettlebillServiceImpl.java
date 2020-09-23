@@ -1,10 +1,23 @@
 package com.example.EAS.service.impl;
 
+import com.example.EAS.mapper.TConChangeauditbillMapper;
 import com.example.EAS.model.TConContractchangesettlebill;
 import com.example.EAS.mapper.TConContractchangesettlebillMapper;
 import com.example.EAS.service.ITConContractchangesettlebillService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.EAS.util.PageBean;
+import com.example.EAS.util.Util;
+import com.example.EAS.vo.ChangeAuditVO;
+import com.example.EAS.vo.ChangeSettleEntryVO;
+import com.example.EAS.vo.ChangeSettleVO;
+import com.example.EAS.vo.ContractVO;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * <p>
@@ -17,4 +30,110 @@ import org.springframework.stereotype.Service;
 @Service
 public class TConContractchangesettlebillServiceImpl extends ServiceImpl<TConContractchangesettlebillMapper, TConContractchangesettlebill> implements ITConContractchangesettlebillService {
 
+    @Autowired
+    private TConContractchangesettlebillMapper mapper;
+    @Autowired
+    private TConChangeauditbillMapper auditMapper;
+
+    @Override
+    public PageBean<ChangeSettleVO> getChangeSettleList(ChangeSettleVO vo) {
+        String orgId = vo.getOrgId();
+        if (Util.isEmpty(orgId)){
+            return null;
+        }
+        String state1 = vo.getState();
+        if (Util.isNotEmpty(state1)) {
+            if (state1.contains("已提交")) {
+                vo.setState("2");
+            } else if (state1.contains("保存")) {
+                vo.setState("1");
+            } else if (state1.contains("审批中")) {
+                vo.setState("3");
+            } else if (state1.contains("已审批")) {
+                vo.setState("4");
+            } else if (state1.contains("终止")) {
+                vo.setState("5");
+            } else if (state1.contains("已下发")) {
+                vo.setState("7");
+            } else if (state1.contains("已签证")) {
+                vo.setState("8");
+            } else if (state1.contains("作废")) {
+                vo.setState("9");
+            } else if (state1.contains("已上报")) {
+                vo.setState("10");
+            } else if (state1.contains("被打回")) {
+                vo.setState("11");
+            } else if (state1.contains("修订中")) {
+                vo.setState("12REVISING");
+            } else if (state1.contains("已修订")) {
+                vo.setState("12REVISE");
+            } else if (state1.contains("已确认")) {
+                vo.setState("13");
+            }
+        }
+        String projectId = vo.getProjectId();
+//        如果是项目 获取项目下的分期id集合
+        if (Util.isNotEmpty(projectId)){
+            List<String> projectIds= auditMapper.selectProjectInfo(projectId);
+            if (projectIds!=null && projectIds.size()>0){
+                vo.setProjectIds(projectIds);
+            }
+        }
+        PageHelper.startPage(vo.getCurrentPage(), vo.getPageSize());
+        List<ChangeSettleVO> settleVOS = mapper.selectDatas(vo);
+        if (settleVOS!=null && settleVOS.size()>0){
+            for (ChangeSettleVO settleVO : settleVOS) {
+                String state = settleVO.getState();
+                if (Util.isNotEmpty(state)) {
+                    if (state.contains("2")) {
+                        settleVO.setState("已提交");
+                    } else if (state.contains("1")) {
+                        settleVO.setState("保存");
+                    } else if (state.contains("3")) {
+                        settleVO.setState("审批中");
+                    } else if (state.contains("4")) {
+                        settleVO.setState("已审批");
+                    } else if (state.contains("5")) {
+                        settleVO.setState("终止");
+                    } else if (state.contains("7")) {
+                        settleVO.setState("已下发");
+                    } else if (state.contains("8")) {
+                        settleVO.setState("已签证");
+                    } else if (state.contains("9")) {
+                        settleVO.setState("作废");
+                    } else if (state.contains("10")) {
+                        settleVO.setState("已上报");
+                    } else if (state.contains("11")) {
+                        settleVO.setState("被打回");
+                    } else if (state.contains("12REVISING")) {
+                        settleVO.setState("修订中");
+                    } else if (state.contains("12REVISE")) {
+                        settleVO.setState("已修订");
+                    } else if (state.contains("13")) {
+                        settleVO.setState("已确认");
+                    }
+                }
+            }
+        }
+        PageBean<ChangeSettleVO> pageBean = new PageBean<>();
+        pageBean.setTotalCount(((Page) settleVOS).getTotal());
+        pageBean.setPageData(settleVOS);
+        return pageBean;
+    }
+
+    @Override
+    public ChangeSettleVO viewChangeSettle(ChangeSettleVO vo) {
+        ChangeSettleVO settleVO = new ChangeSettleVO();
+        String id = vo.getId();
+        if (Util.isNotEmpty(id)){
+            settleVO = mapper.viewChangeSettle(vo);
+            if(Util.isNotEmpty(settleVO)){
+                List<ChangeSettleEntryVO> entryVOS =  mapper.selectEntryInfo(id);
+                if (entryVOS!=null && entryVOS.size()>0){
+                    settleVO.setEntryVOS(entryVOS);
+                }
+            }
+        }
+        return settleVO;
+    }
 }
