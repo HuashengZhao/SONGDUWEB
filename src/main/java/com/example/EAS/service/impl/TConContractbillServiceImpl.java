@@ -8,6 +8,7 @@ import com.example.EAS.mapper.TConSupplierapplyMapper;
 import com.example.EAS.model.TConContractbill;
 import com.example.EAS.service.ITConContractbillService;
 import com.example.EAS.util.PageBean;
+import com.example.EAS.util.ServiceException;
 import com.example.EAS.util.Util;
 import com.example.EAS.vo.*;
 import com.github.pagehelper.Page;
@@ -353,8 +354,9 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         try {
             result = (String) call.invoke(new Object[]{jsonObject.toString()});
         } catch (RemoteException e) {
-            contractVO.setMessage("fault");
-            e.printStackTrace();
+            System.out.println(e.getMessage());
+            System.out.println(e.getCause());
+            throw new ServiceException(e.getMessage());
         }
         return contractVO;
     }

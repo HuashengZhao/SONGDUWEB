@@ -53,11 +53,7 @@ public class TConContractbillController {
         HashMap<String, Object> result = new HashMap<>(10);
         ContractVO vo = BodyDecodeUtil.decodeBody(body, ContractVO.class);
         ContractVO contractVO = service.saveContractBill(vo);
-        if (Util.isNotEmpty(contractVO.getMessage())){
-            result.put("msg", contractVO.getMessage());
-            result.put("code", HttpStatus.SC_METHOD_FAILURE);
-        }
-        result.put("msg", UtilMessage.GET_MSG_SUCCESS);
+        result.put("msg", UtilMessage.SAVE_MSG_SUCCESS);
         result.put("code", HttpStatus.SC_OK);
         return R.ok(result);
     }
