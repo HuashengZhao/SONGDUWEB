@@ -36,6 +36,8 @@ public class ChangeSettleVO {
     //    无效成本
     @JsonSerialize(using = CustomBigDecimalSerialize.class, nullsUsing = CustomBigDecimalSerialize.class)
     private BigDecimal wxcb;
+//    完成描述
+    private String closeDescription;
 
 
     private String contractId;

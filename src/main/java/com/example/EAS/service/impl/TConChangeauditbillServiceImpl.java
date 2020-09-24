@@ -5,6 +5,7 @@ import com.example.EAS.mapper.TBasAttachmentMapper;
 import com.example.EAS.mapper.TConChangeauditbillMapper;
 import com.example.EAS.model.TConChangeauditbill;
 import com.example.EAS.service.ITConChangeauditbillService;
+import com.example.EAS.util.FileContentTypeUtils;
 import com.example.EAS.util.PageBean;
 import com.example.EAS.util.Util;
 import com.example.EAS.vo.AttachmentsVO;
@@ -140,7 +141,7 @@ public class TConChangeauditbillServiceImpl extends ServiceImpl<TConChangeauditb
                 if (contentVOS != null && contentVOS.size() > 0) {
                     for (ChangeAuditContentVO contentVO : contentVOS) {
                         String changeContent = contentVO.getChangeContent();
-                        if (Util.isNotEmpty(changeContent)){
+                        if (Util.isNotEmpty(changeContent)) {
                             stringBuffer.append(changeContent);
                         }
                     }
@@ -153,6 +154,19 @@ public class TConChangeauditbillServiceImpl extends ServiceImpl<TConChangeauditb
 //            附件信息
             List<AttachmentsVO> attachmentsVOS = attachmentMapper.selectAttachMent(id);
             if (attachmentsVOS != null && attachmentsVOS.size() > 0) {
+                for (AttachmentsVO attachmentsVO : attachmentsVOS) {
+                    String fileUrl = attachmentsVO.getFileUrl();
+                    if (Util.isNotEmpty(fileUrl)) {
+                        String type = fileUrl.split("\\.")[fileUrl.split("\\.").length - 1];
+                        attachmentsVO.setFileType(type);
+                        if (Util.isNotEmpty(type)) {
+                            String s = FileContentTypeUtils.contentType("." + type);
+                            if (Util.isNotEmpty(s)) {
+                                attachmentsVO.setContentType(s);
+                            }
+                        }
+                    }
+                }
                 auditVO.setAttachmentsVOS(attachmentsVOS);
             }
         }
