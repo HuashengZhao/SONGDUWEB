@@ -48,7 +48,7 @@
         con.FNUMBER as contractNumber,con.FNAME as contractName,bill.FLASTAMOUNT as lastAmount,
         con.FORIGINALAMOUNT as oriAmount,con.FAMOUNT as amount,
         pro.FNAME_L2 as projectName,bill.FREPORTAMOUNT as reportAmount,
-        bill.FALLOWAMOUNT as allowAmount,bill.FCHANGERESON as changeReason,
+        bill.FALLOWAMOUNT as allowAmount,bill.FCHANGERESON as executeContent,
         u.FNAME_L2 as auditorName,u1.FNAME_L2 as creatorName,bill.FAUDITTIME auditTime,bill.FCREATETIME as createTime,
         cb.FORIGINALAMOUNT as calOriAmount,cb.FAMOUNT as calAmount,sup.FNAME_L2 as supplierName,bill.FISFINISH as isFinish,
         bill.FISFEE as isFee,bill.FWXCB as wxcb,bill.FBOOKEDDATE as bizDate,bill.FCOLSEDESCRIPTION as colseDesc,

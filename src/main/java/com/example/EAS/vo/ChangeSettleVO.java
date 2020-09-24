@@ -65,6 +65,8 @@ public class ChangeSettleVO {
     //    变更原因
     private String changeReasonId;
     private String changeReason;
+//    执行内容
+    private String executeContent;
 
     private String projectId;
     private String projectName;
