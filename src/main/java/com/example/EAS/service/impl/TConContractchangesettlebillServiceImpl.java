@@ -6,6 +6,7 @@ import com.example.EAS.mapper.TConChangeauditbillMapper;
 import com.example.EAS.mapper.TConContractchangesettlebillMapper;
 import com.example.EAS.model.TConContractchangesettlebill;
 import com.example.EAS.service.ITConContractchangesettlebillService;
+import com.example.EAS.util.FileContentTypeUtils;
 import com.example.EAS.util.PageBean;
 import com.example.EAS.util.Util;
 import com.example.EAS.vo.AttachmentsVO;
@@ -149,6 +150,20 @@ public class TConContractchangesettlebillServiceImpl extends ServiceImpl<TConCon
             //            附件信息
             List<AttachmentsVO> attachmentsVOS = attachmentMapper.selectAttachMent(id);
             if (attachmentsVOS != null && attachmentsVOS.size() > 0) {
+                for (AttachmentsVO attachmentsVO : attachmentsVOS) {
+                    String fileUrl = attachmentsVO.getFileUrl();
+                    if (Util.isNotEmpty(fileUrl)) {
+                        String type = fileUrl.split("\\.")[fileUrl.split("\\.").length - 1];
+                        attachmentsVO.setFileType(type);
+                        if (Util.isNotEmpty(type)) {
+                            
+                            String s = FileContentTypeUtils.contentType("." + type);
+                            if (Util.isNotEmpty(s)) {
+                                attachmentsVO.setContentType(s);
+                            }
+                        }
+                    }
+                }
                 settleVO.setAttachmentsVOS(attachmentsVOS);
             }
         }

@@ -42,4 +42,6 @@ public class AttachmentsVO {
      */
     private List<MultipartFile> multipartFileList;
 
+    private String fboid;
+
 }
