@@ -58,7 +58,9 @@
         org.FNAME_L2 as conductDeptName,sup.FNAME_L2 as conductUnitName,wf.FNAME_L2 as wfType,
         bill.FISFEE as isFee,bill.FCOSTUNIT as costUnit,bill.FIsChangeContract as isChangeContract,
         bill.FIsReceipts as isReceipts,bill.FIsImportChange as isImportChange,bill.FIsAlreadyExecuted as isAlreadyDo,
-        bill.FDESCRIPTION as description,un.FNAME_L2 as orgName
+        bill.FDESCRIPTION as description,un.FNAME_L2 as orgName,con.FNUMBER as contractNumber,con.FNAME as contractName,
+        en.FOriCostAmount as  oriCostAmount,sup1.FNAME_L2 as mainSupplierName,sup2.FNAME_L2 as copySupplierName,
+        sup3.FNAME_L2 as generalSupplierName
         from T_CON_ChangeAuditBill bill
         left join T_FDC_CurProject pro on pro.fid=bill.FCURPROJECTID
         left join T_FDC_ChangeType ct on ct.fid=bill.FAUDITTYPEID
@@ -68,6 +70,14 @@
         left join T_BD_Supplier sup on sup.fid=bill.FCONDUCTUNITID
         left join T_CON_ChangeWFType wf on wf.fid=bill.FWFTYPEID
         left join T_ORG_CtrlUnit un on un.fid=bill.FCONTROLUNITID
+        left join T_CON_ChangeSupplierEntry en on en.FPARENTID=bill.FID
+        left join T_CON_CONTRACTBILL con on con.fid=en.FCONTRACTBILLID
+        left join T_CON_ChangeAuditEntry aen on aen.FPARENTID=bill.fid
+        left join T_BD_Supplier sup1 on sup1.fid=en.FMAINSUPPID
+        left join T_CON_CopySupplierEntry cse on cse.FPARENTID=en.FID
+        left join T_BD_Supplier sup2 on sup2.fid=cse.FCOPYSUPPID
+        left join T_CON_NewMainSupplierEntry nmse on nmse.FPARENTID=en.FID
+        left join T_BD_Supplier sup3 on sup3.FID=nmse.FMAINSUPPID
 
         where bill.fid=#{id}
     </select>
@@ -76,6 +86,7 @@
         select fid as id,FCHANGECONTENT as changeContent,FISBACK as isBack,FEFFECT as effect
         from T_CON_ChangeAuditEntry
         where FPARENTID=#{id}
+        order by fseq
     </select>
 
     <select id="selectCalcuInfos" resultType="com.example.EAS.vo.CalculationInfoVO">

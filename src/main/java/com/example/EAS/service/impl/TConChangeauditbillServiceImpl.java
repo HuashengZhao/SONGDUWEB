@@ -1,12 +1,13 @@
 package com.example.EAS.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.EAS.mapper.TBasAttachmentMapper;
 import com.example.EAS.mapper.TConChangeauditbillMapper;
 import com.example.EAS.model.TConChangeauditbill;
 import com.example.EAS.service.ITConChangeauditbillService;
 import com.example.EAS.util.PageBean;
 import com.example.EAS.util.Util;
-import com.example.EAS.vo.CalculationInfoVO;
+import com.example.EAS.vo.AttachmentsVO;
 import com.example.EAS.vo.ChangeAuditContentVO;
 import com.example.EAS.vo.ChangeAuditVO;
 import com.github.pagehelper.Page;
@@ -29,6 +30,9 @@ public class TConChangeauditbillServiceImpl extends ServiceImpl<TConChangeauditb
 
     @Autowired
     private TConChangeauditbillMapper mapper;
+    @Autowired
+    private TBasAttachmentMapper attachmentMapper;
+
 
     @Override
     public PageBean<ChangeAuditVO> getChangeAuditList(ChangeAuditVO vo) {
@@ -110,10 +114,10 @@ public class TConChangeauditbillServiceImpl extends ServiceImpl<TConChangeauditb
                 if (Util.isNotEmpty(offer)) {
                     if (offer.contains("SELFCOM")) {
                         auditVO.setOffer("我方部门");
-                        auditVO.setConductName(auditVO.getConductDeptName()==null?null:auditVO.getConductDeptName());
+                        auditVO.setConductName(auditVO.getConductDeptName() == null ? null : auditVO.getConductDeptName());
                     } else if (offer.contains("DESIGNCOM")) {
                         auditVO.setOffer("合作单位");
-                        auditVO.setConductName(auditVO.getConductUnitName()==null?null:auditVO.getConductUnitName());
+                        auditVO.setConductName(auditVO.getConductUnitName() == null ? null : auditVO.getConductUnitName());
                     }
                 }
 //                单据状态转换
@@ -134,23 +138,22 @@ public class TConChangeauditbillServiceImpl extends ServiceImpl<TConChangeauditb
 //                变更内容分录
                 List<ChangeAuditContentVO> contentVOS = mapper.selectChangeContents(id);
                 if (contentVOS != null && contentVOS.size() > 0) {
-                    auditVO.setContentVOList(contentVOS);
                     for (ChangeAuditContentVO contentVO : contentVOS) {
                         String changeContent = contentVO.getChangeContent();
-                        stringBuffer.append(changeContent + ";");
+                        if (Util.isNotEmpty(changeContent)){
+                            stringBuffer.append(changeContent);
+                        }
                     }
                 }
                 String content = stringBuffer.toString();
-//                测算信息
-                List<CalculationInfoVO> calculationInfoVOS = mapper.selectCalcuInfos(id);
-                if (calculationInfoVOS != null && calculationInfoVOS.size() > 0) {
-                    for (CalculationInfoVO calculationInfoVO : calculationInfoVOS) {
-                        if (content != null && content != "") {
-                            calculationInfoVO.setContent(content);
-                        }
-                    }
-                    auditVO.setCalculationInfoVOS(calculationInfoVOS);
+                if (Util.isNotEmpty(content)) {
+                    auditVO.setExecuteContent(content);
                 }
+            }
+//            附件信息
+            List<AttachmentsVO> attachmentsVOS = attachmentMapper.selectAttachMent(id);
+            if (attachmentsVOS != null && attachmentsVOS.size() > 0) {
+                auditVO.setAttachmentsVOS(attachmentsVOS);
             }
         }
         return auditVO;

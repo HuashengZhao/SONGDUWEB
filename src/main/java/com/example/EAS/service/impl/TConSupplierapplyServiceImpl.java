@@ -775,9 +775,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
             attachmentsVO.setFileUUID(fileUUID);
             attachmentsVO.setFileType(fileType);
             attachmentsVO.setOriginalFilename(originalFilename);
-            SimpleDateFormat simpleDateFormat1 = new SimpleDateFormat("yyyy-MM-dd");
-            String createTime = simpleDateFormat1.format(new Date());
-            attachmentsVO.setCreateTime(createTime);
+            attachmentsVO.setCreateTime(LocalDateTime.now());
 //                attachmentsVO.setContentType(contentType);
             attachmentsVOS.add(attachmentsVO);
         }

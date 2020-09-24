@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
-import org.apache.tomcat.jni.Local;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -119,4 +118,6 @@ public class ChangeSettleVO {
 
     //    分录信息
     private List<ChangeSettleEntryVO> entryVOS;
+    //    附件信息集合
+    private List<AttachmentsVO> attachmentsVOS;
 }

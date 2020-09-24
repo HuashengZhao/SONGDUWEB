@@ -31,6 +31,12 @@ public class ChangeAuditVO {
     private String orgId;
     private String orgName;
 
+    private String contractId;
+    private String contractName;
+    private String contractNumber;
+
+    //    执行内容
+    private String executeContent;
     private String projectName;
     //    变更状态
     private String changeState;
@@ -63,6 +69,12 @@ public class ChangeAuditVO {
     private Integer isAlreadyDo;
     //    是否重大变更
     private Integer isImportChange;
+    //    主送单位
+    private String mainSupplierName;
+    //    抄送单位
+    private String copySupplierName;
+    //    总承包商
+    private String generalSupplierName;
 
     //    变更原因
     private String changeReasonId;
@@ -73,6 +85,9 @@ public class ChangeAuditVO {
     //    测算金额汇总
     @JsonSerialize(using = CustomBigDecimalSerialize.class, nullsUsing = CustomBigDecimalSerialize.class)
     private BigDecimal totalCost;
+    //    测算金额
+    @JsonSerialize(using = CustomBigDecimalSerialize.class, nullsUsing = CustomBigDecimalSerialize.class)
+    private BigDecimal oriCostAmount;
     //    变更事项说明
     private String reaDesc;
     //    备注
@@ -93,7 +108,10 @@ public class ChangeAuditVO {
     private Integer pageSize;
 
     //    变更内容集合
+    private ChangeAuditContentVO contentVO;
     private List<ChangeAuditContentVO> contentVOList;
     //    测算信息
     private List<CalculationInfoVO> calculationInfoVOS;
+    //    附件信息集合
+    private List<AttachmentsVO> attachmentsVOS;
 }

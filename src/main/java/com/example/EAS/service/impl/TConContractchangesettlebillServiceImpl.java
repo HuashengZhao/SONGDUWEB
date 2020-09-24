@@ -1,27 +1,26 @@
 package com.example.EAS.service.impl;
 
-import com.example.EAS.mapper.TConChangeauditbillMapper;
-import com.example.EAS.model.TConContractchangesettlebill;
-import com.example.EAS.mapper.TConContractchangesettlebillMapper;
-import com.example.EAS.service.ITConContractchangesettlebillService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.EAS.mapper.TBasAttachmentMapper;
+import com.example.EAS.mapper.TConChangeauditbillMapper;
+import com.example.EAS.mapper.TConContractchangesettlebillMapper;
+import com.example.EAS.model.TConContractchangesettlebill;
+import com.example.EAS.service.ITConContractchangesettlebillService;
 import com.example.EAS.util.PageBean;
 import com.example.EAS.util.Util;
-import com.example.EAS.vo.ChangeAuditVO;
+import com.example.EAS.vo.AttachmentsVO;
 import com.example.EAS.vo.ChangeSettleEntryVO;
 import com.example.EAS.vo.ChangeSettleVO;
-import com.example.EAS.vo.ContractVO;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
  * @author watson
@@ -34,11 +33,13 @@ public class TConContractchangesettlebillServiceImpl extends ServiceImpl<TConCon
     private TConContractchangesettlebillMapper mapper;
     @Autowired
     private TConChangeauditbillMapper auditMapper;
+    @Autowired
+    private TBasAttachmentMapper attachmentMapper;
 
     @Override
     public PageBean<ChangeSettleVO> getChangeSettleList(ChangeSettleVO vo) {
         String orgId = vo.getOrgId();
-        if (Util.isEmpty(orgId)){
+        if (Util.isEmpty(orgId)) {
             return null;
         }
         String state1 = vo.getState();
@@ -73,15 +74,15 @@ public class TConContractchangesettlebillServiceImpl extends ServiceImpl<TConCon
         }
         String projectId = vo.getProjectId();
 //        如果是项目 获取项目下的分期id集合
-        if (Util.isNotEmpty(projectId)){
-            List<String> projectIds= auditMapper.selectProjectInfo(projectId);
-            if (projectIds!=null && projectIds.size()>0){
+        if (Util.isNotEmpty(projectId)) {
+            List<String> projectIds = auditMapper.selectProjectInfo(projectId);
+            if (projectIds != null && projectIds.size() > 0) {
                 vo.setProjectIds(projectIds);
             }
         }
         PageHelper.startPage(vo.getCurrentPage(), vo.getPageSize());
         List<ChangeSettleVO> settleVOS = mapper.selectDatas(vo);
-        if (settleVOS!=null && settleVOS.size()>0){
+        if (settleVOS != null && settleVOS.size() > 0) {
             for (ChangeSettleVO settleVO : settleVOS) {
                 String state = settleVO.getState();
                 if (Util.isNotEmpty(state)) {
@@ -125,25 +126,30 @@ public class TConContractchangesettlebillServiceImpl extends ServiceImpl<TConCon
     public ChangeSettleVO viewChangeSettle(ChangeSettleVO vo) {
         ChangeSettleVO settleVO = new ChangeSettleVO();
         String id = vo.getId();
-        if (Util.isNotEmpty(id)){
+        if (Util.isNotEmpty(id)) {
             settleVO = mapper.viewChangeSettle(vo);
-            if(Util.isNotEmpty(settleVO)){
+            if (Util.isNotEmpty(settleVO)) {
 //                提出部门、单位
                 String offer = settleVO.getOffer();
                 if (Util.isNotEmpty(offer)) {
                     if (offer.contains("SELFCOM")) {
                         settleVO.setOffer("我方部门");
-                        settleVO.setConductName(settleVO.getConductDeptName()==null?null:settleVO.getConductDeptName());
+                        settleVO.setConductName(settleVO.getConductDeptName() == null ? null : settleVO.getConductDeptName());
                     } else if (offer.contains("DESIGNCOM")) {
                         settleVO.setOffer("合作单位");
-                        settleVO.setConductName(settleVO.getConductUnitName()==null?null:settleVO.getConductUnitName());
+                        settleVO.setConductName(settleVO.getConductUnitName() == null ? null : settleVO.getConductUnitName());
                     }
                 }
 //                变更分录
-                List<ChangeSettleEntryVO> entryVOS =  mapper.selectEntryInfo(id);
-                if (entryVOS!=null && entryVOS.size()>0){
+                List<ChangeSettleEntryVO> entryVOS = mapper.selectEntryInfo(id);
+                if (entryVOS != null && entryVOS.size() > 0) {
                     settleVO.setEntryVOS(entryVOS);
                 }
+            }
+            //            附件信息
+            List<AttachmentsVO> attachmentsVOS = attachmentMapper.selectAttachMent(id);
+            if (attachmentsVOS != null && attachmentsVOS.size() > 0) {
+                settleVO.setAttachmentsVOS(attachmentsVOS);
             }
         }
         return settleVO;
