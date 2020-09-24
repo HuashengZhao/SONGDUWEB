@@ -128,6 +128,18 @@ public class TConContractchangesettlebillServiceImpl extends ServiceImpl<TConCon
         if (Util.isNotEmpty(id)){
             settleVO = mapper.viewChangeSettle(vo);
             if(Util.isNotEmpty(settleVO)){
+//                提出部门、单位
+                String offer = settleVO.getOffer();
+                if (Util.isNotEmpty(offer)) {
+                    if (offer.contains("SELFCOM")) {
+                        settleVO.setOffer("我方部门");
+                        settleVO.setConductName(settleVO.getConductDeptName()==null?null:settleVO.getConductDeptName());
+                    } else if (offer.contains("DESIGNCOM")) {
+                        settleVO.setOffer("合作单位");
+                        settleVO.setConductName(settleVO.getConductUnitName()==null?null:settleVO.getConductUnitName());
+                    }
+                }
+//                变更分录
                 List<ChangeSettleEntryVO> entryVOS =  mapper.selectEntryInfo(id);
                 if (entryVOS!=null && entryVOS.size()>0){
                     settleVO.setEntryVOS(entryVOS);

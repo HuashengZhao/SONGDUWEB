@@ -50,8 +50,12 @@
         pro.FNAME_L2 as projectName,bill.FREPORTAMOUNT as reportAmount,
         bill.FALLOWAMOUNT as allowAmount,bill.FCHANGERESON as changeReason,
         u.FNAME_L2 as auditorName,u1.FNAME_L2 as creatorName,bill.FAUDITTIME auditTime,bill.FCREATETIME as createTime,
-        cb.FORIGINALAMOUNT as calOriAmount,sup.FNAME_L2 as supplierName,bill.FISFINISH as isFinish,
-        bill.FISFEE as isFee,bill.FWXCB as wxcb,bill.FBOOKEDDATE as bizDate,bill.FCOLSEDESCRIPTION as colseDesc
+        cb.FORIGINALAMOUNT as calOriAmount,cb.FAMOUNT as calAmount,sup.FNAME_L2 as supplierName,bill.FISFINISH as isFinish,
+        bill.FISFEE as isFee,bill.FWXCB as wxcb,bill.FBOOKEDDATE as bizDate,bill.FCOLSEDESCRIPTION as colseDesc,
+        res.FNAME_L2 as changeReason,type.FNAME_L2 as changeTypeName,cb.FCOSTUNIT as costUnit,
+        cb.FOFFER as offer,cb.FCONDUCTDEPTID,ad.FNAME_L2 as conductDeptName,sup1.FNAME_L2 as conductUnitName,
+        cb.FREADESC as reaDesc,cb.FISFEE as isFee,cb.FIsChangeContract as isChangeContract,cb.FIsReceipts as isReceipts,
+        cb.FISIMPORTCHANGE  as isImportChange
         from T_CON_ContractChangeSettleBill bill
         left join T_CON_CONTRACTBILL con  on con.fid=bill.FCONTRACTBILLID
         left join T_FDC_CURPROJECT pro on pro.fid=bill.FCURPROJECTID
@@ -59,6 +63,10 @@
         left join T_PM_User u1 on u1.fid=bill.FCREATORID
         left join T_CON_ContractChangeBill cb on cb.fid=bill.FCONCHANGEBILLID
         left join T_BD_Supplier sup on sup.fid=bill.FSUPPLIERID
+        left join T_FDC_CHANGEREASON res on res.fid=cb.FCHANGEREASONID
+        left join T_FDC_CHANGETYPE type on type.fid=cb.FCHANGETYPEID
+        left join T_ORG_Admin ad on ad.fid=cb.FCONDUCTDEPTID
+        left join T_BD_Supplier sup1 on sup1.fid=cb.FCONDUCTUNITID
         where bill.fid=#{id}
     </select>
     <select id="selectAddContracts" resultType="com.example.EAS.vo.ChangeSettleVO">

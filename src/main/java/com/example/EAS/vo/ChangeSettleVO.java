@@ -33,10 +33,7 @@ public class ChangeSettleVO {
     private String supplierName;
     //    完成描述
     private String colseDesc;
-    //    是否已完成施工
-    private Integer isFinish;
-    //    是否费用已核定
-    private Integer isFee;
+
     //    无效成本
     @JsonSerialize(using = CustomBigDecimalSerialize.class, nullsUsing = CustomBigDecimalSerialize.class)
     private BigDecimal wxcb;
@@ -58,9 +55,16 @@ public class ChangeSettleVO {
     //    测算原币金额
     @JsonSerialize(using = CustomBigDecimalSerialize.class, nullsUsing = CustomBigDecimalSerialize.class)
     private BigDecimal calOriAmount;
+    //    测算金额 本位币
+    @JsonSerialize(using = CustomBigDecimalSerialize.class, nullsUsing = CustomBigDecimalSerialize.class)
+    private BigDecimal calAmount;
     //    合同最新金额   合同最新造价
     @JsonSerialize(using = CustomBigDecimalSerialize.class, nullsUsing = CustomBigDecimalSerialize.class)
     private BigDecimal lastAmount;
+
+    //    变更原因
+    private String changeReasonId;
+    private String changeReason;
 
     private String projectId;
     private String projectName;
@@ -72,8 +76,28 @@ public class ChangeSettleVO {
     //    最终审定金额
     @JsonSerialize(using = CustomBigDecimalSerialize.class, nullsUsing = CustomBigDecimalSerialize.class)
     private BigDecimal allowAmount;
-    //变更内容
-    private String changeReason;
+    //变更类型
+    private String changeTypeName;
+    //    费用承担单位
+    private String costUnit;
+    //    提出方
+    private String offer;
+    //    提出部门、单位
+    private String conductName;
+    private String conductDeptName;
+    private String conductUnitName;
+    //    变更事项说明
+    private String reaDesc;
+    //    是否增减合同
+    private Integer isChangeContract;
+    //    是否回执单
+    private Integer isReceipts;
+    //    是否重大变更
+    private Integer isImportChange;
+    //    是否已施工
+    private Integer isFinish;
+    //    是否费用已核定
+    private Integer isFee;
     //    审核信息
     private String auditorId;
     private String auditorName;
@@ -91,6 +115,6 @@ public class ChangeSettleVO {
     private Integer currentPage;
     private Integer pageSize;
 
-//    分录信息
+    //    分录信息
     private List<ChangeSettleEntryVO> entryVOS;
 }
