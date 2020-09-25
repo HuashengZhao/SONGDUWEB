@@ -571,7 +571,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
                     .append(appendToken).append(token));
         }
 //        sb.append("http://172.17.4.125:8082/easWeb/#/supplier").append("?token=").append(token);
-        System.out.println("eas单点link：" + sendUrl);
+        System.out.println("easweb详情link：" + sendUrl);
         obj.put("loginName", "00561");
 //        附件参数 todo
         JSONObject attFile = new JSONObject();
