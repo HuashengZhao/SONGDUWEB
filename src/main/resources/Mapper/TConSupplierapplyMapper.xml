@@ -166,6 +166,9 @@
     <select id="selectSupplierByName" resultType="java.lang.Object">
         select * from T_BD_SUPPLIER where FNAME_L2=#{title}
     </select>
+    <select id="selectViewUrl" resultType="java.lang.String">
+        select url from webUrl where type ='view'
+    </select>
 
     <insert id="insertAttachMent" parameterType="com.example.EAS.vo.AttachmentsVO">
         insert into webattachment(originalFilename,fileUUID,contentType,fileSize,easid,fileNum,url,webUrl,filetype,createtime,personName,fileName)

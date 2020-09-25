@@ -95,5 +95,7 @@ public interface TConSupplierapplyMapper extends BaseMapper<TConSupplierapply> {
     List<SupplierApplyVO> selectByNameId(String title,String id);
 
     List<Object> selectSupplierByName(String title);
+
+    String selectViewUrl();
 }
 
