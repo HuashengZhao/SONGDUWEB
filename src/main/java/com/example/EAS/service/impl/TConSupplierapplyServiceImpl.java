@@ -634,18 +634,17 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
      */
     @Override
     public JSONObject acceptHandle(JSONObject body) {
-
+//     接口返回参数
         JSONObject obj = new JSONObject();
         obj.put("code", "1");
         obj.put("msg", "success");
-
+//      请求参数
         String easid = body.get("easid").toString();
         String oaid = body.get("oaid").toString();
+//        type 01:合同、02:合同付款申请单、03:无合同付款;04：供应商申请，05变更审批单，06变更确认单
         String type = body.get("type").toString();
         String attlink = body.get("attlink").toString();
         String result = body.get("result").toString();
-        //           token 验证  todo
-        String perssion = body.get("permission").toString();
 
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("supplierApplyId", easid);
@@ -703,7 +702,6 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         if (Util.isEmpty(result)) {
             obj.put("code", 2);
             obj.put("msg", UtilMessage.MISS_RESULT);
-
         }
         if (Util.isNotEmpty(easid)) {
             TConSupplierapply tConSupplierapply = mapper.selectById(easid);
