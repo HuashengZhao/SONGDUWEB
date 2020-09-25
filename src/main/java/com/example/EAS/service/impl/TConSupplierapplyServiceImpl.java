@@ -571,7 +571,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
                     .append(appendToken).append(token));
         }
 //        sb.append("http://172.17.4.125:8082/easWeb/#/supplier").append("?token=").append(token);
-        System.out.println("eas单点link：" + sendUrl);
+        System.out.println("easweb详情link：" + sendUrl);
         obj.put("loginName", "00561");
 //        附件参数 todo
         JSONObject attFile = new JSONObject();
@@ -634,13 +634,14 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
 
     @Override
     public JSONObject acceptHandle(JSONObject body) {
-
+//     接口返回参数
         JSONObject obj = new JSONObject();
         obj.put("code", "1");
         obj.put("msg", "success");
-
+//      请求参数
         String easid = body.get("easid").toString();
         String oaid = body.get("oaid").toString();
+//        type 01:合同、02:合同付款申请单、03:无合同付款;04：供应商申请，05变更审批单，06变更确认单
         String type = body.get("type").toString();
         String attlink = body.get("attlink").toString();
         String result = body.get("result").toString();
