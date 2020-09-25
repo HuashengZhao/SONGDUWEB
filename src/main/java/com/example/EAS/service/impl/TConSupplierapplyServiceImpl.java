@@ -219,12 +219,12 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         }
         if (Util.isNotEmpty(vo.getTitle())) {
             String title = vo.getTitle();
-            List<SupplierApplyVO> supplierApplyVOS  = mapper.selectByName(title);
-            if (supplierApplyVOS!=null && supplierApplyVOS.size()>0){
+            List<SupplierApplyVO> supplierApplyVOS = mapper.selectByName(title);
+            if (supplierApplyVOS != null && supplierApplyVOS.size() > 0) {
                 throw new ServiceException(UtilMessage.SUPPLIER_NAME_REPEAT);
             }
             List<Object> objs = mapper.selectSupplierByName(title);
-            if (objs!=null && objs.size()>0){
+            if (objs != null && objs.size() > 0) {
                 throw new ServiceException(UtilMessage.SUPPLIER_NAME_REPEAT);
             }
             obj.put("name", vo.getTitle());
@@ -272,7 +272,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
 //         EAS附件
         JSONArray attach = new JSONArray();
         List<AttachmentsVO> attachmentsVOS = vo.getAttachmentsVOS();
-        if (attachmentsVOS!=null && attachmentsVOS.size()>0){
+        if (attachmentsVOS != null && attachmentsVOS.size() > 0) {
             for (AttachmentsVO attachmentsVO : attachmentsVOS) {
                 JSONObject object = new JSONObject();
                 String webUrl = attachmentsVO.getWebUrl();
@@ -280,12 +280,12 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
                 String originalFilename = attachmentsVO.getOriginalFilename();
                 StringBuffer stringBuffer = new StringBuffer();
                 String s = stringBuffer.append(webUrl).append("/").append(fileUUID).toString();
-                object.put("FName",originalFilename==null?"none":originalFilename);
-                object.put("FRemotePath",s==null?"none":s);
+                object.put("FName", originalFilename == null ? "none" : originalFilename);
+                object.put("FRemotePath", s == null ? "none" : s);
                 attach.add(object);
             }
         }
-        obj.put("attach",attach);
+        obj.put("attach", attach);
 
         Call call = getCall("EASURL", "saveSupplierApply");
         String result = null;
@@ -324,12 +324,12 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         }
         if (Util.isNotEmpty(vo.getTitle())) {
             String title = vo.getTitle();
-            List<SupplierApplyVO> supplierApplyVOS = mapper.selectByNameId(title,id);
-            if (supplierApplyVOS!=null && supplierApplyVOS.size()>0){
+            List<SupplierApplyVO> supplierApplyVOS = mapper.selectByNameId(title, id);
+            if (supplierApplyVOS != null && supplierApplyVOS.size() > 0) {
                 throw new ServiceException(UtilMessage.SUPPLIER_NAME_REPEAT);
             }
             List<Object> objs = mapper.selectSupplierByName(title);
-            if (objs!=null && objs.size()>0){
+            if (objs != null && objs.size() > 0) {
                 throw new ServiceException(UtilMessage.SUPPLIER_NAME_REPEAT);
             }
             obj.put("name", vo.getTitle());
@@ -373,20 +373,20 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
 //        EAS附件
         JSONArray attach = new JSONArray();
         List<AttachmentsVO> attachmentsVOS = vo.getAttachmentsVOS();
-        if (attachmentsVOS!=null && attachmentsVOS.size()>0){
-            for (AttachmentsVO attachmentsVO : attachmentsVOS){
+        if (attachmentsVOS != null && attachmentsVOS.size() > 0) {
+            for (AttachmentsVO attachmentsVO : attachmentsVOS) {
                 JSONObject object = new JSONObject();
                 String webUrl = attachmentsVO.getWebUrl();
                 String fileUUID = attachmentsVO.getFileUUID();
                 String originalFilename = attachmentsVO.getOriginalFilename();
                 StringBuffer stringBuffer = new StringBuffer();
                 String s = stringBuffer.append(webUrl).append("/").append(fileUUID).toString();
-                object.put("FName",originalFilename==null?"none":originalFilename);
-                object.put("FRemotePath",s==null?"none":s);
+                object.put("FName", originalFilename == null ? "none" : originalFilename);
+                object.put("FRemotePath", s == null ? "none" : s);
                 attach.add(object);
             }
         }
-        obj.put("attach",attach);
+        obj.put("attach", attach);
 
         Call call = getCall("EASURL", "saveSupplierApply");
         String result = null;
@@ -550,17 +550,35 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        sb.append("http://172.17.4.125:8082/easWeb/#/supplier/view?from=oa&id=").append(URLEncoder.encode(id)).append("&token=").append(token);
+
+//        http://172.17.4.125:8082/easWeb/#/
+        String sendUrl = null;
+        StringBuffer sbv = new StringBuffer();
+        String appendUrl = mapper.selectViewUrl();
+//					审批单 approval
+        if (Util.isNotEmpty(appendUrl)) {
+            String appendType = "supplier/view?from=oa&id=";
+
+            String appendId = null;
+            try {
+                appendId = URLEncoder.encode(id, "utf-8");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+//					token
+            String appendToken = "&token=";
+            sendUrl = String.valueOf(sbv.append(appendUrl).append(appendType).append(appendId)
+                    .append(appendToken).append(token));
+        }
 //        sb.append("http://172.17.4.125:8082/easWeb/#/supplier").append("?token=").append(token);
-//        obj.put("loginName", personNum);
+        System.out.println("eas单点link：" + sendUrl);
         obj.put("loginName", "00561");
 //        附件参数 todo
         JSONObject attFile = new JSONObject();
 //        obj.put("attFile", attFile);
 //        表单参数
         JSONObject data = new JSONObject();
-        System.out.println("eas单点link："+sb.toString());
-        data.put("fd_link", sb.toString());
+        data.put("fd_link", sendUrl);
         data.put("fd_person", "谢凯伦");
 //        data.put("createTime", vo.getCreateTime());
         obj.put("data", data.toString());
@@ -790,7 +808,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
      * ftp  下载
      */
     @Override
-    public void downLoadFile(HttpServletRequest request, HttpServletResponse response,String webUrl,String fileUUID) {
-            ftpUtil.exportOutputStream(request, response, webUrl, fileUUID);
+    public void downLoadFile(HttpServletRequest request, HttpServletResponse response, String webUrl, String fileUUID) {
+        ftpUtil.exportOutputStream(request, response, webUrl, fileUUID);
     }
 }
