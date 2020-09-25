@@ -610,7 +610,6 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         if (oaid != null && id != null) {
             oaIdUtil.getString(id, oaid);
         }
-
 //       成功提交后，修改eas当前状态为审批中0
         if (code != null && code.contains("1")) {
 //            修改单据状态为审批中
@@ -626,12 +625,13 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
     /**
      * oa审批后回调方法
      * 根据oa审批状态 修改eas单据状态
-     * Oa审批通过 eas改成已审批，
+     * Oa审批通过 eas改成已审批,
      * oa审批驳回，eas改为已提交 此时可以修改并二次提交 二次提交时 携带oa原有id提交,
      * oa废弃流程，eas改为保存 此时为新流程
      *
      * @param body
      */
+
     @Override
     public JSONObject acceptHandle(JSONObject body) {
 
@@ -644,8 +644,6 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         String type = body.get("type").toString();
         String attlink = body.get("attlink").toString();
         String result = body.get("result").toString();
-        //           token 验证  todo
-        String perssion = body.get("permission").toString();
 
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("supplierApplyId", easid);
@@ -698,12 +696,10 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         if (Util.isEmpty(type)) {
             obj.put("code", 2);
             obj.put("msg", UtilMessage.MISS_TYPE);
-
         }
         if (Util.isEmpty(result)) {
             obj.put("code", 2);
             obj.put("msg", UtilMessage.MISS_RESULT);
-
         }
         if (Util.isNotEmpty(easid)) {
             TConSupplierapply tConSupplierapply = mapper.selectById(easid);
@@ -714,7 +710,6 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         }
         return obj;
     }
-
 
     @Override
     public List<AttachmentsVO> uploadAttachment(AttachmentsVO vo) throws IOException {
