@@ -59,6 +59,8 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
     @Autowired
     private FtpUtil ftpUtil;
 
+    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
     org.apache.axis.client.Service service = new org.apache.axis.client.Service();
 
     public Call getCall(String type, String operationName) {
@@ -716,7 +718,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
             InputStream inputStream = multipartFile.getInputStream();
             String type = multipartFile.getContentType();
             String num = null;
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
             Date date = new Date();
             String format = formatter.format(date);
             String s = format.replaceAll("-", "/");
@@ -775,7 +777,9 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
             attachmentsVO.setFileUUID(fileUUID);
             attachmentsVO.setFileType(fileType);
             attachmentsVO.setOriginalFilename(originalFilename);
-            attachmentsVO.setCreateTime(LocalDateTime.now());
+            Date date1 = new Date();
+            String format2 = formatter.format(date1);
+            attachmentsVO.setCreateTime(format2);
 //                attachmentsVO.setContentType(contentType);
             attachmentsVOS.add(attachmentsVO);
         }

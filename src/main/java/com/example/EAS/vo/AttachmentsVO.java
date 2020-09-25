@@ -1,14 +1,10 @@
 package com.example.EAS.vo;
 
-import com.example.EAS.util.DateJsonDeserializer;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -34,9 +30,7 @@ public class AttachmentsVO {
     private String person;
     //    员工名称
     private String personName;
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    @JsonDeserialize(using = DateJsonDeserializer.class)
-    private LocalDateTime createTime;
+    private String createTime;
     /**
      * 上传获取url接口 ，传文件集合
      */
