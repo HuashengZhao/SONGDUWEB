@@ -97,7 +97,8 @@
         ldp.fname_l2 as partA,cb.FCostProperty costProperty,cb.FContractPropert contractNature,
         cb.FIsArchived isArchived, u.fname_l2 auditor,cb.FLastUpdateTime lastAuditTime,uc.fname_l2 as creator,
         cb.fcreatetime createTime,cb.FIsRespite isRespite
-        from T_CON_ContractBill cb left join T_FDC_ContractType ct on cb.FContractTypeID=ct.fid
+        from T_CON_ContractBill cb
+        left join T_FDC_ContractType ct on cb.FContractTypeID=ct.fid
         left join T_CON_ProgrammingContract pc on pc.fid=cb.FProgrammingContract
         left join T_BD_Currency cur on cur.fid=cb.FCurrencyID
         left join T_BD_Supplier supb on supb.fid=cb.FPartBID
@@ -160,8 +161,12 @@
     cb.FIsArchived isArchived, u.fname_l2 auditor,cb.FLastUpdateTime lastAuditTime,uc.fname_l2 as creator,
     cb.fcreatetime createTime,cb.FIsRespite isRespite,cb.FCONTRACTTYPEID as conTypeId,cb.FEXRATE as exRate,
     cb.FCURRENCYID as currencyId,p.FNUMBER as person,cb.FCURPROJECTID as projectId,cp.FNAME_L2 as projectName,
-    cb.FORGUNITID as orgId,un.FNAME_L2 as orgName
-    from T_CON_ContractBill cb left join T_FDC_ContractType ct on cb.FContractTypeID=ct.fid
+    cb.FORGUNITID as orgId,un.FNAME_L2 as orgName,mar.FNAME as marketProjectName,cost.FNAME_L2 as costAccountName,
+    cb.FGRTRATE as grtRate,cb.FGRTAMOUNT as grtAmount,cb.FSTARTDATE as startDate,cb.FENDDATE as endDate,
+    wf.FNAME_L2 as contractWFTypeName,cb.FOrgType as contractWFStartType,cb.FREMARK as description,cb.FLXNUMID as unionBankNum,
+    cb.FBANK as bank,cb.FBANKACCOUNT as bankAccount,cb.FTAXERNUM as taxNum,cb.FTAXERQUA as taxQua
+    from T_CON_ContractBill cb
+    left join T_FDC_ContractType ct on cb.FContractTypeID=ct.fid
     left join T_CON_ProgrammingContract pc on pc.fid=cb.FProgrammingContract
     left join T_BD_Currency cur on cur.fid=cb.FCurrencyID
     left join T_BD_Supplier supb on supb.fid=cb.FPartBID
@@ -175,6 +180,10 @@
     left join T_FDC_CURPROJECT cp on cp.fid=cb.FCURPROJECTID
     left join T_PM_USER uc on uc.fid=cb.FCreatorID
     left join T_ORG_BASEUNIT un on un.fid=cb.FORGUNITID
+    left join T_CON_MarketProject mar on mar.fid = cb.FMARKETPROJECTID
+    left join T_FDC_CostAccount cost on cost.fid=cb.FMPCOSTACCOUNTID
+    left join T_CON_ContractWFType wf on wf.fid=cb.FCONTRACTWFTYPEID
+
     where cb.FID=#{id}
     </select>
 

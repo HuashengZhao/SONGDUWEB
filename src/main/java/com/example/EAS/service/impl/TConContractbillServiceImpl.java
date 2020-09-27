@@ -3,10 +3,12 @@ package com.example.EAS.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.EAS.mapper.TBasAttachmentMapper;
 import com.example.EAS.mapper.TConContractbillMapper;
 import com.example.EAS.mapper.TConSupplierapplyMapper;
 import com.example.EAS.model.TConContractbill;
 import com.example.EAS.service.ITConContractbillService;
+import com.example.EAS.util.FileContentTypeUtils;
 import com.example.EAS.util.PageBean;
 import com.example.EAS.util.ServiceException;
 import com.example.EAS.util.Util;
@@ -38,6 +40,8 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
     private TConContractbillMapper mapper;
     @Autowired
     private TConSupplierapplyMapper csMapper;
+    @Autowired
+    private TBasAttachmentMapper attachmentMapper;
 
     org.apache.axis.client.Service service = new org.apache.axis.client.Service();
 
@@ -215,7 +219,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         String csName = vo.getCsName();
         easJson.put("csName", csName);
         LocalDateTime startDate = vo.getStartDate();
-        if (Util.isNotEmpty(startDate)){
+        if (Util.isNotEmpty(startDate)) {
             easJson.put("startDate", startDate.toString());
         }
         LocalDateTime endDate = vo.getEndDate();
@@ -371,9 +375,24 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         if (Util.isEmpty(contractVO)) {
             return null;
         }
-//        是否有附件
+//       是否有附件
 
-//        形成方式
+        //       审批流程发起组织
+        //    集团/事业部/城市公司=BIGRANGE,项目部=SMALLRANGE,集团/事业部/城市公司-项目部=ALLRANGE,内部关联公司往来类=NEIBU,
+        //    外部供应商客户往来类=WAIBU
+        String contractWFStartType = contractVO.getContractWFStartType();
+        if (Util.isNotEmpty(contractWFStartType)) {
+            if (contractWFStartType.contains("BIGRANGE")) {
+                contractVO.setContractWFStartType("集团/事业部/城市公司");
+            } else if (contractWFStartType.contains("SMALLRANGE")) {
+                contractVO.setContractWFStartType("项目部");
+            } else if (contractWFStartType.contains("ALLRANGE")) {
+                contractVO.setContractWFStartType("集团/事业部/城市公司-项目部");
+            } else if (contractWFStartType.contains("NEIBU")) {
+                contractVO.setContractWFStartType("内部关联公司往来类");
+            }
+        }
+//       形成方式
         String csName = contractVO.getCsName();
         if (Util.isNotEmpty(csName)) {
             if (csName.contains("TRUST")) {
@@ -421,6 +440,17 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                 contractVO.setContractNature("战略协议");
             }
         }
+//       纳税人资质 一般纳税人=NOMAL,小规模纳税人=SMALL,非增值税纳税人=UNNOMAL
+        String taxerQua = contractVO.getTaxQua();
+        if (Util.isNotEmpty(taxerQua)) {
+            if (taxerQua.contains("NOMAL")) {
+                contractVO.setTaxQua("一般纳税人");
+            } else if (taxerQua.contains("SMALL")) {
+                contractVO.setTaxQua("小规模纳税人");
+            } else if (taxerQua.contains("UNNOMAL")) {
+                contractVO.setTaxQua("非增值税纳税人");
+            }
+        }
 //        合同签订明细
         List<ContractSignDetailVO> contractSignDetailVOS = mapper.selectSignInfos(vo.getId());
         if (Util.isNotEmpty(contractSignDetailVOS)) {
@@ -431,7 +461,25 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         if (Util.isNotEmpty(detailVOS)) {
             contractVO.setDetailVOList(detailVOS);
         }
-//        附件信息  todo
+//        附件信息
+        List<AttachmentsVO> attachmentsVOS = attachmentMapper.selectAttachMent(id);
+        if (attachmentsVOS != null && attachmentsVOS.size() > 0) {
+            for (AttachmentsVO attachmentsVO : attachmentsVOS) {
+                String fileUrl = attachmentsVO.getFileUrl();
+                if (Util.isNotEmpty(fileUrl)) {
+                    String type = fileUrl.split("\\.")[fileUrl.split("\\.").length - 1];
+                    attachmentsVO.setFileType(type);
+                    if (Util.isNotEmpty(type)) {
+                        String s = FileContentTypeUtils.contentType("." + type);
+                        if (Util.isNotEmpty(s)) {
+                            attachmentsVO.setContentType(s);
+                        }
+                    }
+                }
+            }
+            contractVO.setAttachmentsVOS(attachmentsVOS);
+        }
+
 //        补充合同信息
 //        合同分录中记录的 content字段存放着合同id fparentid 为该分录记录在合同单据中对应的单据fid
         List<ContractAddVO> contractAddVOS = mapper.selectContractAdds(vo.getId());
@@ -460,7 +508,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             return null;
         }
         List<ContractDetailVO> detailVOS = mapper.selectConDetailsByCT(contractTypeId);
-        if (Util.isEmpty(detailVOS)){
+        if (Util.isEmpty(detailVOS)) {
             return null;
         }
         return detailVOS;
@@ -476,14 +524,14 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         JSONObject jsonObject = new JSONObject();
         JSONArray idArray = new JSONArray();
         List<String> idList = vo.getIdList();
-        if (idList!=null && idList.size()>0){
+        if (idList != null && idList.size() > 0) {
             for (String s : idList) {
                 JSONObject jsonObject1 = new JSONObject();
-                jsonObject1.put("id",s);
+                jsonObject1.put("id", s);
                 idArray.add(jsonObject1);
             }
         }
-        jsonObject.put("idArray",idArray);
+        jsonObject.put("idArray", idArray);
         Call call = getCall("EASURL", "deleteContractBill");
         String result = null;
         try {

@@ -67,7 +67,7 @@ public class OAController {
             StringBuffer sb = new StringBuffer();
             String s = String.valueOf(sb.append(org).append("&&").append(person));
             String token = RSAUtil.encrypt(s, "pub.key");
-//调用缓存工具类 存放token
+//          存放token
             redisUtil.set(redisUtil.generateKey(CacheKeyConstant.WEB_LOGIN_TOKEN, person), token, 1000 * 3600 * 24 * 100);
 //          返回link拼接
             String type = null;
@@ -77,6 +77,7 @@ public class OAController {
             StringBuffer sb1 = new StringBuffer();
             token = URLEncoder.encode(token, "utf-8");
             json.put("permission", token);
+//            type
             String link = String.valueOf(sb1.append("http://172.17.4.125:8082/easWeb/#/")
                     .append(type).append("?token=").append(token));
             json.put("link", link);

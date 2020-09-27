@@ -147,7 +147,6 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
             return true;
         }, "1", "100,100");
 
-
         return obj;
     }
 
