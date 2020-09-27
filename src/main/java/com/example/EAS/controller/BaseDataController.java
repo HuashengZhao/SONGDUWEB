@@ -3,7 +3,6 @@ package com.example.EAS.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.example.EAS.service.impl.BaseDataServiceImpl;
-import com.example.EAS.service.impl.TConSupplierapplyServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,8 +26,6 @@ import java.util.HashMap;
 public class BaseDataController {
     @Autowired
     private BaseDataServiceImpl service;
-    @Autowired
-    private TConSupplierapplyServiceImpl supplierapplyService;
 
     /**
      * 流程回掉接口
@@ -36,7 +33,7 @@ public class BaseDataController {
     @RequestMapping(value = "/acceptHandle", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public JSONObject acceptHandle(@RequestBody JSONObject body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
-        JSONObject obj = supplierapplyService.acceptHandle(body);
+        JSONObject obj = service.acceptHandle(body);
         return obj;
     }
 

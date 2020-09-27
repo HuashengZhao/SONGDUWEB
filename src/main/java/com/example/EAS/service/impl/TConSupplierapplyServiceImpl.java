@@ -7,7 +7,6 @@ import com.example.EAS.mapper.TConSupplierapplyMapper;
 import com.example.EAS.mapper.TFdcContracttypeMapper;
 import com.example.EAS.model.TConSupplierapply;
 import com.example.EAS.service.ITConSupplierapplyService;
-import com.example.EAS.thread.AsyncExecutor;
 import com.example.EAS.util.*;
 import com.example.EAS.vo.AttachmentsVO;
 import com.example.EAS.vo.ContractTypeVO;
@@ -24,7 +23,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.rmi.RemoteException;
 import java.text.DecimalFormat;
@@ -622,95 +623,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         return supplierApplyVO1;
     }
 
-    /**
-     * oa审批后回调方法
-     * 根据oa审批状态 修改eas单据状态
-     * Oa审批通过 eas改成已审批,
-     * oa审批驳回，eas改为已提交 此时可以修改并二次提交 二次提交时 携带oa原有id提交,
-     * oa废弃流程，eas改为保存 此时为新流程
-     *
-     * @param body
-     */
 
-    @Override
-    public JSONObject acceptHandle(JSONObject body) {
-//     接口返回参数
-        JSONObject obj = new JSONObject();
-        obj.put("code", "1");
-        obj.put("msg", "success");
-//      请求参数
-        String easid = body.get("easid").toString();
-        String oaid = body.get("oaid").toString();
-//        type 01:合同、02:合同付款申请单、03:无合同付款;04：供应商申请，05变更审批单，06变更确认单
-        String type = body.get("type").toString();
-        String attlink = body.get("attlink").toString();
-        String result = body.get("result").toString();
-
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("supplierApplyId", easid);
-//        开线程调用eas audit
-        AsyncExecutor.executeTask(t -> {
-            //       如果审核成功 调用eas审核方法
-            if (result.contains("01")) {
-                if (oaid != null && easid != null) {
-                    oaIdUtil.getString(easid, oaid);
-                }
-                Call call = getCall("EASURL", "auditSupplierApply");
-                String back = null;
-                try {
-                    back = (String) call.invoke(new Object[]{jsonObject.toString()});
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-            }
-            try {
-//        如果驳回 修改状态为已提交 并保留oaid
-                if (result.contains("03")) {
-                    if (oaid != null && easid != null) {
-                        oaIdUtil.getString(easid, oaid);
-                    }
-                    TConSupplierapply tConSupplierapply = mapper.selectById(easid);
-                    tConSupplierapply.setFstate("2SUBMITTED");
-                    mapper.updateById(tConSupplierapply);
-                }
-//        如果oa作废 修改状态为保存
-                if (result.contains("02")) {
-                    if (oaid != null && easid != null) {
-                        oaIdUtil.getString(easid, oaid);
-                    }
-                    TConSupplierapply tConSupplierapply = mapper.selectById(easid);
-                    tConSupplierapply.setFstate("1SAVED");
-                    mapper.updateById(tConSupplierapply);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            return true;
-        }, "1", "100,100");
-
-        if (Util.isEmpty(type)) {
-            obj.put("code", 2);
-            obj.put("msg", UtilMessage.MISS_TYPE);
-        }
-        if (Util.isEmpty(result)) {
-            obj.put("code", 2);
-            obj.put("msg", UtilMessage.MISS_RESULT);
-        }
-        if (Util.isNotEmpty(easid)) {
-            TConSupplierapply tConSupplierapply = mapper.selectById(easid);
-            if (Util.isEmpty(tConSupplierapply)) {
-                obj.put("code", "2");
-                obj.put("msg", "fault");
-            }
-        }
-        return obj;
-    }
 
     @Override
     public List<AttachmentsVO> uploadAttachment(AttachmentsVO vo) throws IOException {
@@ -807,4 +720,6 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
     public void downLoadFile(HttpServletRequest request, HttpServletResponse response, String webUrl, String fileUUID) {
         ftpUtil.exportOutputStream(request, response, webUrl, fileUUID);
     }
+
+
 }

@@ -38,7 +38,7 @@ public interface ITConSupplierapplyService extends IService<TConSupplierapply> {
 
     JSONObject suplierUpdate(SupplierApplyVO vo);
 
-    JSONObject acceptHandle(JSONObject body);
+
 
     List<AttachmentsVO> uploadAttachment(AttachmentsVO vo) throws IOException;
 
