@@ -3,9 +3,11 @@
 <mapper namespace="com.example.EAS.mapper.TBasAttachmentMapper">
 
     <select id="selectAttachMent" resultType="com.example.EAS.vo.AttachmentsVO">
-        select att.FNAME_L2 as title,att.FREMOTEPATH as fileUrl,ass.FBOID,att.FCREATETIME as createTime
+        select att.FNAME_L2 as title,att.FREMOTEPATH as fileUrl,ass.FBOID,att.FCREATETIME as createTime,
+        att.FNUMBER as num,att.FTYPE as type,att.FSIZE as attSize,u.FNAME_L2 as creatorName
         from  T_BAS_BoAttchAsso ass
         left join T_BAS_Attachment att on ass.FATTACHMENTID=att.FID
+        left join T_PM_User u on u.fid=att.FCREATORID
         where ass.FBOID=#{id}
         order by att.FREMOTEPATH
     </select>
