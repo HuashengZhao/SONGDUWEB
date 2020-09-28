@@ -139,10 +139,13 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
                     } else if (type.contains("05")) {
                         TConChangeauditbill tConChangeauditbill = auditMapper.selectById(easid);
                         tConChangeauditbill.setFstate("1SAVED");
+                        tConChangeauditbill.setFchangestate("1Saved");
+                        tConChangeauditbill.setFsourcefunction(null);
                         auditMapper.updateById(tConChangeauditbill);
                     } else if (type.contains("06")) {
                         TConContractchangesettlebill tConContractchangesettlebill = settleMapper.selectById(easid);
                         tConContractchangesettlebill.setFstate("1SAVED");
+                        tConContractchangesettlebill.setFsourcefunction(null);
                         settleMapper.updateById(tConContractchangesettlebill);
                     }
                 }
@@ -170,6 +173,7 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
                 } else if (type.contains("05")) {
                     TConChangeauditbill tConChangeauditbill = auditMapper.selectById(easid);
                     tConChangeauditbill.setFstate("2SUBMITTED");
+                    tConChangeauditbill.setFchangestate("3Submit");
                     auditMapper.updateById(tConChangeauditbill);
                 } else if (type.contains("06")) {
                     TConContractchangesettlebill tConContractchangesettlebill = settleMapper.selectById(easid);

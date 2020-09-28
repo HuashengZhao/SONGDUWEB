@@ -508,7 +508,6 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             contractVO.setAttachmentsVOS(attachmentsVOS);
         }
 
-
 //        补充合同信息
         TConContractbill tConContractbill1 = mapper.selectById(vo.getId());
         String fnumber = tConContractbill1.getFnumber();
@@ -544,6 +543,11 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         return detailVOS;
     }
 
+    /**
+     * submit in eas system
+     *
+     * @param vo
+     */
     @Override
     public void submitToOa(ContractVO vo) {
 
