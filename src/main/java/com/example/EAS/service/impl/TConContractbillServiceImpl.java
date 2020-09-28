@@ -314,7 +314,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             for (ContractSignDetailVO detailVO : detailVOS) {
                 JSONObject json = new JSONObject();
                 String detail = detailVO.getDetail();
-                json.put("bgItem", detail);
+                json.put("detail", detail);
                 String totalAmount = detailVO.getTotalAmount();
                 json.put("totalAmount", totalAmount);
                 String voAmount = detailVO.getAmount();
