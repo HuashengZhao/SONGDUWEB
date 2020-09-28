@@ -3,6 +3,7 @@ package com.example.EAS.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.EAS.mapper.TBasAttachmentMapper;
 import com.example.EAS.mapper.TConSupplierapplyMapper;
 import com.example.EAS.mapper.TFdcContracttypeMapper;
 import com.example.EAS.model.TConSupplierapply;
@@ -59,6 +60,8 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
     private OaIdUtil oaIdUtil;
     @Autowired
     private FtpUtil ftpUtil;
+    @Autowired
+    private TBasAttachmentMapper attachmentMapper;
 
     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -270,24 +273,32 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         if (Util.isNotEmpty(vo.getOrgId())) {
             obj.put("orgId", vo.getOrgId());
         }
-//         EAS附件
+//      保存到EAS附件
         JSONArray attach = new JSONArray();
         List<AttachmentsVO> attachmentsVOS = vo.getAttachmentsVOS();
         if (attachmentsVOS != null && attachmentsVOS.size() > 0) {
             for (AttachmentsVO attachmentsVO : attachmentsVOS) {
                 JSONObject object = new JSONObject();
+                String attachNum = attachmentsVO.getNum();
                 String webUrl = attachmentsVO.getWebUrl();
                 String fileUUID = attachmentsVO.getFileUUID();
                 String originalFilename = attachmentsVO.getOriginalFilename();
-                StringBuffer stringBuffer = new StringBuffer();
-                String s = stringBuffer.append(webUrl).append("/").append(fileUUID).toString();
-                object.put("FName", originalFilename == null ? "none" : originalFilename);
-                object.put("FRemotePath", s == null ? "none" : s);
-                attach.add(object);
+                if (Util.isNotEmpty(attachNum)) {
+                    List<AttachmentsVO> attachmentsVOSList = attachmentMapper.selectByNumber(attachNum);
+                    if (attachmentsVOSList != null && attachmentsVOSList.size() > 0) {
+                        if (Util.isNotEmpty(webUrl) && Util.isNotEmpty(fileUUID) && Util.isNotEmpty(originalFilename)) {
+                            StringBuffer stringBuffer = new StringBuffer();
+                            String s = stringBuffer.append(webUrl).append("/").append(fileUUID).toString();
+                            object.put("FName", originalFilename == null ? "none" : originalFilename);
+                            object.put("FRemotePath", s == null ? "none" : s);
+                            attach.add(object);
+                        }
+                    }
+                }
             }
         }
-        obj.put("attach", attach);
 
+        obj.put("attach", attach);
         Call call = getCall("EASURL", "saveSupplierApply");
         String result = null;
         try {
@@ -622,7 +633,6 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         }
         return supplierApplyVO1;
     }
-
 
 
     @Override

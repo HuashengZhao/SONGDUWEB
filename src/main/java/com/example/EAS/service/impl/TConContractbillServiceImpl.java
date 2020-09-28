@@ -164,7 +164,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
     }
 
     /**
-     * 新增合同单据
+     * 保存合同单据
      */
     @Override
     public ContractVO saveContractBill(ContractVO vo) {
@@ -263,7 +263,31 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         LocalDateTime createTime = LocalDateTime.now();
         easJson.put("createTime", createTime);
 
-//        附件信息 todo
+//      保存到EAS附件
+        JSONArray attach = new JSONArray();
+        List<AttachmentsVO> attachmentsVOS = vo.getAttachmentsVOS();
+        if (attachmentsVOS != null && attachmentsVOS.size() > 0) {
+            for (AttachmentsVO attachmentsVO : attachmentsVOS) {
+                JSONObject object = new JSONObject();
+                String attachNum = attachmentsVO.getNum();
+                String webUrl = attachmentsVO.getWebUrl();
+                String fileUUID = attachmentsVO.getFileUUID();
+                String originalFilename = attachmentsVO.getOriginalFilename();
+                if (Util.isNotEmpty(attachNum)) {
+                    List<AttachmentsVO> attachmentsVOSList = attachmentMapper.selectByNumber(attachNum);
+                    if (attachmentsVOSList != null && attachmentsVOSList.size() > 0) {
+                        if (Util.isNotEmpty(webUrl) && Util.isNotEmpty(fileUUID) && Util.isNotEmpty(originalFilename)) {
+                            StringBuffer stringBuffer = new StringBuffer();
+                            String s = stringBuffer.append(webUrl).append("/").append(fileUUID).toString();
+                            object.put("FName", originalFilename == null ? "none" : originalFilename);
+                            object.put("FRemotePath", s == null ? "none" : s);
+                            attach.add(object);
+                        }
+                    }
+                }
+            }
+        }
+
 //       税务信息+收款信息
         JSONObject jsonObject = new JSONObject();
         String bank = vo.getBank();
@@ -327,7 +351,11 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             }
         }
         easJson.put("conDetailArray", details);
-//      补充合同信息  另增方法 在合同审批之后才可 新增补充合同
+//      补充合同信息  在合同审批之后才可 新增补充合同
+        List<ContractAddVO> contractAddVOS = vo.getContractAddVOS();
+        if (contractAddVOS != null && contractAddVOS.size() > 0) {
+            mapper.insertAddContract(contractAddVOS);
+        }
 //      营销合同分摊明细 分摊比例加起来必须百分百
         List<MarketContDetailVO> marketContDetailVOS = vo.getMarketContDetailVOS();
         BigDecimal totalRate = BigDecimal.ZERO;
@@ -481,8 +509,9 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         }
 
 //        补充合同信息
-//        合同分录中记录的 content字段存放着合同id fparentid 为该分录记录在合同单据中对应的单据fid
-        List<ContractAddVO> contractAddVOS = mapper.selectContractAdds(vo.getId());
+        TConContractbill tConContractbill1 = mapper.selectById(vo.getId());
+        String fnumber = tConContractbill1.getFnumber();
+        List<ContractAddVO> contractAddVOS = mapper.selectContractAdds(fnumber);
         if (Util.isNotEmpty(contractAddVOS)) {
             contractVO.setContractAddVOS(contractAddVOS);
         }
@@ -539,5 +568,10 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public List<ContractVO> getMainContractNums(ContractVO vo) {
+        return null;
     }
 }

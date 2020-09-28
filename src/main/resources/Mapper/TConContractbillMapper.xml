@@ -1,6 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.EAS.mapper.TConContractbillMapper">
+    <insert id="insertAddContract">
+        insert into T_CON_CONTRACTBILL()
+    </insert>
+
+    <select id="selectContractAdds" parameterType="com.example.EAS.vo.ContractVO"
+            resultType="com.example.EAS.vo.ContractAddVO">
+    select b.FID as id,
+     b.FNAME           as title,
+    b.FNUMBER         as num,
+    b.FMainContractNumber         as mainNumber,
+    t.FNAME_L2        as contractType,
+    b.FCOSTPROPERTY   as contractNature,
+    b.FBOOKEDDATE        as bizDate,
+    s.FNAME_L2        as partB,
+    b.FORIGINALAMOUNT as originalAmount,
+    b.FAMOUNT         as amount
+    from T_CON_CONTRACTBILL b
+    left join T_FDC_ContractType t on t.fid = b.FCONTRACTTYPEID
+    left join T_BD_SUPPLIER s on s.fid = b.FPARTBID
+    where b.fnumber = #{number}
+    </select>
 
     <select id="selectDatas" resultType="com.example.EAS.vo.ContractVO">
         select cb.FID id,cb.fbookeddate bizDate,cb.FState state,cb.FHasSettled hasSettled,ct.fname_l2 as conTypeName,
@@ -124,24 +145,6 @@
     FCONTENT as content
     from T_CON_CONTRACTBILLENTRY
     where FPARENTID=#{id}
-    </select>
-
-    <select id="selectContractAdds" parameterType="com.example.EAS.vo.ContractVO"
-            resultType="com.example.EAS.vo.ContractAddVO">
-    select b.FID as id,
-     b.FNAME           as title,
-    b.FNUMBER         as num,
-    t.FNAME_L2        as contractType,
-    b.FCOSTPROPERTY   as contractNature,
-    b.FBOOKEDDATE        as bizDate,
-    s.FNAME_L2        as partB,
-    b.FORIGINALAMOUNT as originalAmount,
-    b.FAMOUNT         as amount
-    from T_CON_CONTRACTBILL b
-    left join T_FDC_ContractType t on t.fid = b.FCONTRACTTYPEID
-    left join T_BD_SUPPLIER s on s.fid = b.FPARTBID
-    where b.fid in
-    (select FPARENTID from T_CON_CONTRACTBILLENTRY where FCONTENT=#{id})
     </select>
 
     <select id="selectMarketCons" resultType="com.example.EAS.vo.MarketContDetailVO">

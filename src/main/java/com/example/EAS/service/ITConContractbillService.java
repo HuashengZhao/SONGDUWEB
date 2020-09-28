@@ -29,4 +29,7 @@ public interface ITConContractbillService extends IService<TConContractbill> {
     void submitToOa(ContractVO vo);
 
     void deleteContractBills(ContractVO vo);
+
+    List<ContractVO> getMainContractNums(ContractVO vo);
+
 }

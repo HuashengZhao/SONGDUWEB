@@ -37,9 +37,13 @@ public interface TConContractbillMapper extends BaseMapper<TConContractbill> {
 
     List<ContractDetailVO> selectDetails(String id);
 
-    List<ContractAddVO> selectContractAdds(String id);
+    List<ContractAddVO> selectContractAdds(String fnumber);
 
     List<MarketContDetailVO> selectMarketCons(String id);
 
     ContractVO viewContractVO(ContractVO vo);
+
+    void insertAddContract(List<ContractAddVO> contractAddVOS);
+
+
 }

@@ -160,24 +160,10 @@ public class FtpUtil {
             String changeUrl = split[webUrl.split("/").length - 1];
             String encode = URLEncoder.encode(billId);
             String newUrl = webUrl.replace(changeUrl, encode).replace("ftp/", "");
-//            todo 测试后打开下面三行 用来更改ftp文件名
-//            mapper.updateWebUrl(newUrl,billId);
-//            attachmentsVO.setWebUrl(newUrl);
-//            attachmentsVO.setWebUrl(webUrl);
+
             //      存入对应信息到 eas database
             mapper.insertAttachMent(attachmentsVO);
 
-            //        调用ftp远程修改目录地址
-            FTPClient ftp = new FTPClient();
-//            try {
-//                int reply;
-//                ftp.connect("172.17.4.60", 21);// 连接FTP服务器
-//                // 如果采用默认端口，可以使用ftp.connect(host)的方式直接连接FTP服务器
-//                ftp.login("adminftp", "sdjt2020@#");// 登录
-//                moveFile(webUrl, newUrl);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
         }
     }
 

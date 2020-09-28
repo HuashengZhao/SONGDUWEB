@@ -17,4 +17,7 @@ import java.util.List;
 public interface TBasAttachmentMapper extends BaseMapper<TBasAttachment> {
 
     List<AttachmentsVO> selectAttachMent(String id);
+
+    List<AttachmentsVO> selectByNumber(String attachNum);
+
 }

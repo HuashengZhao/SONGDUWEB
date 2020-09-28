@@ -110,5 +110,19 @@ public class TConContractbillController {
         return R.ok(result);
     }
 
+    /**
+     * 新增合同时选择合同性质为补充合同时返回合同编码集合
+     */
+    @RequestMapping(value = "getMainContractNums", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public R getMainContractNums(@RequestBody String body) throws Exception {
+        HashMap<String, Object> result = new HashMap<>(10);
+        ContractVO vo = BodyDecodeUtil.decodeBody(body, ContractVO.class);
+        List<ContractVO> vos =  service.getMainContractNums(vo);
+        result.put("data", vos);
+        result.put("msg", UtilMessage.SUBMIT_SUCCESS);
+        result.put("code", HttpStatus.SC_OK);
+        return R.ok(result);
+    }
+
 
 }

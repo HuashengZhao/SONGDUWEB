@@ -19,6 +19,4 @@ public class ContractAddVO {
 //    本位币金额
     private String amount;
 
-
-
 }
