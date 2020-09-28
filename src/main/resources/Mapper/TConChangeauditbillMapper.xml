@@ -104,6 +104,6 @@
         order by en.fseq
     </select>
     <select id="selectProjectInfo" resultType="java.lang.String">
-        select fid from T_FDC_CURPROJECT where FPARENTID=#{projectId} and FIsEnabled = 1
+        select fid from T_FDC_CURPROJECT where FPARENTID=#{projectId} or fid=#{projectId} and FIsEnabled = 1
     </select>
 </mapper>
