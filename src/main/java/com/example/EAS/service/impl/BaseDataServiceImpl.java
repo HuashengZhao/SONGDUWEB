@@ -74,15 +74,16 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
 
     @Override
     public JSONObject acceptHandle(JSONObject body) {
-//     接口返回参数
+//      接口返回参数
         JSONObject obj = new JSONObject();
         obj.put("code", "1");
         obj.put("msg", "success");
 //      请求参数
         String oaid = body.get("oaid").toString();
         String attlink = body.get("attlink").toString();
+//      01:审批通过,02:废弃,03:驳回,修订
         String result = body.get("result").toString();
-//        type 01:合同、02:合同付款申请单、03:无合同付款;04：供应商申请，05变更审批单，06变更确认单
+//      type 01:合同、02:合同付款申请单、03:无合同付款;04：供应商申请，05变更审批单，06变更确认单
         String type = body.get("type").toString();
         String easid = body.get("easid").toString();
         if (oaid == null || type == null || easid == null) {
@@ -90,18 +91,21 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
             obj.put("msg", "fault");
             return obj;
         }
-//       操作类型 对应webservice 的方法
+//      操作类型 对应webservice 的方法
         JSONObject operation = getOperation(type);
         String saveOperation = operation.getString("saveOperation");
         String submitOperation = operation.getString("submitOperation");
         String auditOperation = operation.getString("auditOperation");
         String deleteOperation = operation.getString("deleteOperation");
-//     根据类型查看eas单据是否存在
-
-
+//      根据类型验证eas单据是否存在
+        JSONObject object = ifEasIdExists(easid, type);
+        if (object.get("code") != null) {
+            return object;
+        }
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("supplierApplyId", easid);
 //        开线程调用eas audit
+//        供应商的状态修改逻辑较为简易 直接mybatis修改fstate
+        jsonObject.put("id", easid);
         AsyncExecutor.executeTask(t -> {
             //       如果审核成功 调用eas审核方法
             if (result.contains("01")) {
@@ -117,26 +121,61 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
                 }
             }
             try {
+
+//        如果oa作废 修改状态为保存
+                if (result.contains("02")) {
+                    if (oaid != null && easid != null) {
+                        oaIdUtil.getString(easid, oaid);
+                    }
+                    if (type.contains("01")) {
+                    } else if (type.contains("02")) {
+
+                    } else if (type.contains("03")) {
+
+                    } else if (type.contains("04")) {
+                        TConSupplierapply tConSupplierapply = supplierapplyMapper.selectById(easid);
+                        tConSupplierapply.setFstate("1SAVED");
+                        supplierapplyMapper.updateById(tConSupplierapply);
+                    } else if (type.contains("05")) {
+                        TConChangeauditbill tConChangeauditbill = auditMapper.selectById(easid);
+                        tConChangeauditbill.setFstate("1SAVED");
+                        auditMapper.updateById(tConChangeauditbill);
+                    } else if (type.contains("06")) {
+                        TConContractchangesettlebill tConContractchangesettlebill = settleMapper.selectById(easid);
+                        tConContractchangesettlebill.setFstate("1SAVED");
+                        settleMapper.updateById(tConContractchangesettlebill);
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
 //        如果驳回 修改状态为已提交 并保留oaid
-                if (result.contains("03")) {
+            if (result.contains("03")) {
+                if (type.contains("01")) {
+                    TConContractbill tConContractbill = contractbillMapper.selectById(easid);
+                    tConContractbill.setFstate("2SUBMITTED");
+                    contractbillMapper.updateById(tConContractbill);
+                } else if (type.contains("02")) {
+
+                } else if (type.contains("03")) {
+
+                } else if (type.contains("04")) {
                     if (oaid != null && easid != null) {
                         oaIdUtil.getString(easid, oaid);
                     }
                     TConSupplierapply tConSupplierapply = supplierapplyMapper.selectById(easid);
                     tConSupplierapply.setFstate("2SUBMITTED");
                     supplierapplyMapper.updateById(tConSupplierapply);
+                } else if (type.contains("05")) {
+                    TConChangeauditbill tConChangeauditbill = auditMapper.selectById(easid);
+                    tConChangeauditbill.setFstate("2SUBMITTED");
+                    auditMapper.updateById(tConChangeauditbill);
+                } else if (type.contains("06")) {
+                    TConContractchangesettlebill tConContractchangesettlebill = settleMapper.selectById(easid);
+                    tConContractchangesettlebill.setFstate("2SUBMITTED");
+                    settleMapper.updateById(tConContractchangesettlebill);
                 }
-//        如果oa作废 修改状态为保存
-                if (result.contains("02")) {
-                    if (oaid != null && easid != null) {
-                        oaIdUtil.getString(easid, oaid);
-                    }
-                    TConSupplierapply tConSupplierapply = supplierapplyMapper.selectById(easid);
-                    tConSupplierapply.setFstate("1SAVED");
-                    supplierapplyMapper.updateById(tConSupplierapply);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
             }
             try {
                 Thread.sleep(5000);
