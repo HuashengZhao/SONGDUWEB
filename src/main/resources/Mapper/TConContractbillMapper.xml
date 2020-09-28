@@ -7,19 +7,25 @@
 
     <select id="selectContractAdds" parameterType="com.example.EAS.vo.ContractVO"
             resultType="com.example.EAS.vo.ContractAddVO">
-    select b.FID as id,
-     b.FNAME           as title,
+    select
+    b.FID as id,
+    b.FNAME          as title,
     b.FNUMBER         as num,
     b.FMainContractNumber         as mainNumber,
     t.FNAME_L2        as contractType,
     b.FCOSTPROPERTY   as contractNature,
-    b.FBOOKEDDATE        as bizDate,
+    b.FBOOKEDDATE     as bizDate,
     s.FNAME_L2        as partB,
     b.FORIGINALAMOUNT as originalAmount,
-    b.FAMOUNT         as amount
+    b.FAMOUNT         as amount,
+    cu.fname_l2       as currencyName,
+    ad.FNAME_L2       as deptName,
+    b.FREMARK         as remark
     from T_CON_CONTRACTBILL b
     left join T_FDC_ContractType t on t.fid = b.FCONTRACTTYPEID
     left join T_BD_SUPPLIER s on s.fid = b.FPARTBID
+    left join T_BD_CURRENCY cu on cu.fid=b.FCURRENCYID
+    left join T_ORG_ADMIN ad on ad.fid=b.FCREATEDEPTID
     where b.fnumber = #{number}
     </select>
 
