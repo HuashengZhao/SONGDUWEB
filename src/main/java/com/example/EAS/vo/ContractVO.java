@@ -109,6 +109,8 @@ public class ContractVO {
     private LocalDateTime createTime;
     //    是否暂缓
     private String isRespite;
+    //    link查看oa流程
+    private String link;
 
     //    分页
     private Integer currentPage;

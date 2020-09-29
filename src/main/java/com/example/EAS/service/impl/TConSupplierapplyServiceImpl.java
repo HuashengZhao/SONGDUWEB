@@ -145,7 +145,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
                         StringBuffer stringBuffer = new StringBuffer();
                         oaid = URLEncoder.encode(oaid);
                         String link = String.valueOf(stringBuffer.append(s1).append(oaid).append(s2).append(mtLoginNum));
-                        System.out.println("OA单点路径：" + link);
+                        System.out.println("OA路径：" + link);
                         supplierApplyVO.setLink(link);
                     }
 //                        如果是查看 根据单据id去查看对应的附件信息
