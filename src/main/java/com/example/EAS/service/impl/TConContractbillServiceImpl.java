@@ -8,15 +8,13 @@ import com.example.EAS.mapper.TConContractbillMapper;
 import com.example.EAS.mapper.TConSupplierapplyMapper;
 import com.example.EAS.model.TConContractbill;
 import com.example.EAS.service.ITConContractbillService;
-import com.example.EAS.util.FileContentTypeUtils;
-import com.example.EAS.util.PageBean;
-import com.example.EAS.util.ServiceException;
-import com.example.EAS.util.Util;
+import com.example.EAS.util.*;
 import com.example.EAS.vo.*;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.apache.axis.client.Call;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.jackson.JsonObjectDeserializer;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -384,11 +382,17 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         Call call = getCall("EASURL", "saveContractBill");
         String result = null;
         try {
-            result = (String) call.invoke(new Object[]{jsonObject.toString()});
+            result = (String) call.invoke(new Object[]{easJson.toString()});
         } catch (RemoteException e) {
-            System.out.println(e.getMessage());
-            System.out.println(e.getCause());
             throw new ServiceException(e.getMessage());
+        }
+        if (Util.isNotEmpty(result)){
+            JSONObject resultObject = JSONObject.parseObject(result);
+            String result1 = resultObject.get("result").toString();
+            String message = resultObject.get("message").toString();
+            if (result1!=null&&result1.contains("fault")){
+                throw new ServiceException(UtilMessage.SAVE_MSG_ERROR);
+            }
         }
         return contractVO;
     }

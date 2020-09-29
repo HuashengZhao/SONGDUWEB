@@ -52,7 +52,6 @@
         left join T_PM_USER uc on uc.fid=cb.FCreatorID
         <where>
             cb.FControlUnitID=#{orgId}
-
             <if test="projectIds != null and projectIds.size > 0">
                 and cb.FCurProjectID in
                 <foreach item="item" collection="projectIds" index="index" open="(" separator="," close=")">
@@ -96,6 +95,7 @@
                 and oaa.FNAME_L2 like CONCAT(CONCAT('%',#{creatDept}),'%')
             </if>
         </where>
+        order by cb.fbookeddate,cb.fnumber
     </select>
     <select id="selectProject" resultType="java.lang.String">
         select FParentID from T_FDC_CurProject where fid=#{projectId}
