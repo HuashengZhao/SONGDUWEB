@@ -24,7 +24,7 @@ public interface ITConContractbillService extends IService<TConContractbill> {
 
     List<ContractDetailVO> getContractDetails(ContractDetailVO vo);
 
-    ContractVO viewContractBill(ContractVO vo);
+    ContractVO viewContractBill(ContractVO vo) throws Exception;
 
     ContractVO submitToOa(ContractVO vo);
 
