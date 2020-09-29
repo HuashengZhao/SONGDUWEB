@@ -192,8 +192,8 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         easJson.put("num", num);
         String conTypeId = vo.getConTypeId();
         easJson.put("conTypeId", conTypeId);
-        String hygh = vo.getHygh();
-        easJson.put("hygh", hygh);
+        String hyghId = vo.getHyghId();
+        easJson.put("hygh", hyghId);
         String partA = vo.getPartA();
         easJson.put("partA", partA);
         String partB = vo.getPartB();
@@ -319,8 +319,8 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         jsonObject.put("unionBankNum", unionBankNum);
         if (Util.isNotEmpty(unionBankNum)) {
             String unionBankId = mapper.selectUnionBankId(unionBankNum);
+            jsonObject.put("unionBankId", unionBankId);
         }
-        jsonObject.put("unionBankId", unionBankNum);
         easJson.put("taxBill", jsonObject);
 //      合同签订明细  含税金额总和不能大于合同原币金额
         List<ContractSignDetailVO> detailVOS = vo.getDetailSignVOS();
@@ -405,6 +405,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         try {
             result = (String) call.invoke(new Object[]{easJson.toString()});
         } catch (RemoteException e) {
+            e.printStackTrace();
             throw new ServiceException(e.getMessage());
         }
         JSONObject object = JSONObject.parseObject(result);

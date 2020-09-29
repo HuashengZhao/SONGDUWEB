@@ -32,6 +32,7 @@ public class ContractVO {
     private String conTypeName;
     private String conTypeId;
     private String hygh;
+    private String hyghId;
     private String mainNumber;
     //    币别
     private String currencyId;
