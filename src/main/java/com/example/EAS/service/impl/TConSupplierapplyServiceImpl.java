@@ -147,6 +147,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
                         String link = String.valueOf(stringBuffer.append(s1).append(oaid).append(s2).append(mtLoginNum));
                         System.out.println("OA路径：" + link);
                         supplierApplyVO.setLink(link);
+                        supplierApplyVO.setOaId(oaid);
                     }
 //                        如果是查看 根据单据id去查看对应的附件信息
                     List<AttachmentsVO> attachmentsVOS = mapper.selectAttachments(easId);

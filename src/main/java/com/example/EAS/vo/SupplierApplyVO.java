@@ -46,7 +46,7 @@ public class SupplierApplyVO {
     private Integer pageSize;
 //   流程回掉信息i
     private String easid;
-    private String oaid;
+    private String oaId;
     private String type;
     private String attlink;
     private String result;

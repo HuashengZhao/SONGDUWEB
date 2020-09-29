@@ -47,7 +47,6 @@ public class TFdcContracttypeController {
         result.put("msg", UtilMessage.GET_MSG_SUCCESS);
         result.put("code", HttpStatus.SC_OK);
         return R.ok(result);
-
     }
     /**
      * 新增合同时返回生成的编码
@@ -62,7 +61,6 @@ public class TFdcContracttypeController {
         result.put("msg", UtilMessage.GET_MSG_SUCCESS);
         result.put("code", HttpStatus.SC_OK);
         return R.ok(result);
-
     }
 
 }

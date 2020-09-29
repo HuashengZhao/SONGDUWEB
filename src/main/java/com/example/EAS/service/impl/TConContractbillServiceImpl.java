@@ -450,6 +450,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             String link = String.valueOf(stringBuffer.append(s1).append(oaid).append(s2).append(mtLoginNum));
             System.out.println("OA路径：" + link);
             contractVO.setLink(link);
+            contractVO.setOaId(oaid);
         }
             //       审批流程发起组织
             //    集团/事业部/城市公司=BIGRANGE,项目部=SMALLRANGE,集团/事业部/城市公司-项目部=ALLRANGE,内部关联公司往来类=NEIBU,
