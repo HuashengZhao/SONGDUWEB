@@ -450,6 +450,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             String link = String.valueOf(stringBuffer.append(s1).append(oaid).append(s2).append(mtLoginNum));
             System.out.println("OA路径：" + link);
             contractVO.setLink(link);
+            contractVO.setOaId(oaid);
         }
             //       审批流程发起组织
             //    集团/事业部/城市公司=BIGRANGE,项目部=SMALLRANGE,集团/事业部/城市公司-项目部=ALLRANGE,内部关联公司往来类=NEIBU,
@@ -555,39 +556,39 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             }
 
 //        补充合同信息
-            TConContractbill tConContractbill1 = mapper.selectById(vo.getId());
-            String fnumber = tConContractbill1.getFnumber();
-            List<ContractAddVO> contractAddVOS = mapper.selectContractAdds(fnumber);
-            if (Util.isNotEmpty(contractAddVOS)) {
-                contractVO.setContractAddVOS(contractAddVOS);
-            }
+        TConContractbill tConContractbill1 = mapper.selectById(vo.getId());
+        String fnumber = tConContractbill1.getFnumber();
+        List<ContractAddVO> contractAddVOS = mapper.selectContractAdds(fnumber);
+        if (Util.isNotEmpty(contractAddVOS)) {
+            contractVO.setContractAddVOS(contractAddVOS);
+        }
 //        营销合同分摊明细
-            List<MarketContDetailVO> marketContDetailVOS = mapper.selectMarketCons(vo.getId());
-            TConContractbill tConContractbill = mapper.selectById(vo.getId());
-            Long fisjt = tConContractbill.getFisjt();
-            if (marketContDetailVOS != null && marketContDetailVOS.size() > 0) {
-                for (MarketContDetailVO marketContDetailVO : marketContDetailVOS) {
-                    if (Util.isNotEmpty(fisjt)) {
-                        marketContDetailVO.setIsjt(1);
-                    }
+        List<MarketContDetailVO> marketContDetailVOS = mapper.selectMarketCons(vo.getId());
+        TConContractbill tConContractbill = mapper.selectById(vo.getId());
+        Long fisjt = tConContractbill.getFisjt();
+        if (marketContDetailVOS != null && marketContDetailVOS.size() > 0) {
+            for (MarketContDetailVO marketContDetailVO : marketContDetailVOS) {
+                if (Util.isNotEmpty(fisjt)) {
+                    marketContDetailVO.setIsjt(1);
                 }
-                contractVO.setMarketContDetailVOS(marketContDetailVOS);
             }
-            return contractVO;
+            contractVO.setMarketContDetailVOS(marketContDetailVOS);
         }
+        return contractVO;
+    }
 
-        @Override
-        public List<ContractDetailVO> getContractDetails (ContractDetailVO vo){
-            String contractTypeId = vo.getContractTypeId();
-            if (Util.isEmpty(contractTypeId)) {
-                return null;
-            }
-            List<ContractDetailVO> detailVOS = mapper.selectConDetailsByCT(contractTypeId);
-            if (Util.isEmpty(detailVOS)) {
-                return null;
-            }
-            return detailVOS;
+    @Override
+    public List<ContractDetailVO> getContractDetails(ContractDetailVO vo) {
+        String contractTypeId = vo.getContractTypeId();
+        if (Util.isEmpty(contractTypeId)) {
+            return null;
         }
+        List<ContractDetailVO> detailVOS = mapper.selectConDetailsByCT(contractTypeId);
+        if (Util.isEmpty(detailVOS)) {
+            return null;
+        }
+        return detailVOS;
+    }
 
         /**
          * submit to oa  system

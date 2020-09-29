@@ -4,6 +4,7 @@ import com.example.EAS.model.TFdcContracttype;
 import com.example.EAS.mapper.TFdcContracttypeMapper;
 import com.example.EAS.service.ITFdcContracttypeService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.EAS.util.Util;
 import com.example.EAS.vo.ContractTypeVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,19 @@ public class TFdcContracttypeServiceImpl extends ServiceImpl<TFdcContracttypeMap
         List<ContractTypeVO> contractTypes = contracttypeMapper.selectData(vo);
         if (contractTypes != null && contractTypes.size() > 0) {
             for (ContractTypeVO contractType : contractTypes) {
+                String orgType = contractType.getContractWFStartType();
+                    if (Util.isNotEmpty(orgType)) {
+                        if (orgType.contains("BIGRANGE")) {
+                            contractType.setContractWFStartType("集团/事业部/城市公司");
+                        } else if (orgType.contains("SMALLRANGE")) {
+                            contractType.setContractWFStartType("项目部");
+                        } else if (orgType.contains("ALLRANGE")) {
+                            contractType.setContractWFStartType("集团/事业部/城市公司-项目部");
+                        } else if (orgType.contains("NEIBU")) {
+                            contractType.setContractWFStartType("内部关联公司往来类");
+                        }
+                    }
+
                 if (contractType.getLongNumber()!=null) {
                     contractType.setLongNumber(contractType.getLongNumber()
                             .replace("-", ".")

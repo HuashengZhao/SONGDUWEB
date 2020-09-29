@@ -19,7 +19,11 @@ public class ContractTypeVO {
     private String num;
     private String longNumber;
     private String id;
-    private String orgType;
+
+    //    合同流程发起类型 ==审批流程发起组织
+//    集团/事业部/城市公司=BIGRANGE,项目部=SMALLRANGE,集团/事业部/城市公司-项目部=ALLRANGE,
+//    内部关联公司往来类=NEIBU,外部供应商客户往来类=WAIBU
+    private String contractWFStartType;
     private String isCost;
     private String enabled;
     private String description;

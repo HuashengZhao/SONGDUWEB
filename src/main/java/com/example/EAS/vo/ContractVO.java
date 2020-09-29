@@ -112,6 +112,7 @@ public class ContractVO {
     private String isRespite;
     //    link查看oa流程
     private String link;
+    private String oaId;
 
     //    分页
     private Integer currentPage;
