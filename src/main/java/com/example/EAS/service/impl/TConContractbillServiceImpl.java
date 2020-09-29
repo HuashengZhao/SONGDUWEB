@@ -403,7 +403,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         Call call = getCall("EASURL", "saveContractBill");
         String result = null;
         try {
-            result = (String) call.invoke(new Object[]{jsonObject.toString()});
+            result = (String) call.invoke(new Object[]{easJson.toString()});
         } catch (RemoteException e) {
             throw new ServiceException(e.getMessage());
         }
@@ -570,7 +570,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
     }
 
     /**
-     * submit in eas system
+     * submit to oa  system
      *
      * @param vo
      */
@@ -593,7 +593,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         oaId = supplierapplyMapper.selectOaid(id);
 //      基本参数
         obj.put("id", id);
-        obj.put("tmplateId", "17400f46dd2db720a8bfcf348c1984dc");
+        obj.put("tmplateId", "174046df325987eb1d487be4026b1b64");
         obj.put("fdType", "1");
         obj.put("docSubject", vo.getConName());
         StringBuffer sb = new StringBuffer();
@@ -686,8 +686,6 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         } else {
             throw new ServiceException(UtilMessage.SUBMIT_FAULT);
         }
-
-
 
         return contractVO;
     }
