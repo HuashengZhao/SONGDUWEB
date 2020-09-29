@@ -219,12 +219,12 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
         } else if (type.contains("05")) {
             object.put("saveOperation", "todo");
             object.put("submitOperation", "todo");
-            object.put("auditOperation", "todo");
+            object.put("auditOperation", "auditChangeAuditBill");
             object.put("deleteOperation", "todo");
         } else if (type.contains("06")) {
             object.put("saveOperation", "todo");
             object.put("submitOperation", "todo");
-            object.put("auditOperation", "todo");
+            object.put("auditOperation", "auditContractChangeSettleBill");
             object.put("deleteOperation", "todo");
         }
         return object;

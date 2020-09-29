@@ -5,8 +5,10 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.EAS.mapper.TBasAttachmentMapper;
 import com.example.EAS.mapper.TConContractbillMapper;
+import com.example.EAS.mapper.TConMarketprojectMapper;
 import com.example.EAS.mapper.TConSupplierapplyMapper;
 import com.example.EAS.model.TConContractbill;
+import com.example.EAS.model.TConMarketproject;
 import com.example.EAS.service.ITConContractbillService;
 import com.example.EAS.util.*;
 import com.example.EAS.vo.*;
@@ -14,7 +16,6 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.apache.axis.client.Call;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.jackson.JsonObjectDeserializer;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -40,6 +41,8 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
     private TConSupplierapplyMapper csMapper;
     @Autowired
     private TBasAttachmentMapper attachmentMapper;
+    @Autowired
+    private TConMarketprojectMapper marketProjectMapper;
 
     org.apache.axis.client.Service service = new org.apache.axis.client.Service();
 
@@ -194,6 +197,15 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         easJson.put("taEntryId", taEntryId);
         String marketProjectId = vo.getMarketProjectId();
         easJson.put("marketProjectId", marketProjectId);
+        if (Util.isNotEmpty(marketProjectId)) {
+            TConMarketproject tConMarketproject = marketProjectMapper.selectById(marketProjectId);
+            Long fisjt = tConMarketproject.getFisjt();
+            if (fisjt != null && fisjt == 1) {
+                easJson.put("isJT", "true");
+            } else if (fisjt != null && fisjt == 0) {
+                easJson.put("isJT", "false");
+            }
+        }
 //       费用归属 需要验证是否被关联过  关联关系： 合同关联立项 以及组织，获取对应的费用归属信息  选择其中一个
 //       合同费用归属为一对一 且被关联的费用归属科目不可再被关联  费用归属区分 合同 跟无文本合同 两个类型
         String costAccountId = vo.getCostAccountId();
@@ -356,6 +368,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         }
 //      营销合同分摊明细 分摊比例加起来必须百分百
         List<MarketContDetailVO> marketContDetailVOS = vo.getMarketContDetailVOS();
+        JSONArray jsonArray = new JSONArray();
         BigDecimal totalRate = BigDecimal.ZERO;
         if (Util.isNotEmpty(marketContDetailVOS)) {
             for (MarketContDetailVO marketContDetailVO : marketContDetailVOS) {
@@ -372,27 +385,24 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                 json.put("rate", rate);
                 BigDecimal bigDecimal1 = new BigDecimal(rate);
                 totalRate.add(bigDecimal1);
+                jsonArray.add(json);
             }
         }
 //        if (totalRate.compareTo(BigDecimal.ONE) != 0) {
 //            throw new ServiceException(UtilMessage.TOTAL_RATE_NOT_ONE);
 //        }
-        easJson.put("marketConArray", details);
+        easJson.put("marketConArray", jsonArray);
 //        调用eas 保存方法进行保存
         Call call = getCall("EASURL", "saveContractBill");
         String result = null;
         try {
-            result = (String) call.invoke(new Object[]{easJson.toString()});
+            result = (String) call.invoke(new Object[]{jsonObject.toString()});
         } catch (RemoteException e) {
             throw new ServiceException(e.getMessage());
         }
-        if (Util.isNotEmpty(result)){
-            JSONObject resultObject = JSONObject.parseObject(result);
-            String result1 = resultObject.get("result").toString();
-            String message = resultObject.get("message").toString();
-            if (result1!=null&&result1.contains("fault")){
-                throw new ServiceException(UtilMessage.SAVE_MSG_ERROR);
-            }
+        JSONObject object = JSONObject.parseObject(result);
+        if (result!=null&&object.get("result").toString().contains("fault")){
+            throw new ServiceException(UtilMessage.SAVE_MSG_ERROR);
         }
         return contractVO;
     }
