@@ -411,7 +411,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         JSONObject object = JSONObject.parseObject(result);
         if (result != null && object.get("result").toString().contains("fault")) {
             contractVO.setResult("fault");
-            throw new ServiceException(UtilMessage.SAVE_MSG_ERROR);
+            throw new ServiceException(object.getString("message"));
         } else if (result != null && object.get("result").toString().contains("success")) {
             String id = object.getString("id");
             contractVO.setId(id);
