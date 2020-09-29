@@ -3,22 +3,19 @@
 <mapper namespace="com.example.EAS.mapper.TBdSupplierMapper">
 
     <select id="selectDatas" resultType="com.example.EAS.vo.SupplierVO">
-        select m.fid as id, m.fname_l2 as title , m.fnumber as num,m.FOLDNUMBER as longNumber,
+        select distinct m.fid as id, m.fname_l2 as title , m.fnumber as num,m.FOLDNUMBER as longNumber,
         m.FTAXREGISTERNO as taxNum,m.FMnemonicCode as memNumber,m.FIsInternalCompany isInner,
         ba.FBANKACCOUNT as bankAccount,ba.FBANK as bank
         from T_BD_Supplier m
         left join T_BD_SUPPLIERCOMPANYINFO ci on ci.FSUPPLIERID=m.FID
         left join T_BD_SUPPLIERCOMPANYBANK ba on ba.FSUPPLIERCOMPANYINFOID=ci.fid
         <where>
-            FUsedStatus=1
+            m.FUsedStatus=1
             <if test="title!=null and title!=''">
-                and fname_l2 like '%${title}%'
+                and m.fname_l2 like '%${title}%'
             </if>
             <if test="num!=null and num!=''">
-                and fnumber like '%${num}%'
-            </if>
-            <if test="orgId!=null and orgId!=''">
-                and m.FADMINCUID=#{orgId}
+                and m.fnumber like '%${num}%'
             </if>
         </where>
         order by m.fnumber
