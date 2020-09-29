@@ -26,7 +26,7 @@ public interface ITConContractbillService extends IService<TConContractbill> {
 
     ContractVO viewContractBill(ContractVO vo);
 
-    void submitToOa(ContractVO vo);
+    ContractVO submitToOa(ContractVO vo);
 
     void deleteContractBills(ContractVO vo);
 

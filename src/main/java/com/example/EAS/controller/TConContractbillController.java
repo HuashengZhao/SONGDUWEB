@@ -92,7 +92,8 @@ public class TConContractbillController {
     public R submitToOa(@RequestBody String body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         ContractVO vo = BodyDecodeUtil.decodeBody(body, ContractVO.class);
-        service.submitToOa(vo);
+        ContractVO contractVO  = service.submitToOa(vo);
+        result.put("data", contractVO);
         result.put("msg", UtilMessage.SUBMIT_SUCCESS);
         result.put("code", HttpStatus.SC_OK);
         return R.ok(result);

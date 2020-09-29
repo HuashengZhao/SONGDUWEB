@@ -6,8 +6,8 @@ package com.example.EAS.util;
 public class UtilMessage {
 
     public static final String GET_MSG_SUCCESS = "获取数据成功！";
-    public static final String AUDIT_SUCCESS = "audit success";
-    public static final String SUBMIT_SUCCESS = "submit success";
+    public static final String AUDIT_SUCCESS = "审核成功";
+    public static final String SUBMIT_SUCCESS = "提交成功";
     public static final String Revive_Room_SUCCESS = "复原成功！";
     public static final String Revive_Room_ERROR = "复原失败！";
     public static final String UPLOAD_SUCCESS = "上传成功！";
@@ -83,6 +83,7 @@ public class UtilMessage {
     public static final String MISS_BILLID = "单据ID缺失！";
     public static final String MISS_TYPE = "单据类型缺失！";
     public static final String MISS_RESULT = "审核状态缺失！";
+    public static final String MISS_CONTRACTTYPE = "请选择合同类型！";
     public static final String ERROR_DEPT_PERSON = "员工与部门信息存在不匹配问题，请重新登录！";
     public static final String NO_TAXERQUA = "请完善纳税人信息！";
     public static final String EXIST_TAX_NUM = "纳税人识别号重复！";

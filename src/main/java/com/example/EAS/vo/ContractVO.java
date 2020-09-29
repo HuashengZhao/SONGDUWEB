@@ -131,6 +131,8 @@ public class ContractVO {
     private String bankAccount;
     private String taxQua;
     private String taxNum;
+//    保存eas結果信息
+    private String result;
 
     //    合同签订明细
     private List<ContractSignDetailVO> detailSignVOS;

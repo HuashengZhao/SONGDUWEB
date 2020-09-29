@@ -46,4 +46,5 @@ public interface TConContractbillMapper extends BaseMapper<TConContractbill> {
     void insertAddContract(List<ContractAddVO> contractAddVOS);
 
 
+    List<ContractVO> selectMainNums(ContractVO vo);
 }
