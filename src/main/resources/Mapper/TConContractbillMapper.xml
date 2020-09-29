@@ -172,8 +172,9 @@
     cb.FCURRENCYID as currencyId,p.FNUMBER as person,cb.FCURPROJECTID as projectId,cp.FNAME_L2 as projectName,
     cb.FORGUNITID as orgId,un.FNAME_L2 as orgName,mar.FNAME as marketProjectName,cost.FNAME_L2 as costAccountName,
     cb.FGRTRATE as grtRate,cb.FGRTAMOUNT as grtAmount,cb.FSTARTDATE as startDate,cb.FENDDATE as endDate,
-    wf.FNAME_L2 as contractWFTypeName,cb.FOrgType as contractWFStartType,cb.FREMARK as description,cb.FLXNUMID as unionBankNum,
-    cb.FBANK as bank,cb.FBANKACCOUNT as bankAccount,cb.FTAXERNUM as taxNum,cb.FTAXERQUA as taxQua
+    cb.FCONTRACTWFTYPEID as contractWFTypeId,wf.FNAME_L2 as contractWFTypeName,cb.FOrgType as contractWFStartType,
+    cb.FREMARK as description,cb.FLXNUMID as unionBankNum,cb.FBANK as bank,cb.FBANKACCOUNT as bankAccount,
+    cb.FTAXERNUM as taxNum,cb.FTAXERQUA as taxQua
     from T_CON_ContractBill cb
     left join T_FDC_ContractType ct on cb.FContractTypeID=ct.fid
     left join T_CON_ProgrammingContract pc on pc.fid=cb.FProgrammingContract
@@ -194,6 +195,12 @@
     left join T_CON_ContractWFType wf on wf.fid=cb.FCONTRACTWFTYPEID
 
     where cb.FID=#{id}
+    </select>
+    <select id="selectMainNums" resultType="com.example.EAS.vo.ContractVO">
+        select fnumber as num
+        from T_CON_ContractBill
+        where FControlUnitID=#{orgId} and FCurProjectID = #{projectId}
+        order by fnumber
     </select>
 
 </mapper>

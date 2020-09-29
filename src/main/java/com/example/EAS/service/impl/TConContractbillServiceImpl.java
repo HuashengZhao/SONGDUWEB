@@ -18,7 +18,9 @@ import org.apache.axis.client.Call;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.net.URLEncoder;
 import java.rmi.RemoteException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -43,6 +45,12 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
     private TBasAttachmentMapper attachmentMapper;
     @Autowired
     private TConMarketprojectMapper marketProjectMapper;
+    @Autowired
+    private TConSupplierapplyMapper supplierapplyMapper;
+    @Autowired
+    private FtpUtil ftpUtil;
+    @Autowired
+    private OaIdUtil oaIdUtil;
 
     org.apache.axis.client.Service service = new org.apache.axis.client.Service();
 
@@ -116,7 +124,6 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                 if (file != null && file.contains("T")) {
                     contractVO.setHasFile(1);
                 }
-
 //                保存=1SAVED,已提交=2SUBMITTED,审批中=3AUDITTING,已审批=4AUDITTED,终止=5CANCEL,已下发=7ANNOUNCE,已签证=8VISA,
 //                作废=9INVALID,已上报=10PUBLISH,被打回=11BACK,修订中=12REVISING,已修订=12REVISE,已确认=13CONFIRMED
                 String state = contractVO.getState();
@@ -401,8 +408,13 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             throw new ServiceException(e.getMessage());
         }
         JSONObject object = JSONObject.parseObject(result);
-        if (result!=null&&object.get("result").toString().contains("fault")){
+        if (result != null && object.get("result").toString().contains("fault")) {
+            contractVO.setResult("fault");
             throw new ServiceException(UtilMessage.SAVE_MSG_ERROR);
+        }else if (result != null && object.get("result").toString().contains("success")){
+            String id = object.getString("id");
+            contractVO.setId(id);
+            contractVO.setResult("success");
         }
         return contractVO;
     }
@@ -563,8 +575,121 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
      * @param vo
      */
     @Override
-    public void submitToOa(ContractVO vo) {
+    public ContractVO submitToOa(ContractVO vo) {
+        ContractVO contractVO = new ContractVO();
+        String id = vo.getId();
+        ContractVO contractVO1 = saveContractBill(vo);
+        if (contractVO1.getId()!=null){
+            id=contractVO1.getId();
+        }
+        String saveResult = contractVO1.getResult();
+        if (Util.isNotEmpty(saveResult)&&saveResult.contains("fault")){
+            throw new ServiceException(UtilMessage.SUBMIT_FAULT);
+        }
+//      判断是否提交过被驳回  需要携带oaid
+        JSONObject obj = new JSONObject();
+        String oaId = null;
+        SupplierApplyVO supplierApplyVO = supplierapplyMapper.selectDataById(id);
+        oaId = supplierapplyMapper.selectOaid(id);
+//      基本参数
+        obj.put("id", id);
+        obj.put("tmplateId", "17400f46dd2db720a8bfcf348c1984dc");
+        obj.put("fdType", "1");
+        obj.put("docSubject", vo.getConName());
+        StringBuffer sb = new StringBuffer();
+        String token = RequestHolder.getCurrentUser().getToken();
+        String dencrypt = null;
+        try {
+            dencrypt = RSAUtil.dencrypt(token, "pri.key");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        String[] split = dencrypt.split("&&");
+        String personNum = split[1];
+        PersonsVO person = supplierapplyMapper.selectCreator(personNum);
+        if (vo.getAttachmentsVOS() != null && vo.getAttachmentsVOS().size() > 0) {
+            List<AttachmentsVO> attachmentsVOS = vo.getAttachmentsVOS();
+            supplierapplyMapper.deletAttach(id);
+            ftpUtil.saveAttachMent(attachmentsVOS, id);
+        } else {
+            supplierapplyMapper.deletAttach(id);
+        }
+        try {
+            token = URLEncoder.encode(token, "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        //        http://172.17.4.125:8082/easWeb/#/
+        String sendUrl = null;
+        StringBuffer sbv = new StringBuffer();
+        String appendUrl = supplierapplyMapper.selectViewUrl();
+//					审批单 approval
+        if (Util.isNotEmpty(appendUrl)) {
+            String appendType = "contract/view?from=oa&id=";
 
+            String appendId = null;
+            try {
+                appendId = URLEncoder.encode(id, "utf-8");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+//					token
+            String appendToken = "&token=";
+            sendUrl = String.valueOf(sbv.append(appendUrl).append(appendType).append(appendId)
+                    .append(appendToken).append(token));
+        }
+//        sb.append("http://172.17.4.125:8082/easWeb/#/supplier").append("?token=").append(token);
+        System.out.println("easweb详情link：" + sendUrl);
+        obj.put("loginName", "00561");
+//        附件参数 todo
+        JSONObject attFile = new JSONObject();
+//        obj.put("attFile", attFile);
+//        表单参数
+        JSONObject data = new JSONObject();
+        data.put("fd_link", sendUrl);
+        data.put("fd_person", "谢凯伦");
+//        data.put("createTime", vo.getCreateTime());
+        obj.put("data", data.toString());
+        //        当当前流程未提交时 oaidrecord没有对应oaid 调用oa新增提交方法
+        String result = null;
+        JSONObject str = null;
+        if (Util.isEmpty(oaId)) {
+            Call call = getCall("OAURL", "addEkpReview");
+            try {
+                result = (String) call.invoke(new Object[]{obj.toString()});
+                str = JSONObject.parseObject(result);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        } else {
+            Call call = getCall("OAURL", "updateEkpReview");
+            try {
+                obj.put("id", oaId);
+                result = (String) call.invoke(new Object[]{obj.toString()});
+                str = JSONObject.parseObject(result);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+//        code 1 success 2 fault
+        String code = str.getString("code");
+        String oaid = str.getString("oaid");
+        if (oaid != null && id != null) {
+            oaIdUtil.getString(id, oaid);
+        }
+//       成功提交后，修改eas当前状态为审批中0
+        if (code != null && code.contains("1")) {
+//            修改单据状态为审批中
+            TConContractbill tConContractbill = mapper.selectById(id);
+            tConContractbill.setFstate("3AUDITTING");
+            mapper.updateById(tConContractbill);
+        } else {
+            throw new ServiceException(UtilMessage.SUBMIT_FAULT);
+        }
+
+
+
+        return contractVO;
     }
 
     @Override
@@ -591,6 +716,12 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
 
     @Override
     public List<ContractVO> getMainContractNums(ContractVO vo) {
-        return null;
+        if (Util.isEmpty(vo.getOrgId()) || Util.isEmpty(vo.getProjectId())) {
+            return null;
+        } else if (Util.isEmpty(vo.getConTypeId())) {
+            throw new ServiceException(UtilMessage.MISS_CONTRACTTYPE);
+        }
+        List<ContractVO> contracts = mapper.selectMainNums(vo);
+        return contracts;
     }
 }
