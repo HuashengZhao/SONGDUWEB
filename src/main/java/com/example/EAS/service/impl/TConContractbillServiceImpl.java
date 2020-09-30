@@ -23,6 +23,7 @@ import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.rmi.RemoteException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,7 +52,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
     private FtpUtil ftpUtil;
     @Autowired
     private OaIdUtil oaIdUtil;
-
+    DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     org.apache.axis.client.Service service = new org.apache.axis.client.Service();
 
     //    String url = "http://127.0.0.1:8088/ormrpc/services/WSOAContractFacade";
@@ -239,11 +240,13 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         easJson.put("csName", csName);
         LocalDateTime startDate = vo.getStartDate();
         if (Util.isNotEmpty(startDate)) {
-            easJson.put("startDate", startDate.toString());
+            String format = df.format(startDate);
+            easJson.put("startDate", format);
         }
         LocalDateTime endDate = vo.getEndDate();
         if (Util.isNotEmpty(endDate)) {
-            easJson.put("endDate", endDate.toString());
+            String format = df.format(endDate);
+            easJson.put("endDate", format);
         }
         String contractNature = vo.getContractNature();
         String person = vo.getPerson();
@@ -280,7 +283,8 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         String description = vo.getDescription();
         easJson.put("description", description);
         LocalDateTime createTime = LocalDateTime.now();
-        easJson.put("createTime", createTime);
+        String format = df.format(createTime);
+        easJson.put("createTime", format);
 
 //      保存到EAS附件
         JSONArray attach = new JSONArray();
@@ -405,6 +409,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         Call call = getCall("EASURL", "saveContractBill");
         String result = null;
         try {
+            System.out.println(easJson.toJSONString());
             result = (String) call.invoke(new Object[]{easJson.toString()});
         } catch (RemoteException e) {
             e.printStackTrace();
