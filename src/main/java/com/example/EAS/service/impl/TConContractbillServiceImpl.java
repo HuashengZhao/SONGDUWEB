@@ -157,12 +157,14 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                 }
 //                固定总价=COMP_COMFIRM,暂定总价=TEMP_EVAL,暂定总价转固定总价=BASE_CONFIRM
                 String costProperty = contractVO.getCostProperty();
-                if (costProperty.contains("COMP_COMFIRM")) {
-                    contractVO.setCostProperty("固定总价");
-                } else if (costProperty.contains("TEMP_EVAL")) {
-                    contractVO.setCostProperty("暂定总价");
-                } else if (costProperty.contains("BASE_CONFIRM")) {
-                    contractVO.setCostProperty("暂定总价转固定总价");
+                if (Util.isNotEmpty(costProperty)) {
+                    if (costProperty.contains("COMP_COMFIRM")) {
+                        contractVO.setCostProperty("固定总价");
+                    } else if (costProperty.contains("TEMP_EVAL")) {
+                        contractVO.setCostProperty("暂定总价");
+                    } else if (costProperty.contains("BASE_CONFIRM")) {
+                        contractVO.setCostProperty("暂定总价转固定总价");
+                    }
                 }
             }
         }
