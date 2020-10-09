@@ -76,6 +76,7 @@ public class TFdcContracttypeServiceImpl extends ServiceImpl<TFdcContracttypeMap
         Integer numberRecord = contracttypeMapper.selectNumberRecord();
         if (numberRecord != null) {
             value = value + numberRecord + 1;
+            contracttypeMapper.updateNumRecord(value);
             format = decimalFormat.format(value);
         }
         StringBuffer stringBuffer = new StringBuffer();

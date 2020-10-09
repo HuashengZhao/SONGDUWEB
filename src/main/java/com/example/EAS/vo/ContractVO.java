@@ -131,6 +131,7 @@ public class ContractVO {
     private LocalDateTime endDate;
     //税务信息+收款信息
     private String unionBankNum;
+    private String unionBankId;
     private String bank;
     private String bankAccount;
     private String taxQua;

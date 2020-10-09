@@ -265,13 +265,14 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             easJson.put("contractNature", contractNature);
         }
         String contractWFTypeId = vo.getContractWFTypeId();
+        easJson.put("contractWFTypeId", contractWFTypeId);
 //        合同流程发起类型 前端写死 后端存值
         String contractWFStartType = vo.getContractWFStartType();
         easJson.put("contractWFStartType", contractWFStartType);
         String creator = vo.getCreator();
         String creatorId = null;
         if (creator != null) {
-            creatorId = mapper.selectPersonByNum(creator);
+            creatorId = mapper.selectUserByNum(creator);
             easJson.put("creatorId", creatorId);
         }
         String creatDept = vo.getCreatDept();
@@ -312,22 +313,19 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         }
 
 //       税务信息+收款信息
-        JSONObject jsonObject = new JSONObject();
         String bank = vo.getBank();
-        jsonObject.put("bank", bank);
+        easJson.put("bank", bank);
         String bankAccount = vo.getBankAccount();
-        jsonObject.put("bankAccount", bankAccount);
+        easJson.put("bankAccount", bankAccount);
         String taxNum = vo.getTaxNum();
-        jsonObject.put("taxNum", taxNum);
+        easJson.put("taxerNum", taxNum);
         String taxQua = vo.getTaxQua();
-        jsonObject.put("taxQua", taxQua);
+        easJson.put("taxerQua", taxQua);
         String unionBankNum = vo.getUnionBankNum();
-        jsonObject.put("unionBankNum", unionBankNum);
         if (Util.isNotEmpty(unionBankNum)) {
             String unionBankId = mapper.selectUnionBankId(unionBankNum);
-            jsonObject.put("unionBankId", unionBankId);
+            easJson.put("unionBankId", unionBankId);
         }
-        easJson.put("taxBill", jsonObject);
 //      合同签订明细  含税金额总和不能大于合同原币金额
         List<ContractSignDetailVO> detailVOS = vo.getDetailSignVOS();
         JSONArray objects = new JSONArray();
@@ -346,17 +344,17 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                 json.put("description", voDescription);
                 String rate = detailVO.getRate();
                 json.put("rate", rate);
-                objects.add(jsonObject);
+                objects.add(json);
                 allDetailAmount.add(new BigDecimal(totalAmount));
             }
         }
 //        判断金额
-//        if (Util.isNotEmpty(originalAmount)){
-//            BigDecimal bigDecimal = new BigDecimal(originalAmount);
-//            if (allDetailAmount.compareTo(bigDecimal) == 1) {
-//                throw new ServiceException(UtilMessage.DETAIL_AMOUNT_BEYOND);
-//            }
-//        }
+        if (Util.isNotEmpty(originalAmount)){
+            BigDecimal bigDecimal = new BigDecimal(originalAmount);
+            if (allDetailAmount.compareTo(bigDecimal) == 1) {
+                throw new ServiceException(UtilMessage.DETAIL_AMOUNT_BEYOND);
+            }
+        }
         easJson.put("signDetailArray", objects);
 //      合同详情信息
         List<ContractDetailVO> detailVOList = vo.getDetailVOList();
@@ -368,9 +366,9 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                 json.put("detailInfo", detailInfo);
                 String content = contractDetailVO.getContent();
                 json.put("content", content);
-                String descrip = contractDetailVO.getDescription();
-                json.put("description", descrip);
-                details.add(jsonObject);
+                String desp = contractDetailVO.getDescription();
+                json.put("description", desp);
+                details.add(json);
             }
         }
         easJson.put("conDetailArray", details);
@@ -396,14 +394,14 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                 json.put("remark", remark);
                 String rate = marketContDetailVO.getRate();
                 json.put("rate", rate);
-                BigDecimal bigDecimal1 = new BigDecimal(rate);
-                totalRate.add(bigDecimal1);
+                BigDecimal bigDecimal1 = new BigDecimal(rate).divide(new BigDecimal("100"));
+                totalRate = totalRate.add(bigDecimal1);
                 jsonArray.add(json);
             }
         }
-//        if (totalRate.compareTo(BigDecimal.ONE) != 0) {
-//            throw new ServiceException(UtilMessage.TOTAL_RATE_NOT_ONE);
-//        }
+        if (totalRate.compareTo(BigDecimal.ONE) != 0) {
+            throw new ServiceException(UtilMessage.TOTAL_RATE_NOT_ONE);
+        }
         easJson.put("marketConArray", jsonArray);
 //        调用eas 保存方法进行保存
         Call call = getCall("EASURL", "saveContractBill");
@@ -415,6 +413,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             e.printStackTrace();
             throw new ServiceException(e.getMessage());
         }
+//        接收返回eas信息
         JSONObject object = JSONObject.parseObject(result);
         if (result != null && object.get("result").toString().contains("fault")) {
             contractVO.setResult("fault");

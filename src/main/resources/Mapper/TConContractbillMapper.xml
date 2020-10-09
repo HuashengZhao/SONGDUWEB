@@ -26,7 +26,7 @@
     left join T_BD_SUPPLIER s on s.fid = b.FPARTBID
     left join T_BD_CURRENCY cu on cu.fid=b.FCURRENCYID
     left join T_ORG_ADMIN ad on ad.fid=b.FCREATEDEPTID
-    where b.fnumber = #{number}
+    where b.FMAINCONTRACTNUMBER = #{number}
     </select>
 
     <select id="selectDatas" resultType="com.example.EAS.vo.ContractVO">
@@ -95,7 +95,7 @@
                 and oaa.FNAME_L2 like CONCAT(CONCAT('%',#{creatDept}),'%')
             </if>
         </where>
-        order by cb.fbookeddate,cb.fnumber
+        order by cb.fbookeddate desc ,cb.fnumber
     </select>
     <select id="selectProject" resultType="java.lang.String">
         select FParentID from T_FDC_CurProject where fid=#{projectId}
@@ -107,7 +107,7 @@
         select fid from T_FDC_ContractType where fparentid=#{conTypeId}
     </select>
     <select id="selectPersonByNum" resultType="java.lang.String">
-        select FID  from T_PM_USER where fnumber = #{number}
+        select FID  from T_BD_PERSON where fnumber = #{number}
     </select>
     <select id="selectDeptByNum" resultType="java.lang.String">
         select FID from T_ORG_BASEUNIT where FNUMBER = #{number}
@@ -164,7 +164,7 @@
     select cb.FID id,cb.fbookeddate bizDate,cb.FState state,cb.FHasSettled hasSettled,ct.fname_l2 as conTypeName,
     cb.fnumber num,cb.FNAME as conName,pc.fname_l2 as hygh,cb.fmaincontractnumber as mainNumber,
     cur.fname_l2 curName,cb.FSrcAmount srcAmount,cb.FOriginalAmount originalAmount,cb.famount amount,
-    supb.fname_l2 as partBName,supb.FID as partB,supc.fname_l2 as partCName,supc.fid as partC,cs.fname_l2 as csName,
+    supb.fname_l2 as partBName,supb.FID as partB,supc.fname_l2 as partCName,supc.fid as partC,cb.FCONTRACTSOURCE as csName,
     cb.fsigndate signDate,oa.fname_l2 as deptName,p.fname_l2 as personName,oaa.FNAME_L2 creatDept,
     ldp.fname_l2 as partAName,ldp.FID as partA,cb.FCostProperty costProperty,cb.FContractPropert contractNature,
     cb.FIsArchived isArchived, u.fname_l2 auditor,cb.FLastUpdateTime lastAuditTime,uc.fname_l2 as creator,
@@ -173,7 +173,7 @@
     cb.FORGUNITID as orgId,un.FNAME_L2 as orgName,mar.FNAME as marketProjectName,cost.FNAME_L2 as costAccountName,
     cb.FGRTRATE as grtRate,cb.FGRTAMOUNT as grtAmount,cb.FSTARTDATE as startDate,cb.FENDDATE as endDate,
     cb.FCONTRACTWFTYPEID as contractWFTypeId,wf.FNAME_L2 as contractWFTypeName,cb.FOrgType as contractWFStartType,
-    cb.FREMARK as description,cb.FLXNUMID as unionBankNum,cb.FBANK as bank,cb.FBANKACCOUNT as bankAccount,
+    cb.FREMARK as description,bank.FNUMBER as unionBankNum,cb.FBANK as bank,cb.FBANKACCOUNT as bankAccount,
     cb.FTAXERNUM as taxNum,cb.FTAXERQUA as taxQua
     from T_CON_ContractBill cb
     left join T_FDC_ContractType ct on cb.FContractTypeID=ct.fid
@@ -181,7 +181,6 @@
     left join T_BD_Currency cur on cur.fid=cb.FCurrencyID
     left join T_BD_Supplier supb on supb.fid=cb.FPartBID
     left join T_BD_Supplier supc on supc.fid=cb.FPartCID
-    left join T_FDC_ContractSource cs on cs.fid=cb.FContractSourceId
     left join T_BD_Person p on p.fid=cb.FRespPersonID
     left join T_ORG_Admin oa on oa.fid=cb.FRespDeptID
     left join T_ORG_Admin oaa on oaa.fid=cb.FCreateDeptID
@@ -193,6 +192,7 @@
     left join T_CON_MarketProject mar on mar.fid = cb.FMARKETPROJECTID
     left join T_FDC_CostAccount cost on cost.fid=cb.FMPCOSTACCOUNTID
     left join T_CON_ContractWFType wf on wf.fid=cb.FCONTRACTWFTYPEID
+    left join T_CON_BankNum bank on bank.fid=cb.FLXNUMID
 
     where cb.FID=#{id}
     </select>
@@ -201,6 +201,9 @@
         from T_CON_ContractBill
         where FControlUnitID=#{orgId} and FCurProjectID = #{projectId}
         order by fnumber
+    </select>
+    <select id="selectUserByNum" resultType="java.lang.String">
+        select fid from T_PM_USER where FNUMBER=#{number}
     </select>
 
 </mapper>
