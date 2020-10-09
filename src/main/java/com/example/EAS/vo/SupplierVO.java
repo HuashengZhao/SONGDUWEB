@@ -28,6 +28,7 @@ public class SupplierVO {
     private String taxNum;
     private String bank;
     private String bankNum;
+    private String bankAccount;
     private String orgId;
 
 }

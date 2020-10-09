@@ -24,6 +24,8 @@ public class ProgramConVO {
     private String longNumber;
     private String amount;
     private String balance;
+//    关联的单据id  合同与无文本
+    private String billId;
     private List<ProgramConVO> programConVOS;
 
 }
