@@ -14,4 +14,17 @@
          </where>
          order by m.flongnumber
     </select>
+    <select id="selectDataCanBeLinked" resultType="com.example.EAS.vo.ProgramConVO">
+        select m.fid as id, m.fnumber as num ,m.fname_l2 as title,m.FLONGNUMBER as longNumber
+        ,m.FAMOUNT as amount,m.FBALANCE as balance,m.FBILLID billId
+        from T_CON_ProgrammingContract m
+        left join T_CON_Programming e on e.fid=m.FProgrammingID
+        <where>
+            m.fcontracttypeid=#{contractTypeId}
+            and e.FProjectID=#{projectId}
+            and e.FIsLatest=1
+            and m.FBILLID is null
+        </where>
+        order by m.flongnumber
+    </select>
 </mapper>

@@ -3,6 +3,7 @@ package com.example.EAS.controller;
 
 import com.example.EAS.service.impl.TConProgrammingcontractServiceImpl;
 import com.example.EAS.util.BodyDecodeUtil;
+import com.example.EAS.util.PageBean;
 import com.example.EAS.util.R;
 import com.example.EAS.util.UtilMessage;
 import com.example.EAS.vo.ProgramConVO;
@@ -39,8 +40,8 @@ public class TConProgrammingcontractController {
     public R getProgramCon(@RequestBody String  body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         ProgramConVO vo = BodyDecodeUtil.decodeBody(body, ProgramConVO.class);
-        ProgramConVO persons= service.getProgramCon(vo);
-        result.put("data", persons);
+        PageBean<ProgramConVO> pageBean= service.getProgramCon(vo);
+        result.put("data", pageBean);
         result.put("msg", UtilMessage.GET_MSG_SUCCESS);
         result.put("code", HttpStatus.SC_OK);
         return R.ok(result);

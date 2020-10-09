@@ -439,6 +439,36 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         if (Util.isEmpty(contractVO)) {
             return null;
         }
+        //                保存=1SAVED,已提交=2SUBMITTED,审批中=3AUDITTING,已审批=4AUDITTED,终止=5CANCEL,已下发=7ANNOUNCE,已签证=8VISA,
+//                作废=9INVALID,已上报=10PUBLISH,被打回=11BACK,修订中=12REVISING,已修订=12REVISE,已确认=13CONFIRMED
+        String state = contractVO.getState();
+        if (state.contains("2")) {
+            contractVO.setState("已提交");
+        } else if (state.contains("1")) {
+            contractVO.setState("保存");
+        } else if (state.contains("3")) {
+            contractVO.setState("审批中");
+        } else if (state.contains("4")) {
+            contractVO.setState("已审批");
+        } else if (state.contains("5")) {
+            contractVO.setState("终止");
+        } else if (state.contains("7")) {
+            contractVO.setState("已下发");
+        } else if (state.contains("8")) {
+            contractVO.setState("已签证");
+        } else if (state.contains("9")) {
+            contractVO.setState("作废");
+        } else if (state.contains("10")) {
+            contractVO.setState("已上报");
+        } else if (state.contains("11")) {
+            contractVO.setState("被打回");
+        } else if (state.contains("12REVISING")) {
+            contractVO.setState("修订中");
+        } else if (state.contains("12REVISE")) {
+            contractVO.setState("已修订");
+        } else if (state.contains("13")) {
+            contractVO.setState("已确认");
+        }
         //                    获取对应的oaid
         String oaid = supplierapplyMapper.selectOaid(id);
         if (Util.isNotEmpty(oaid)) {

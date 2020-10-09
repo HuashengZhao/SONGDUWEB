@@ -2,6 +2,7 @@ package com.example.EAS.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.example.EAS.model.TConProgrammingcontract;
+import com.example.EAS.util.PageBean;
 import com.example.EAS.vo.ProgramConVO;
 
 /**
@@ -14,5 +15,5 @@ import com.example.EAS.vo.ProgramConVO;
  */
 public interface ITConProgrammingcontractService extends IService<TConProgrammingcontract> {
 
-    ProgramConVO getProgramCon(ProgramConVO vo);
+    PageBean<ProgramConVO> getProgramCon(ProgramConVO vo);
 }
