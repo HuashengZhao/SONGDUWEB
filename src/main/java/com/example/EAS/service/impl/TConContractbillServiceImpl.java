@@ -422,6 +422,10 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             String id = object.getString("id");
             contractVO.setId(id);
             contractVO.setResult("success");
+            TConContractbill con = new TConContractbill();
+            con.setFid(id);
+            con.setFcreatorid(creatorId);
+            mapper.updateById(con);
         }
         return contractVO;
     }
