@@ -46,7 +46,7 @@ public class OAController {
      * 注意@！！oa登录的组织与eas不同 eas查看组织 用用户去查
      */
     @RequestMapping(value = "/ByNameAndDept", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public R selectAccountViewList(@RequestBody LoginVO vo) throws Exception {
+    public R ByNameAndDept(@RequestBody LoginVO vo) throws Exception {
         JSONObject json = new JSONObject();
         try {
             String org = vo.getOrg();
@@ -81,7 +81,7 @@ public class OAController {
             String link = String.valueOf(sb1.append("http://172.17.4.125:8082/easWeb/#/")
                     .append(type).append("?token=").append(token));
             json.put("link", link);
-            System.out.println(link);
+            System.out.println("oa登录时返回link: " + link);
             json.put("code", 1);
             json.put("message", "success");
         } catch (Exception e) {
