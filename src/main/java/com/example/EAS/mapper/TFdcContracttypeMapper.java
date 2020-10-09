@@ -21,4 +21,6 @@ public interface TFdcContracttypeMapper extends BaseMapper<TFdcContracttype> {
     Integer selectNumberRecord();
 
     String selectOrgNumber(ContractTypeVO vo);
+
+    void updateNumRecord(int value);
 }

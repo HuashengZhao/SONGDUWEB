@@ -47,4 +47,6 @@ public interface TConContractbillMapper extends BaseMapper<TConContractbill> {
 
 
     List<ContractVO> selectMainNums(ContractVO vo);
+
+    String selectUserByNum(String creator);
 }
