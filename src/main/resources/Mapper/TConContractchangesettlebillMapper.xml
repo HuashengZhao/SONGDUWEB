@@ -41,7 +41,7 @@
                 and con.FNAME like CONCAT(CONCAT('%',#{contractName}),'%')
             </if>
         </where>
-        order by bill.fcreateTime desc
+        order by bill.FBOOKEDDATE desc,bill.fnumber
     </select>
     <select id="viewChangeSettle" resultType="com.example.EAS.vo.ChangeSettleVO">
         select bill.fid as id,bill.FSTATE as state,bill.FNUMBER as num,bill.FNAME as title,
