@@ -1,6 +1,7 @@
 package com.example.EAS.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.EAS.mapper.TConContractbillMapper;
 import com.example.EAS.mapper.TConProgrammingcontractMapper;
 import com.example.EAS.model.TConProgrammingcontract;
 import com.example.EAS.service.ITConProgrammingcontractService;
@@ -24,6 +25,9 @@ public class TConProgrammingcontractServiceImpl extends ServiceImpl<TConProgramm
 
     @Autowired
     private TConProgrammingcontractMapper mapper;
+    @Autowired
+    private TConContractbillMapper contractbillMapper;
+
 
     @Override
     public ProgramConVO getProgramCon(ProgramConVO vo) {
@@ -37,6 +41,10 @@ public class TConProgrammingcontractServiceImpl extends ServiceImpl<TConProgramm
         List<ProgramConVO> programConVOList = mapper.selectDatas(vo);
         if (Util.isNotEmpty(programConVOList)){
             for (ProgramConVO conVO : programConVOList) {
+                String billId = conVO.getBillId();
+                if (Util.isNotEmpty(billId)){
+
+                }
                 String longNumber = conVO.getLongNumber();
                 if (Util.isNotEmpty(longNumber)){
                     conVO.setLongNumber(longNumber

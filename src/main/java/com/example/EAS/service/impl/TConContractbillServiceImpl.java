@@ -619,7 +619,6 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
 //      判断是否提交过被驳回  需要携带oaid
             JSONObject obj = new JSONObject();
             String oaId = null;
-            SupplierApplyVO supplierApplyVO = supplierapplyMapper.selectDataById(id);
             oaId = supplierapplyMapper.selectOaid(id);
 //      基本参数
             obj.put("id", id);
@@ -716,7 +715,6 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             } else {
                 throw new ServiceException(UtilMessage.SUBMIT_FAULT);
             }
-
             return contractVO;
         }
 

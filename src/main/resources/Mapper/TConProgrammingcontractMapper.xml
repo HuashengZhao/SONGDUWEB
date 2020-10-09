@@ -4,7 +4,7 @@
 
     <select id="selectDatas" resultType="com.example.EAS.vo.ProgramConVO">
         select m.fid as id, m.fnumber as num ,m.fname_l2 as title,m.FLONGNUMBER as longNumber
-        ,m.FAMOUNT as amount,m.FBALANCE as balance
+        ,m.FAMOUNT as amount,m.FBALANCE as balance,m.FBILLID billId
          from T_CON_ProgrammingContract m
          left join T_CON_Programming e on e.fid=m.FProgrammingID
          <where>

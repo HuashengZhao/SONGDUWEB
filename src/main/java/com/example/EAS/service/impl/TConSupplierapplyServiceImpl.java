@@ -464,9 +464,11 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
     @Override
     public String getNewNumber(SupplierApplyVO vo) {
         DecimalFormat decimalFormat = new DecimalFormat("00000000");
+        Date date = new Date();
+        String dateInfo = formatter.format(date);
         int value = 0;
         String format = "'errorNum'";
-        //     供应商新增申请单编码生成规则 WEB-组织编码-8位流水号
+        //     供应商新增申请单编码生成规则 WEB-时间格式YYYY-MM-DD-8位流水号
         String orgNumber = "errorNumber";
         if (vo.getOrgId() != null) {
             ContractTypeVO contractTypeVO = new ContractTypeVO();
@@ -479,8 +481,8 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
             format = decimalFormat.format(value);
         }
         StringBuffer stringBuffer = new StringBuffer();
-        StringBuffer conNumber = stringBuffer.append("WEB.")
-                .append(orgNumber + ".").append(format);
+        StringBuffer conNumber = stringBuffer.append("WEB.").append(dateInfo + "-")
+                .append(format);
         //       if  add operation do success then update recordNumber +1
         numberRecord = numberRecord + 1;
         mapper.updateNumberRecord(numberRecord);
