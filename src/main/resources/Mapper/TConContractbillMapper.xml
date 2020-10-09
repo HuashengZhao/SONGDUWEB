@@ -95,7 +95,7 @@
                 and oaa.FNAME_L2 like CONCAT(CONCAT('%',#{creatDept}),'%')
             </if>
         </where>
-        order by cb.fbookeddate,cb.fnumber
+        order by cb.fbookeddate desc ,cb.fnumber
     </select>
     <select id="selectProject" resultType="java.lang.String">
         select FParentID from T_FDC_CurProject where fid=#{projectId}

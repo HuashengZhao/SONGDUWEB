@@ -318,9 +318,9 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         String bankAccount = vo.getBankAccount();
         jsonObject.put("bankAccount", bankAccount);
         String taxNum = vo.getTaxNum();
-        jsonObject.put("taxNum", taxNum);
+        jsonObject.put("taxerNum", taxNum);
         String taxQua = vo.getTaxQua();
-        jsonObject.put("taxQua", taxQua);
+        jsonObject.put("taxerQua", taxQua);
         String unionBankNum = vo.getUnionBankNum();
         jsonObject.put("unionBankNum", unionBankNum);
         if (Util.isNotEmpty(unionBankNum)) {
