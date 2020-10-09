@@ -6,7 +6,7 @@
     </update>
 
     <select id="selectData" resultType="com.example.EAS.vo.ContractTypeVO">
-        select fid as id,fiscost as isCost,fname_l2 as title,
+        select fid as id,fiscost as isCost,fname_l2 as title,FISMARKET as isMarket,
         forgtype orgType,fdescription_l2 as description,fisenabled as enabled,
         FNUMBER as num ,FLONGNUMBER as longNumber,FORGTYPE as contractWFStartType
         from T_FDC_ContractType

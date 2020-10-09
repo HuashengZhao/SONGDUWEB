@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -25,6 +27,8 @@ public class TFdcContracttypeServiceImpl extends ServiceImpl<TFdcContracttypeMap
 
     @Autowired
     private TFdcContracttypeMapper contracttypeMapper;
+
+    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
     @Override
     public ContractTypeVO getContractType(ContractTypeVO vo) {
@@ -59,6 +63,8 @@ public class TFdcContracttypeServiceImpl extends ServiceImpl<TFdcContracttypeMap
 
     @Override
     public String getNewContractNumber(ContractTypeVO vo) {
+        Date date = new Date();
+        String dateInfo = formatter.format(date);
         ContractTypeVO contractTypeVO = new ContractTypeVO();
         String typeNumber = vo.getNum();
         if (typeNumber == null) {
