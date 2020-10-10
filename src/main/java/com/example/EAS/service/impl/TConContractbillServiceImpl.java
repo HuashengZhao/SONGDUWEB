@@ -472,7 +472,12 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         //                    获取对应的oaid
         String oaid = supplierapplyMapper.selectOaid(id);
         if (Util.isNotEmpty(oaid)) {
-            String person = vo.getPerson();
+//            获取当前登录信息 取用户账号用作oa流程查看登录
+            String token = RequestHolder.getCurrentUser().getToken();
+            String dencrypt = RSAUtil.dencrypt(token, "pri.key");
+            String[] split = dencrypt.split("&&");
+            String org = split[0];
+            String person = split[1];
             if (Util.isEmpty(person)) {
                 throw new ServiceException(UtilMessage.PERSON_MISSING);
             }
@@ -487,7 +492,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             StringBuffer stringBuffer = new StringBuffer();
             oaid = URLEncoder.encode(oaid);
             String link = String.valueOf(stringBuffer.append(s1).append(oaid).append(s2).append(mtLoginNum));
-            System.out.println("OA路径：" + link);
+            System.out.println("OA流程路径：" + link);
             contractVO.setLink(link);
             contractVO.setOaId(oaid);
         }
