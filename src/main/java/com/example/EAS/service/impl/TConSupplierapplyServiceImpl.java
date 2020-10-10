@@ -175,11 +175,11 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
                 }
                 String state = supplierApplyVO.getState();
                 if (Util.isNotEmpty(state)) {
-                    if (state.contains("2")) {
+                    if (state.contains("2SUB")) {
                         supplierApplyVO.setState("已提交");
-                    } else if (state.contains("1")) {
+                    } else if (state.contains("1SAVED")) {
                         supplierApplyVO.setState("保存");
-                    } else if (state.contains("3")) {
+                    } else if (state.contains("3AUD")) {
                         supplierApplyVO.setState("审批中");
                     } else if (state.contains("4")) {
                         supplierApplyVO.setState("已审批");

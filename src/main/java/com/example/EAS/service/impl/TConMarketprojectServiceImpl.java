@@ -31,11 +31,11 @@ public class TConMarketprojectServiceImpl extends ServiceImpl<TConMarketprojectM
         if (marketProjectVOList != null && marketProjectVOList.size() > 0) {
             for (MarketProjectVO marketProjectVO : marketProjectVOList) {
                 String state = marketProjectVO.getState();
-                if (state.contains("2")){
+                if (state.contains("2SUB")){
                     marketProjectVO.setState("已提交");
-                }else if (state.contains("1")){
+                }else if (state.contains("1SAVED")){
                     marketProjectVO.setState("保存");
-                }else if (state.contains("3")){
+                }else if (state.contains("3AUD")){
                     marketProjectVO.setState("审批中");
                 }else if (state.contains("4")){
                     marketProjectVO.setState("已审批");

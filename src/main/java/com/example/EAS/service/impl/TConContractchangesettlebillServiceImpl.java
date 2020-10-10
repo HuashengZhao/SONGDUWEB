@@ -87,11 +87,11 @@ public class TConContractchangesettlebillServiceImpl extends ServiceImpl<TConCon
             for (ChangeSettleVO settleVO : settleVOS) {
                 String state = settleVO.getState();
                 if (Util.isNotEmpty(state)) {
-                    if (state.contains("2")) {
+                    if (state.contains("2SUB")) {
                         settleVO.setState("已提交");
-                    } else if (state.contains("1")) {
+                    } else if (state.contains("1SAVED")) {
                         settleVO.setState("保存");
-                    } else if (state.contains("3")) {
+                    } else if (state.contains("3AUD")) {
                         settleVO.setState("审批中");
                     } else if (state.contains("4")) {
                         settleVO.setState("已审批");

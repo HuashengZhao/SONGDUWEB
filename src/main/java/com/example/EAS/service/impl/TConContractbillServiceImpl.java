@@ -128,11 +128,11 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
 //                保存=1SAVED,已提交=2SUBMITTED,审批中=3AUDITTING,已审批=4AUDITTED,终止=5CANCEL,已下发=7ANNOUNCE,已签证=8VISA,
 //                作废=9INVALID,已上报=10PUBLISH,被打回=11BACK,修订中=12REVISING,已修订=12REVISE,已确认=13CONFIRMED
                 String state = contractVO.getState();
-                if (state.contains("2")) {
+                if (state.contains("2SUB")) {
                     contractVO.setState("已提交");
-                } else if (state.contains("1")) {
+                } else if (state.contains("1SAVED")) {
                     contractVO.setState("保存");
-                } else if (state.contains("3")) {
+                } else if (state.contains("3AUD")) {
                     contractVO.setState("审批中");
                 } else if (state.contains("4")) {
                     contractVO.setState("已审批");
@@ -442,11 +442,11 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         //                保存=1SAVED,已提交=2SUBMITTED,审批中=3AUDITTING,已审批=4AUDITTED,终止=5CANCEL,已下发=7ANNOUNCE,已签证=8VISA,
 //                作废=9INVALID,已上报=10PUBLISH,被打回=11BACK,修订中=12REVISING,已修订=12REVISE,已确认=13CONFIRMED
         String state = contractVO.getState();
-        if (state.contains("2")) {
+        if (state.contains("2SUB")) {
             contractVO.setState("已提交");
-        } else if (state.contains("1")) {
+        } else if (state.contains("1SAVED")) {
             contractVO.setState("保存");
-        } else if (state.contains("3")) {
+        } else if (state.contains("3AUD")) {
             contractVO.setState("审批中");
         } else if (state.contains("4")) {
             contractVO.setState("已审批");

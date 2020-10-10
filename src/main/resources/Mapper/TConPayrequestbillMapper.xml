@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.EAS.mapper.TConPayrequestbillMapper">
+
+
+    <select id="selectDatas" resultType="com.example.EAS.vo.PayRequestBillVO">
+        select bill.fid as id,
+         bill.FBOOKEDDATE as bizDate,bill.FNUMBER as num,bill.FSTATE as state,bill.FNAME as title,
+        bill.FCREATORID as creatorId,u.FNAME_L2 as creatorName,bill.FCURPROJECTID as projectId,
+        cp.FNAME_L2 as projectName,con.FNUMBER as contractNumber,con.FNAME as contractName,
+        bill.FSUPPLIERID as supplierId,sup.FNAME_L2 as supplierName,bill.FCURRENCYID as currencyId,
+        cur.FNAME_L2 as currencyName,bill.FAMOUNT as amount,bill.FORIGINALAMOUNT as oriAmount,
+        bill.FRECBANK as recBank,bill.FRECACCOUNT as recAccount,bill.FUSAGE as remark,
+        pt.FNAME_L2 as paymentTypeName,bill.FAUDITORID as auditorId,u1.FNAME_L2 as auditorName,
+        bill.FAUDITTIME auditTime,bill.FCREATETIME createTime
+        from T_CON_PayRequestBill bill
+        left join t_pm_user u on u.fid=bill.FCREATORID
+        left join t_pm_user u1 on u1.fid=bill.FAUDITORID
+        left join T_FDC_PaymentType pt on pt.fid=bill.FPAYMENTTYPE
+        left join T_FDC_CurProject cp on cp.fid=bill.FCURPROJECTID
+        left join T_CON_CONTRACTBILL con on con.fid=bill.FCONTRACTID
+        left join T_BD_Supplier sup on sup.fid=bill.FSUPPLIERID
+        left join T_BD_CURRENCY cur on cur.fid=bill.FCURRENCYID
+        left join T_FNC_DeductBill de
+        <where>
+            bill.FControlUnitID=#{orgId}
+            and bill.FCurProjectID=#{projectId}
+            and bill.FSource='0D6DD1F4'
+            <if test="title!=null and title!=''">
+                and bill.FNAME like '%#{title}%'
+            </if>
+            <if test="num!=null and num!=''">
+                and bill.fnumber like '%#{num}%'
+            </if>
+            <if test="contractNumber!=null and contractNumber!=''">
+                and con.FNUMBER like '%#{contractNumber}%'
+            </if>
+            <if test="contractName!=null and contractName!=''">
+                and con.FNAME like '%#{contractName}%'
+            </if>
+            <if test="supplierName!=null and v!=''">
+                and sup.FNAME_L2 like '%#{supplierName}%'
+            </if>
+            <if test="projectName!=null and projectName!=''">
+                and cp.FNAME_L2 like '%#{projectName}%'
+            </if>
+            <if test="bizDate!=null and bizDate!=''">
+                and bill.FBOOKEDDATE like '%#{bizDate}%'
+            </if>
+            <if test="creatorName!=null and creatorName!=''">
+                and u.FNAME_L2 like '%#{creatorName}%'
+            </if>
+        </where>
+        order by bill.FBOOKEDDATE desc,bill.fnumber
+    </select>
+    <select id="selectDataById" resultType="com.example.EAS.vo.PayRequestBillVO">
+        select bill.FBOOKEDDATE as bizDate,bill.FNUMBER as num,bill.FSTATE as state,bill.FNAME as title,
+        bill.FCREATORID as creatorId,u.FNAME_L2 as creatorName,bill.FCURPROJECTID as projectId,
+        cp.FNAME_L2 as projectName,con.FNUMBER as contractNumber,con.FNAME as contractName,
+        bill.FSUPPLIERID as supplierId,sup.FNAME_L2 as supplierName,bill.FCURRENCYID as currencyId,
+        cur.FNAME_L2 as currencyName,bill.FAMOUNT as amount,bill.FORIGINALAMOUNT as oriAmount,
+        bill.FRECBANK as recBank,bill.FRECACCOUNT as recAccount,bill.FUSAGE as remark,
+        pt.FNAME_L2 as paymentTypeName,bill.FAUDITORID as auditorId,u1.FNAME_L2 as auditorName,
+        bill.FAUDITTIME auditTime,bill.FCREATETIME creatTime
+        from T_CON_PayRequestBill bill
+        left join t_pm_user u on u.fid=bill.FCREATORID
+        left join t_pm_user u1 on u1.fid=bill.FAUDITORID
+        left join T_FDC_PaymentType pt on pt.fid=bill.FPAYMENTTYPE
+        left join T_FDC_CurProject cp on cp.fid=bill.FCURPROJECTID
+        left join T_CON_CONTRACTBILL con on con.fid=bill.FCONTRACTID
+        left join T_BD_Supplier sup on sup.fid=bill.FSUPPLIERID
+        left join T_BD_CURRENCY cur on cur.fid=bill.FCURRENCYID
+        left join T_FNC_DeductBill de
+        where bill.fid=#{id}
+    </select>
+
+</mapper>
