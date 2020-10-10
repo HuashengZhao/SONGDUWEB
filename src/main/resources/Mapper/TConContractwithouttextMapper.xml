@@ -23,6 +23,29 @@
         <where>
             bill.FCurProjectID=#{projectId}
             and bill.FControlUnitID=#{orgId}
+            <if test="bizDate!=null and bizDate!=''">
+                and bill.FBOOKEDDATE like CONCAT(CONCAT('%',#{bizDate}),'%')
+            </if>
+            <if test="num!=null and num!=''">
+                and bill.fnumber like CONCAT(CONCAT('%',#{num}),'%')
+            </if>
+            <if test="title!=null and title!=''">
+                and bill.fname like CONCAT(CONCAT('%',#{title}),'%')
+            </if>
+            <if test="contractTypeName!=null and contractTypeName!=''">
+                and ct.FNAME_L2 like CONCAT(CONCAT('%',#{contractTypeName}),'%')
+            </if>
+            <if test="receiverName!=null and receiverName!=''">
+                and sup.FNAME_L2 like CONCAT(CONCAT('%',#{receiverName}),'%')
+                or p.FNAME_L2 like CONCAT(CONCAT('%',#{receiverName}),'%')
+            </if>
+            <if test="amount!=null and amount!=''">
+                and bill.FAMOUNT like CONCAT(CONCAT('%',#{amount}),'%')
+            </if>
+            <if test="oriAmount!=null and oriAmount!=''">
+                and bill.FORIGINALAMOUNT like CONCAT(CONCAT('%',#{oriAmount}),'%')
+            </if>
         </where>
+        order by bill.FBOOKEDDATE desc,bill.fnumber
     </select>
 </mapper>
