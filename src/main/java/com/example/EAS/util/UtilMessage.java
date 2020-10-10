@@ -89,5 +89,5 @@ public class UtilMessage {
     public static final String EXIST_TAX_NUM = "纳税人识别号重复！";
 
     public static final String DETAIL_AMOUNT_BEYOND = "签订明细金额不能大于合同金额！";
-    public static final String TOTAL_RATE_NOT_ONE = "分摊明细比例和不为1！";
+    public static final String TOTAL_RATE_NOT_ONE = "分摊比例的总和不为百分百！";
 }

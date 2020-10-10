@@ -43,8 +43,10 @@ public class NoTextContractVO {
     //  币别
     private String currencyId;
     private String currencyName;
-    //收款人名称
+    //收款人
     private String receiverName;
+    private String personId;
+    private String FReceiveUnitID;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     @JsonDeserialize(using = DateJsonDeserializer.class)

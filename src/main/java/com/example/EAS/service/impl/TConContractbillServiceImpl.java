@@ -114,6 +114,22 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         List<ContractVO> contractVOList = mapper.selectDatas(vo);
         if (Util.isNotEmpty(contractVOList)) {
             for (ContractVO contractVO : contractVOList) {
+                //       形成方式
+                String csName = contractVO.getCsName();
+                if (Util.isNotEmpty(csName)) {
+                    if (csName.contains("TRUST")) {
+                        contractVO.setCsName("委托");
+                    }
+                    if (csName.contains("INVITE")) {
+                        contractVO.setCsName("招标");
+                    }
+                    if (csName.contains("DISCUSS")) {
+                        contractVO.setCsName("仪标");
+                    }
+                    if (csName.contains("COOP")) {
+                        contractVO.setCsName("战略合作");
+                    }
+                }
                 //                查看是否有附件
                 contractVO.setHasFile(0);
                 Call call = getCall("EASURL", "ifHasAttachFile");
@@ -400,7 +416,8 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                 }
                 jsonArray.add(json);
             }
-            if (totalRate.compareTo(BigDecimal.ONE) != 0) {
+//            根据合同类型 是否需要分摊明细 去判断是否验证比例和为1
+            if (Util.isNotEmpty(vo.getIsMarket()) && vo.getIsMarket()==1&&totalRate.compareTo(BigDecimal.ONE) != 0) {
                 throw new ServiceException(UtilMessage.TOTAL_RATE_NOT_ONE);
             }
         }

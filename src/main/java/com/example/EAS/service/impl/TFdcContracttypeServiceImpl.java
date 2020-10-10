@@ -36,6 +36,12 @@ public class TFdcContracttypeServiceImpl extends ServiceImpl<TFdcContracttypeMap
         List<ContractTypeVO> contractTypes = contracttypeMapper.selectData(vo);
         if (contractTypes != null && contractTypes.size() > 0) {
             for (ContractTypeVO contractType : contractTypes) {
+                Integer isMarket = contractType.getIsMarket();
+                if (Util.isEmpty(isMarket)||isMarket==0){
+                    contractType.setIsMarket(0);
+                }else {
+                    contractType.setIsMarket(1);
+                }
                 String orgType = contractType.getContractWFStartType();
                     if (Util.isNotEmpty(orgType)) {
                         if (orgType.contains("BIGRANGE")) {

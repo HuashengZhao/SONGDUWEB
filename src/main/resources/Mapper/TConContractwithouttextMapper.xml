@@ -11,7 +11,7 @@
         bill.FAMOUNT as amount,bill.FORIGINALAMOUNT as oriAmount,
         sup.FNAME_L2 as receiverName,bill.FSIGNDATE as signDate,
         u.FNAME_L2 as creatorName,bill.FCREATETIME as createTime,
-
+        bill.FPERSONID as personId,
         from T_CON_CONTRACTWITHOUTTEXT bill
         left join T_FDC_ContractType ct on ct.fid=bill.FCONTRACTTYPEID
         left join T_CON_ProgrammingContract pc on pc.fid=bill.FProgrammingContract

@@ -40,8 +40,11 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         }
         PageHelper.startPage(vo.getCurrentPage(),vo.getPageSize());
         List<NoTextContractVO> noTextContractVOList = mapper.selectDatas(vo);
+        if (noTextContractVOList!=null && noTextContractVOList.size()>0){
+            for (NoTextContractVO noTextContractVO : noTextContractVOList) {
 
-
+            }
+        }
         PageBean<NoTextContractVO> pageBean = new PageBean<>();
         pageBean.setTotalCount(((Page) noTextContractVOList).getTotal());
         pageBean.setPageData(noTextContractVOList);
