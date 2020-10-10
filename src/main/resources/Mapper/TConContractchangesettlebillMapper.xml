@@ -57,7 +57,7 @@
         cb.FREADESC as reaDesc,cb.FISFEE as isFee,cb.FIsChangeContract as isChangeContract,cb.FIsReceipts as isReceipts,
         cb.FISIMPORTCHANGE  as isImportChange
         from T_CON_ContractChangeSettleBill bill
-        left join T_CON_CONTRACTCHANGEENTRY en on en.FPARENTID=bill.FCONCHANGEBILLID
+        left join T_CON_ContractChangeEntry en on en.FPARENTID=bill.FCONCHANGEBILLID
         left join T_CON_CONTRACTBILL con  on con.fid=bill.FCONTRACTBILLID
         left join T_FDC_CURPROJECT pro on pro.fid=bill.FCURPROJECTID
         left join T_PM_User u on u.fid=bill.FAUDITORID

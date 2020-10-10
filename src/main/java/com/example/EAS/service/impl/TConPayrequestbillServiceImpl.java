@@ -14,7 +14,6 @@ import com.example.EAS.vo.AttachmentsVO;
 import com.example.EAS.vo.PayRequestBillVO;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import io.jsonwebtoken.impl.AbstractTextCodec;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -96,7 +95,8 @@ public class TConPayrequestbillServiceImpl extends ServiceImpl<TConPayrequestbil
                     if (attachmentsVOS!=null && attachmentsVOS.size()>0){
                         payRequestBillVO.setIfHasAttach(1);
                     }
-                    List<TConDeductofpayreqbill> billList = deductofpayreqbillMapper.selectList(new QueryWrapper<TConDeductofpayreqbill>()
+                    List<TConDeductofpayreqbill> billList = deductofpayreqbillMapper.selectList
+                            (new QueryWrapper<TConDeductofpayreqbill>()
                             .eq("FPAYMENTBILLID", id));
                     if (billList!=null && billList.size()>0){
                         for (TConDeductofpayreqbill tConDeductofpayreqbill : billList) {

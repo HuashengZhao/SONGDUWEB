@@ -26,5 +26,4 @@ public class ContractAddVO {
     private String deptName;
     private String currencyName;
     private String remark;
-
 }

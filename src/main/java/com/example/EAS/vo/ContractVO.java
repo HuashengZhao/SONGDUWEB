@@ -154,4 +154,6 @@ public class ContractVO {
 //附件
     private List<AttachmentsVO> attachmentsVOS ;
 
+//    是否需要营销合同分摊明细
+    private Integer isMarket;
 }

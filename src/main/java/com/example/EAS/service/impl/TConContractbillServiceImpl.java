@@ -114,6 +114,22 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         List<ContractVO> contractVOList = mapper.selectDatas(vo);
         if (Util.isNotEmpty(contractVOList)) {
             for (ContractVO contractVO : contractVOList) {
+                //       形成方式
+                String csName = contractVO.getCsName();
+                if (Util.isNotEmpty(csName)) {
+                    if (csName.contains("TRUST")) {
+                        contractVO.setCsName("委托");
+                    }
+                    if (csName.contains("INVITE")) {
+                        contractVO.setCsName("招标");
+                    }
+                    if (csName.contains("DISCUSS")) {
+                        contractVO.setCsName("仪标");
+                    }
+                    if (csName.contains("COOP")) {
+                        contractVO.setCsName("战略合作");
+                    }
+                }
                 //                查看是否有附件
                 contractVO.setHasFile(0);
                 Call call = getCall("EASURL", "ifHasAttachFile");
@@ -380,8 +396,8 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
 //      营销合同分摊明细 分摊比例加起来必须百分百
         List<MarketContDetailVO> marketContDetailVOS = vo.getMarketContDetailVOS();
         JSONArray jsonArray = new JSONArray();
-        BigDecimal totalRate = BigDecimal.ZERO;
         if (Util.isNotEmpty(marketContDetailVOS)) {
+            BigDecimal totalRate = BigDecimal.ZERO;
             for (MarketContDetailVO marketContDetailVO : marketContDetailVOS) {
                 JSONObject json = new JSONObject();
                 String date = marketContDetailVO.getFsdate();
@@ -394,14 +410,18 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                 json.put("remark", remark);
                 String rate = marketContDetailVO.getRate();
                 json.put("rate", rate);
-                BigDecimal bigDecimal1 = new BigDecimal(rate).divide(new BigDecimal("100"));
-                totalRate = totalRate.add(bigDecimal1);
+                if (Util.isNotEmpty(rate)){
+                    BigDecimal bigDecimal1 = new BigDecimal(rate).divide(new BigDecimal("100"));
+                    totalRate = totalRate.add(bigDecimal1);
+                }
                 jsonArray.add(json);
             }
+//            根据合同类型 是否需要分摊明细 去判断是否验证比例和为1
+            if (Util.isNotEmpty(vo.getIsMarket()) && vo.getIsMarket()==1&&totalRate.compareTo(BigDecimal.ONE) != 0) {
+                throw new ServiceException(UtilMessage.TOTAL_RATE_NOT_ONE);
+            }
         }
-        if (totalRate.compareTo(BigDecimal.ONE) != 0) {
-            throw new ServiceException(UtilMessage.TOTAL_RATE_NOT_ONE);
-        }
+
         easJson.put("marketConArray", jsonArray);
 //        调用eas 保存方法进行保存
         Call call = getCall("EASURL", "saveContractBill");

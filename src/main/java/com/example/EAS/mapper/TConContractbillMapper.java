@@ -30,7 +30,6 @@ public interface TConContractbillMapper extends BaseMapper<TConContractbill> {
 
     String selectUnionBankId(String unionBankNum);
 
-
     List<ContractDetailVO> selectConDetailsByCT(String contractTypeId);
 
     List<ContractSignDetailVO> selectSignInfos(String id);
