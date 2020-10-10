@@ -156,4 +156,6 @@ public class ContractVO {
 
 //    是否需要营销合同分摊明细
     private Integer isMarket;
+//    是否调用eas提交方法
+    private Boolean flag;
 }

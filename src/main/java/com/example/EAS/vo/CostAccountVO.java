@@ -25,5 +25,7 @@ public class CostAccountVO {
     private String project;
     private String description;
     private List<CostAccountVO> costAccountVOList;
+//    控制单据  CONTRACT  NOTEXTCONTRACT
+    private String controlType;
 
 }

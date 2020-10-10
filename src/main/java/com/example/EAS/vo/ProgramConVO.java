@@ -27,7 +27,7 @@ public class ProgramConVO {
 //    关联的单据id  合同与无文本
     private String billId;
     private List<ProgramConVO> programConVOS;
-//    是否能够关联合同
+//    能否够关联合同
     private Integer ifBeLinked;
 
     private Integer currentPage;

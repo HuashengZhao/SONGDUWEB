@@ -1,10 +1,8 @@
 package com.example.EAS.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.EAS.mapper.TConContractbillMapper;
 import com.example.EAS.mapper.TConProgrammingcontractMapper;
-import com.example.EAS.model.TConContractbill;
 import com.example.EAS.model.TConProgrammingcontract;
 import com.example.EAS.service.ITConProgrammingcontractService;
 import com.example.EAS.util.PageBean;
@@ -57,14 +55,14 @@ public class TConProgrammingcontractServiceImpl extends ServiceImpl<TConProgramm
             for (ProgramConVO conVO : programConVOList) {
                 Integer linked = 1;
                 String billId = conVO.getBillId();
-                if (Util.isNotEmpty(billId)) {
-                    List<TConContractbill> conContractbills = contractbillMapper.selectList(new QueryWrapper<TConContractbill>()
-                            .eq("fid", billId));
-                    if (conContractbills != null && conContractbills.size() > 0) {
-                        linked = 0;
-                    }
-                }
-                conVO.setIfBeLinked(linked);
+//                if (Util.isNotEmpty(billId)) {
+//                    List<TConContractbill> conContractbills = contractbillMapper.selectList(new QueryWrapper<TConContractbill>()
+//                            .eq("fid", billId));
+//                    if (conContractbills != null && conContractbills.size() > 0) {
+//                        linked = 0;
+//                    }
+//                }
+//                conVO.setIfBeLinked(linked);
                 String longNumber = conVO.getLongNumber();
                 if (Util.isNotEmpty(longNumber)) {
                     conVO.setLongNumber(longNumber

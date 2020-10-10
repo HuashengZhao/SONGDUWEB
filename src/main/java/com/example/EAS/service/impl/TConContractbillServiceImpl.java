@@ -198,6 +198,8 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
 //        总JSONOBJECT
         ContractVO contractVO = new ContractVO();
         JSONObject easJson = new JSONObject();
+//        是否调用eas提交方法
+        Boolean flag = vo.getFlag();
         //        根据是否携带单据id 判断新增 修改
         String contractBillId = vo.getId();
         easJson.put("id", contractBillId);
@@ -314,17 +316,15 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                 String webUrl = attachmentsVO.getWebUrl();
                 String fileUUID = attachmentsVO.getFileUUID();
                 String originalFilename = attachmentsVO.getOriginalFilename();
-                if (Util.isNotEmpty(attachNum)) {
-                    List<AttachmentsVO> attachmentsVOSList = attachmentMapper.selectByNumber(attachNum);
-                    if (attachmentsVOSList != null && attachmentsVOSList.size() > 0) {
+//                    List<AttachmentsVO> attachmentsVOSList = attachmentMapper.selectByNumber(attachNum);
+//                    if (attachmentsVOSList != null && attachmentsVOSList.size() > 0) {
                         if (Util.isNotEmpty(webUrl) && Util.isNotEmpty(fileUUID) && Util.isNotEmpty(originalFilename)) {
                             StringBuffer stringBuffer = new StringBuffer();
                             String s = stringBuffer.append(webUrl).append("/").append(fileUUID).toString();
                             object.put("FName", originalFilename == null ? "none" : originalFilename);
                             object.put("FRemotePath", s == null ? "none" : s);
                             attach.add(object);
-                        }
-                    }
+//                        }
                 }
             }
             easJson.put("attach", attach);
@@ -422,18 +422,31 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                     throw new ServiceException(UtilMessage.TOTAL_RATE_NOT_ONE);
                 }
             }
-
             easJson.put("marketConArray", jsonArray);
-//        调用eas 保存方法进行保存
-            Call call = getCall("EASURL", "saveContractBill");
             String result = null;
-            try {
-                System.out.println(easJson.toJSONString());
-                result = (String) call.invoke(new Object[]{easJson.toString()});
-            } catch (RemoteException e) {
-                e.printStackTrace();
-                throw new ServiceException(e.getMessage());
+            Call call = null;
+//        调用eas 保存方法进行保存
+            if (Util.isEmpty(flag) || flag.compareTo(false) == 0) {
+                call = getCall("EASURL", "saveContractBill");
+                try {
+                    System.out.println(easJson.toJSONString());
+                    result = (String) call.invoke(new Object[]{easJson.toString()});
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                    throw new ServiceException(e.getMessage());
+                }
+            } else {
+                //            如果是驳回后重新提交 调用eas合同提交方法
+                call = getCall("EASURL", "submitContractBill");
+                try {
+                    System.out.println(easJson.toJSONString());
+                    result = (String) call.invoke(new Object[]{easJson.toString()});
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                    throw new ServiceException(e.getMessage());
+                }
             }
+
 //        接收返回eas信息
             JSONObject object = JSONObject.parseObject(result);
             if (result != null && object.get("result").toString().contains("fault")) {
@@ -615,15 +628,15 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         List<AttachmentsVO> attachmentsVOS = attachmentMapper.selectWEBAttach(id);
         if (attachmentsVOS != null && attachmentsVOS.size() > 0) {
             for (AttachmentsVO attachmentsVO : attachmentsVOS) {
-                if (Util.isNotEmpty(attachmentsVO.getOriginalFilename())){
+                if (Util.isNotEmpty(attachmentsVO.getOriginalFilename())) {
                     attachmentsVO.setTitle(attachmentsVO.getOriginalFilename());
                 }
-                    if (Util.isNotEmpty(attachmentsVO.getFileType())) {
-                        String s = FileContentTypeUtils.contentType("." + attachmentsVO.getFileType());
-                        if (Util.isNotEmpty(s)) {
-                            attachmentsVO.setContentType(s);
-                        }
+                if (Util.isNotEmpty(attachmentsVO.getFileType())) {
+                    String s = FileContentTypeUtils.contentType("." + attachmentsVO.getFileType());
+                    if (Util.isNotEmpty(s)) {
+                        attachmentsVO.setContentType(s);
                     }
+                }
             }
             contractVO.setAttachmentsVOS(attachmentsVOS);
         }
@@ -672,6 +685,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
     public ContractVO submitToOa(ContractVO vo) {
         ContractVO contractVO = new ContractVO();
         String id = vo.getId();
+        vo.setFlag(true);
         ContractVO contractVO1 = saveContractBill(vo);
         if (contractVO1.getId() != null) {
             id = contractVO1.getId();
