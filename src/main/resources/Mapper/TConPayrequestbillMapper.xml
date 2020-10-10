@@ -21,7 +21,6 @@
         left join T_CON_CONTRACTBILL con on con.fid=bill.FCONTRACTID
         left join T_BD_Supplier sup on sup.fid=bill.FSUPPLIERID
         left join T_BD_CURRENCY cur on cur.fid=bill.FCURRENCYID
-        left join T_FNC_DeductBill de
         <where>
             bill.FControlUnitID=#{orgId}
             and bill.FCurProjectID=#{projectId}
@@ -70,7 +69,6 @@
         left join T_CON_CONTRACTBILL con on con.fid=bill.FCONTRACTID
         left join T_BD_Supplier sup on sup.fid=bill.FSUPPLIERID
         left join T_BD_CURRENCY cur on cur.fid=bill.FCURRENCYID
-        left join T_FNC_DeductBill de
         where bill.fid=#{id}
     </select>
 

@@ -380,8 +380,8 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
 //      营销合同分摊明细 分摊比例加起来必须百分百
         List<MarketContDetailVO> marketContDetailVOS = vo.getMarketContDetailVOS();
         JSONArray jsonArray = new JSONArray();
-        BigDecimal totalRate = BigDecimal.ZERO;
         if (Util.isNotEmpty(marketContDetailVOS)) {
+            BigDecimal totalRate = BigDecimal.ZERO;
             for (MarketContDetailVO marketContDetailVO : marketContDetailVOS) {
                 JSONObject json = new JSONObject();
                 String date = marketContDetailVO.getFsdate();
@@ -394,14 +394,17 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                 json.put("remark", remark);
                 String rate = marketContDetailVO.getRate();
                 json.put("rate", rate);
-                BigDecimal bigDecimal1 = new BigDecimal(rate).divide(new BigDecimal("100"));
-                totalRate = totalRate.add(bigDecimal1);
+                if (Util.isNotEmpty(rate)){
+                    BigDecimal bigDecimal1 = new BigDecimal(rate).divide(new BigDecimal("100"));
+                    totalRate = totalRate.add(bigDecimal1);
+                }
                 jsonArray.add(json);
             }
+            if (totalRate.compareTo(BigDecimal.ONE) != 0) {
+                throw new ServiceException(UtilMessage.TOTAL_RATE_NOT_ONE);
+            }
         }
-        if (totalRate.compareTo(BigDecimal.ONE) != 0) {
-            throw new ServiceException(UtilMessage.TOTAL_RATE_NOT_ONE);
-        }
+
         easJson.put("marketConArray", jsonArray);
 //        调用eas 保存方法进行保存
         Call call = getCall("EASURL", "saveContractBill");

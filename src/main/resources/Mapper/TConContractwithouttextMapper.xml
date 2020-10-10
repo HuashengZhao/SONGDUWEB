@@ -2,4 +2,21 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.EAS.mapper.TConContractwithouttextMapper">
 
+    <select id="selectDatas" resultType="com.example.EAS.vo.NoTextContractVO">
+        select bill.fid as id,bill.FNUMBER as num,bill.FNAME as title,
+        bill.FBOOKEDDATE as bizDate,bill.FSTATE as state,
+        bill.FCONTRACTTYPEID as contractTypeId,ct.FNAME_L2 as contractTypeName,
+        bill.FProgrammingContract as programContractId,pc.FNAME_L2 as programContractName,
+        bill.FCURRENCYID as currencyId,cur.FNAME_L2 as currenctName,
+        bill.FAMOUNT as amount,bill.FORIGINALAMOUNT as oriAmount,
+        sup.FNAME_L2 as receiverName,bill.FSIGNDATE as signDate,
+        u.FNAME_L2 as creatorName,bill.FCREATETIME as createTime,
+
+        from T_CON_CONTRACTWITHOUTTEXT bill
+        left join T_FDC_ContractType ct on ct.fid=bill.FCONTRACTTYPEID
+        left join T_CON_ProgrammingContract pc on pc.fid=bill.FProgrammingContract
+        left join T_BD_CURRENCY cur on cur.fid=bill.FCURRENCYID
+        left join t_bd_supplier sup on sup.fid=bill.FRECEIVEUNITID
+        left join T_PM_USER u on u.fid=bill.FCREATORID
+    </select>
 </mapper>
