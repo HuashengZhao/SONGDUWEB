@@ -73,4 +73,6 @@ public class PayRequestBillVO {
     //    分页参数
     private Integer currentPage;
     private Integer pageSize;
+//    附件
+    private Integer ifHasAttach;
 }

@@ -2,6 +2,7 @@ package com.example.EAS.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.EAS.mapper.TBasAttachmentMapper;
 import com.example.EAS.mapper.TConDeductofpayreqbillMapper;
 import com.example.EAS.mapper.TConPayrequestbillMapper;
 import com.example.EAS.model.TConDeductofpayreqbill;
@@ -9,9 +10,11 @@ import com.example.EAS.model.TConPayrequestbill;
 import com.example.EAS.service.ITConPayrequestbillService;
 import com.example.EAS.util.PageBean;
 import com.example.EAS.util.Util;
+import com.example.EAS.vo.AttachmentsVO;
 import com.example.EAS.vo.PayRequestBillVO;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import io.jsonwebtoken.impl.AbstractTextCodec;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +37,8 @@ public class TConPayrequestbillServiceImpl extends ServiceImpl<TConPayrequestbil
 
     @Autowired
     private TConDeductofpayreqbillMapper deductofpayreqbillMapper;
+    @Autowired
+    private TBasAttachmentMapper attachmentMapper;
 
 
     @Override
@@ -85,6 +90,12 @@ public class TConPayrequestbillServiceImpl extends ServiceImpl<TConPayrequestbil
                 BigDecimal deductAmt=BigDecimal.ZERO;
                 String id = payRequestBillVO.getId();
                 if (Util.isNotEmpty(id)){
+//                    是否有附件
+                    payRequestBillVO.setIfHasAttach(0);
+                    List<AttachmentsVO> attachmentsVOS = attachmentMapper.selectAttachMent(id);
+                    if (attachmentsVOS!=null && attachmentsVOS.size()>0){
+                        payRequestBillVO.setIfHasAttach(1);
+                    }
                     List<TConDeductofpayreqbill> billList = deductofpayreqbillMapper.selectList(new QueryWrapper<TConDeductofpayreqbill>()
                             .eq("FPAYMENTBILLID", id));
                     if (billList!=null && billList.size()>0){
