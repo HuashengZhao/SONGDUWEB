@@ -48,7 +48,7 @@
         con.FNUMBER as contractNumber,con.FNAME as contractName,bill.FLASTAMOUNT as lastAmount,
         con.FORIGINALAMOUNT as oriAmount,con.FAMOUNT as amount,bill.FCOLSEDESCRIPTION closeDescription,
         pro.FNAME_L2 as projectName,bill.FREPORTAMOUNT as reportAmount,
-        bill.FALLOWAMOUNT as allowAmount,bill.FCHANGERESON as executeContent,
+        bill.FALLOWAMOUNT as allowAmount,en.FCHANGECONTENT as executeContent,
         u.FNAME_L2 as auditorName,u1.FNAME_L2 as creatorName,bill.FAUDITTIME auditTime,bill.FCREATETIME as createTime,
         cb.FORIGINALAMOUNT as calOriAmount,cb.FAMOUNT as calAmount,sup.FNAME_L2 as supplierName,bill.FISFINISH as isFinish,
         bill.FISFEE as isFee,bill.FWXCB as wxcb,bill.FBOOKEDDATE as bizDate,bill.FCOLSEDESCRIPTION as colseDesc,
@@ -57,6 +57,7 @@
         cb.FREADESC as reaDesc,cb.FISFEE as isFee,cb.FIsChangeContract as isChangeContract,cb.FIsReceipts as isReceipts,
         cb.FISIMPORTCHANGE  as isImportChange
         from T_CON_ContractChangeSettleBill bill
+        left join T_CON_CONTRACTCHANGEENTRY en on en.FPARENTID=bill.FCONCHANGEBILLID
         left join T_CON_CONTRACTBILL con  on con.fid=bill.FCONTRACTBILLID
         left join T_FDC_CURPROJECT pro on pro.fid=bill.FCURPROJECTID
         left join T_PM_User u on u.fid=bill.FAUDITORID
