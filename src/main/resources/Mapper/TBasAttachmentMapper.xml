@@ -14,4 +14,7 @@
     <select id="selectByNumber"  resultType="com.example.EAS.vo.AttachmentsVO">
         select * from webattachment where FILENUM=#{attachNum}
     </select>
+    <select id="selectWEBAttach" resultType="com.example.EAS.vo.AttachmentsVO">
+        select * from webattachment where EASID=#{id}
+    </select>
 </mapper>

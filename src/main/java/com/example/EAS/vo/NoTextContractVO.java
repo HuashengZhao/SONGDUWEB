@@ -46,6 +46,7 @@ public class NoTextContractVO {
     //收款人
     private String receiverName;
     private String personId;
+    private String personName;
     private String FReceiveUnitID;
 
     @JsonFormat(pattern = "yyyy-MM-dd")

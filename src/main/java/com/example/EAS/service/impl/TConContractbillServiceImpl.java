@@ -303,6 +303,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         String format = df.format(createTime);
         easJson.put("createTime", format);
 
+
 //      保存到EAS附件
         JSONArray attach = new JSONArray();
         List<AttachmentsVO> attachmentsVOS = vo.getAttachmentsVOS();
@@ -326,128 +327,138 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                     }
                 }
             }
-        }
+            easJson.put("attach", attach);
 
 //       税务信息+收款信息
-        String bank = vo.getBank();
-        easJson.put("bank", bank);
-        String bankAccount = vo.getBankAccount();
-        easJson.put("bankAccount", bankAccount);
-        String taxNum = vo.getTaxNum();
-        easJson.put("taxerNum", taxNum);
-        String taxQua = vo.getTaxQua();
-        easJson.put("taxerQua", taxQua);
-        String unionBankNum = vo.getUnionBankNum();
-        if (Util.isNotEmpty(unionBankNum)) {
-            String unionBankId = mapper.selectUnionBankId(unionBankNum);
-            easJson.put("unionBankId", unionBankId);
-        }
+            String bank = vo.getBank();
+            easJson.put("bank", bank);
+            String bankAccount = vo.getBankAccount();
+            easJson.put("bankAccount", bankAccount);
+            String taxNum = vo.getTaxNum();
+            easJson.put("taxerNum", taxNum);
+            String taxQua = vo.getTaxQua();
+            easJson.put("taxerQua", taxQua);
+            String unionBankNum = vo.getUnionBankNum();
+            if (Util.isNotEmpty(unionBankNum)) {
+                String unionBankId = mapper.selectUnionBankId(unionBankNum);
+                easJson.put("unionBankId", unionBankId);
+            }
 //      合同签订明细  含税金额总和不能大于合同原币金额
-        List<ContractSignDetailVO> detailVOS = vo.getDetailSignVOS();
-        JSONArray objects = new JSONArray();
+            List<ContractSignDetailVO> detailVOS = vo.getDetailSignVOS();
+            JSONArray objects = new JSONArray();
 //        总的明细含税金额
-        BigDecimal allDetailAmount = BigDecimal.ZERO;
-        if (Util.isNotEmpty(detailVOS)) {
-            for (ContractSignDetailVO detailVO : detailVOS) {
-                JSONObject json = new JSONObject();
-                String detail = detailVO.getDetail();
-                json.put("detail", detail);
-                String totalAmount = detailVO.getTotalAmount();
-                json.put("totalAmount", totalAmount);
-                String voAmount = detailVO.getAmount();
-                json.put("amount", voAmount);
-                String voDescription = detailVO.getDescription();
-                json.put("description", voDescription);
-                String rate = detailVO.getRate();
-                json.put("rate", rate);
-                objects.add(json);
-                allDetailAmount.add(new BigDecimal(totalAmount));
-            }
-        }
-//        判断金额
-        if (Util.isNotEmpty(originalAmount)){
-            BigDecimal bigDecimal = new BigDecimal(originalAmount);
-            if (allDetailAmount.compareTo(bigDecimal) == 1) {
-                throw new ServiceException(UtilMessage.DETAIL_AMOUNT_BEYOND);
-            }
-        }
-        easJson.put("signDetailArray", objects);
-//      合同详情信息
-        List<ContractDetailVO> detailVOList = vo.getDetailVOList();
-        JSONArray details = new JSONArray();
-        if (Util.isNotEmpty(detailVOList)) {
-            for (ContractDetailVO contractDetailVO : detailVOList) {
-                JSONObject json = new JSONObject();
-                String detailInfo = contractDetailVO.getDetailInfo();
-                json.put("detailInfo", detailInfo);
-                String content = contractDetailVO.getContent();
-                json.put("content", content);
-                String desp = contractDetailVO.getDescription();
-                json.put("description", desp);
-                details.add(json);
-            }
-        }
-        easJson.put("conDetailArray", details);
-//      补充合同信息  在合同审批之后才可 新增补充合同
-        List<ContractAddVO> contractAddVOS = vo.getContractAddVOS();
-        if (contractAddVOS != null && contractAddVOS.size() > 0) {
-            mapper.insertAddContract(contractAddVOS);
-        }
-//      营销合同分摊明细 分摊比例加起来必须百分百
-        List<MarketContDetailVO> marketContDetailVOS = vo.getMarketContDetailVOS();
-        JSONArray jsonArray = new JSONArray();
-        if (Util.isNotEmpty(marketContDetailVOS)) {
-            BigDecimal totalRate = BigDecimal.ZERO;
-            for (MarketContDetailVO marketContDetailVO : marketContDetailVOS) {
-                JSONObject json = new JSONObject();
-                String date = marketContDetailVO.getFsdate();
-                json.put("date", date);
-                String amount1 = marketContDetailVO.getAmount();
-                json.put("amount", amount1);
-                String content = marketContDetailVO.getContent();
-                json.put("content", content);
-                String remark = marketContDetailVO.getRemark();
-                json.put("remark", remark);
-                String rate = marketContDetailVO.getRate();
-                json.put("rate", rate);
-                if (Util.isNotEmpty(rate)){
-                    BigDecimal bigDecimal1 = new BigDecimal(rate).divide(new BigDecimal("100"));
-                    totalRate = totalRate.add(bigDecimal1);
+            BigDecimal allDetailAmount = BigDecimal.ZERO;
+            if (Util.isNotEmpty(detailVOS)) {
+                for (ContractSignDetailVO detailVO : detailVOS) {
+                    JSONObject json = new JSONObject();
+                    String detail = detailVO.getDetail();
+                    json.put("detail", detail);
+                    String totalAmount = detailVO.getTotalAmount();
+                    json.put("totalAmount", totalAmount);
+                    String voAmount = detailVO.getAmount();
+                    json.put("amount", voAmount);
+                    String voDescription = detailVO.getDescription();
+                    json.put("description", voDescription);
+                    String rate = detailVO.getRate();
+                    json.put("rate", rate);
+                    objects.add(json);
+                    allDetailAmount.add(new BigDecimal(totalAmount));
                 }
-                jsonArray.add(json);
             }
+//        判断金额
+            if (Util.isNotEmpty(originalAmount)) {
+                BigDecimal bigDecimal = new BigDecimal(originalAmount);
+                if (allDetailAmount.compareTo(bigDecimal) == 1) {
+                    throw new ServiceException(UtilMessage.DETAIL_AMOUNT_BEYOND);
+                }
+            }
+            easJson.put("signDetailArray", objects);
+//      合同详情信息
+            List<ContractDetailVO> detailVOList = vo.getDetailVOList();
+            JSONArray details = new JSONArray();
+            if (Util.isNotEmpty(detailVOList)) {
+                for (ContractDetailVO contractDetailVO : detailVOList) {
+                    JSONObject json = new JSONObject();
+                    String detailInfo = contractDetailVO.getDetailInfo();
+                    json.put("detailInfo", detailInfo);
+                    String content = contractDetailVO.getContent();
+                    json.put("content", content);
+                    String desp = contractDetailVO.getDescription();
+                    json.put("description", desp);
+                    details.add(json);
+                }
+            }
+            easJson.put("conDetailArray", details);
+//      补充合同信息  在合同审批之后才可 新增补充合同
+            List<ContractAddVO> contractAddVOS = vo.getContractAddVOS();
+            if (contractAddVOS != null && contractAddVOS.size() > 0) {
+                mapper.insertAddContract(contractAddVOS);
+            }
+//      营销合同分摊明细 分摊比例加起来必须百分百
+            List<MarketContDetailVO> marketContDetailVOS = vo.getMarketContDetailVOS();
+            JSONArray jsonArray = new JSONArray();
+            if (Util.isNotEmpty(marketContDetailVOS)) {
+                BigDecimal totalRate = BigDecimal.ZERO;
+                for (MarketContDetailVO marketContDetailVO : marketContDetailVOS) {
+                    JSONObject json = new JSONObject();
+                    String date = marketContDetailVO.getFsdate();
+                    json.put("date", date);
+                    String amount1 = marketContDetailVO.getAmount();
+                    json.put("amount", amount1);
+                    String content = marketContDetailVO.getContent();
+                    json.put("content", content);
+                    String remark = marketContDetailVO.getRemark();
+                    json.put("remark", remark);
+                    String rate = marketContDetailVO.getRate();
+                    json.put("rate", rate);
+                    if (Util.isNotEmpty(rate)) {
+                        BigDecimal bigDecimal1 = new BigDecimal(rate).divide(new BigDecimal("100"));
+                        totalRate = totalRate.add(bigDecimal1);
+                    }
+                    jsonArray.add(json);
+                }
 //            根据合同类型 是否需要分摊明细 去判断是否验证比例和为1
-            if (Util.isNotEmpty(vo.getIsMarket()) && vo.getIsMarket()==1&&totalRate.compareTo(BigDecimal.ONE) != 0) {
-                throw new ServiceException(UtilMessage.TOTAL_RATE_NOT_ONE);
+                if (Util.isNotEmpty(vo.getIsMarket()) && vo.getIsMarket() == 1 && totalRate.compareTo(BigDecimal.ONE) != 0) {
+                    throw new ServiceException(UtilMessage.TOTAL_RATE_NOT_ONE);
+                }
             }
-        }
 
-        easJson.put("marketConArray", jsonArray);
+            easJson.put("marketConArray", jsonArray);
 //        调用eas 保存方法进行保存
-        Call call = getCall("EASURL", "saveContractBill");
-        String result = null;
-        try {
-            System.out.println(easJson.toJSONString());
-            result = (String) call.invoke(new Object[]{easJson.toString()});
-        } catch (RemoteException e) {
-            e.printStackTrace();
-            throw new ServiceException(e.getMessage());
-        }
+            Call call = getCall("EASURL", "saveContractBill");
+            String result = null;
+            try {
+                System.out.println(easJson.toJSONString());
+                result = (String) call.invoke(new Object[]{easJson.toString()});
+            } catch (RemoteException e) {
+                e.printStackTrace();
+                throw new ServiceException(e.getMessage());
+            }
 //        接收返回eas信息
-        JSONObject object = JSONObject.parseObject(result);
-        if (result != null && object.get("result").toString().contains("fault")) {
-            contractVO.setResult("fault");
-            throw new ServiceException(object.getString("message"));
-        } else if (result != null && object.get("result").toString().contains("success")) {
-            String id = object.getString("id");
-            contractVO.setId(id);
-            contractVO.setResult("success");
-            TConContractbill tConContractbill = mapper.selectById(id);
-            tConContractbill.setFcreatorid(creatorId);
-            mapper.updateById(tConContractbill);
+            JSONObject object = JSONObject.parseObject(result);
+            if (result != null && object.get("result").toString().contains("fault")) {
+                contractVO.setResult("fault");
+                throw new ServiceException(object.getString("message"));
+            } else if (result != null && object.get("result").toString().contains("success")) {
+                String id = object.getString("id");
+                contractBillId = id;
+                contractVO.setId(id);
+                contractVO.setResult("success");
+                TConContractbill tConContractbill = mapper.selectById(id);
+                tConContractbill.setFcreatorid(creatorId);
+                mapper.updateById(tConContractbill);
+            }
+//        保存附件到web表
+            if (Util.isNotEmpty(contractBillId) && vo.getAttachmentsVOS() != null && vo.getAttachmentsVOS().size() > 0) {
+                supplierapplyMapper.deletAttach(contractBillId);
+                ftpUtil.saveAttachMent(attachmentsVOS, contractBillId);
+            } else {
+                supplierapplyMapper.deletAttach(contractBillId);
+            }
         }
         return contractVO;
     }
+
 
     @Override
     public ContractVO viewContractBill(ContractVO vo) throws Exception {
@@ -516,108 +527,106 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             contractVO.setLink(link);
             contractVO.setOaId(oaid);
         }
-            //       审批流程发起组织
-            //    集团/事业部/城市公司=BIGRANGE,项目部=SMALLRANGE,集团/事业部/城市公司-项目部=ALLRANGE,内部关联公司往来类=NEIBU,
-            //    外部供应商客户往来类=WAIBU
-            String contractWFStartType = contractVO.getContractWFStartType();
-            if (Util.isNotEmpty(contractWFStartType)) {
-                if (contractWFStartType.contains("BIGRANGE")) {
-                    contractVO.setContractWFStartType("集团/事业部/城市公司");
-                } else if (contractWFStartType.contains("SMALLRANGE")) {
-                    contractVO.setContractWFStartType("项目部");
-                } else if (contractWFStartType.contains("ALLRANGE")) {
-                    contractVO.setContractWFStartType("集团/事业部/城市公司-项目部");
-                } else if (contractWFStartType.contains("NEIBU")) {
-                    contractVO.setContractWFStartType("内部关联公司往来类");
-                }
+        //       审批流程发起组织
+        //    集团/事业部/城市公司=BIGRANGE,项目部=SMALLRANGE,集团/事业部/城市公司-项目部=ALLRANGE,内部关联公司往来类=NEIBU,
+        //    外部供应商客户往来类=WAIBU
+        String contractWFStartType = contractVO.getContractWFStartType();
+        if (Util.isNotEmpty(contractWFStartType)) {
+            if (contractWFStartType.contains("BIGRANGE")) {
+                contractVO.setContractWFStartType("集团/事业部/城市公司");
+            } else if (contractWFStartType.contains("SMALLRANGE")) {
+                contractVO.setContractWFStartType("项目部");
+            } else if (contractWFStartType.contains("ALLRANGE")) {
+                contractVO.setContractWFStartType("集团/事业部/城市公司-项目部");
+            } else if (contractWFStartType.contains("NEIBU")) {
+                contractVO.setContractWFStartType("内部关联公司往来类");
             }
+        }
 //       形成方式
-            String csName = contractVO.getCsName();
-            if (Util.isNotEmpty(csName)) {
-                if (csName.contains("TRUST")) {
-                    contractVO.setCsName("委托");
-                }
-                if (csName.contains("INVITE")) {
-                    contractVO.setCsName("招标");
-                }
-                if (csName.contains("DISCUSS")) {
-                    contractVO.setCsName("仪标");
-                }
-                if (csName.contains("COOP")) {
-                    contractVO.setCsName("战略合作");
-                }
+        String csName = contractVO.getCsName();
+        if (Util.isNotEmpty(csName)) {
+            if (csName.contains("TRUST")) {
+                contractVO.setCsName("委托");
             }
+            if (csName.contains("INVITE")) {
+                contractVO.setCsName("招标");
+            }
+            if (csName.contains("DISCUSS")) {
+                contractVO.setCsName("仪标");
+            }
+            if (csName.contains("COOP")) {
+                contractVO.setCsName("战略合作");
+            }
+        }
 //        造价性质
-            String costProperty = contractVO.getCostProperty();
-            if (Util.isNotEmpty(costProperty)) {
-                if (costProperty.contains("COMP_COMFIRM")) {
-                    contractVO.setCostProperty("固定总价");
-                }
-                if (costProperty.contains("COMP_COMFIRM")) {
-                    contractVO.setCostProperty("固定总价");
-                }
-                if (costProperty.contains("COMP_COMFIRM")) {
-                    contractVO.setCostProperty("固定总价");
-                }
-                if (costProperty.contains("COMP_COMFIRM")) {
-                    contractVO.setCostProperty("固定总价");
-                }
+        String costProperty = contractVO.getCostProperty();
+        if (Util.isNotEmpty(costProperty)) {
+            if (costProperty.contains("COMP_COMFIRM")) {
+                contractVO.setCostProperty("固定总价");
             }
+            if (costProperty.contains("COMP_COMFIRM")) {
+                contractVO.setCostProperty("固定总价");
+            }
+            if (costProperty.contains("COMP_COMFIRM")) {
+                contractVO.setCostProperty("固定总价");
+            }
+            if (costProperty.contains("COMP_COMFIRM")) {
+                contractVO.setCostProperty("固定总价");
+            }
+        }
 //        合同性质
-            String contractNature = contractVO.getContractNature();
-            if (Util.isNotEmpty(contractNature)) {
-                if (contractNature.contains("DIRECT")) {
-                    contractVO.setContractNature("直接合同");
-                }
-                if (contractNature.contains("THREE_PARTY")) {
-                    contractVO.setContractNature("三方合同");
-                }
-                if (contractNature.contains("SUPPLY")) {
-                    contractVO.setContractNature("补充合同");
-                }
-                if (contractNature.contains("STRATEGY")) {
-                    contractVO.setContractNature("战略协议");
-                }
+        String contractNature = contractVO.getContractNature();
+        if (Util.isNotEmpty(contractNature)) {
+            if (contractNature.contains("DIRECT")) {
+                contractVO.setContractNature("直接合同");
             }
+            if (contractNature.contains("THREE_PARTY")) {
+                contractVO.setContractNature("三方合同");
+            }
+            if (contractNature.contains("SUPPLY")) {
+                contractVO.setContractNature("补充合同");
+            }
+            if (contractNature.contains("STRATEGY")) {
+                contractVO.setContractNature("战略协议");
+            }
+        }
 //       纳税人资质 一般纳税人=NOMAL,小规模纳税人=SMALL,非增值税纳税人=UNNOMAL
-            String taxerQua = contractVO.getTaxQua();
-            if (Util.isNotEmpty(taxerQua)) {
-                if (taxerQua.contains("NOMAL")) {
-                    contractVO.setTaxQua("一般纳税人");
-                } else if (taxerQua.contains("SMALL")) {
-                    contractVO.setTaxQua("小规模纳税人");
-                } else if (taxerQua.contains("UNNOMAL")) {
-                    contractVO.setTaxQua("非增值税纳税人");
-                }
+        String taxerQua = contractVO.getTaxQua();
+        if (Util.isNotEmpty(taxerQua)) {
+            if (taxerQua.contains("NOMAL")) {
+                contractVO.setTaxQua("一般纳税人");
+            } else if (taxerQua.contains("SMALL")) {
+                contractVO.setTaxQua("小规模纳税人");
+            } else if (taxerQua.contains("UNNOMAL")) {
+                contractVO.setTaxQua("非增值税纳税人");
             }
+        }
 //        合同签订明细
-            List<ContractSignDetailVO> contractSignDetailVOS = mapper.selectSignInfos(vo.getId());
-            if (Util.isNotEmpty(contractSignDetailVOS)) {
-                contractVO.setDetailSignVOS(contractSignDetailVOS);
-            }
+        List<ContractSignDetailVO> contractSignDetailVOS = mapper.selectSignInfos(vo.getId());
+        if (Util.isNotEmpty(contractSignDetailVOS)) {
+            contractVO.setDetailSignVOS(contractSignDetailVOS);
+        }
 //        合同详情信息
-            List<ContractDetailVO> detailVOS = mapper.selectDetails(vo.getId());
-            if (Util.isNotEmpty(detailVOS)) {
-                contractVO.setDetailVOList(detailVOS);
-            }
+        List<ContractDetailVO> detailVOS = mapper.selectDetails(vo.getId());
+        if (Util.isNotEmpty(detailVOS)) {
+            contractVO.setDetailVOList(detailVOS);
+        }
 //        附件信息
-            List<AttachmentsVO> attachmentsVOS = attachmentMapper.selectAttachMent(id);
-            if (attachmentsVOS != null && attachmentsVOS.size() > 0) {
-                for (AttachmentsVO attachmentsVO : attachmentsVOS) {
-                    String fileUrl = attachmentsVO.getFileUrl();
-                    if (Util.isNotEmpty(fileUrl)) {
-                        String type = fileUrl.split("\\.")[fileUrl.split("\\.").length - 1];
-                        attachmentsVO.setFileType(type);
-                        if (Util.isNotEmpty(type)) {
-                            String s = FileContentTypeUtils.contentType("." + type);
-                            if (Util.isNotEmpty(s)) {
-                                attachmentsVO.setContentType(s);
-                            }
+        List<AttachmentsVO> attachmentsVOS = attachmentMapper.selectWEBAttach(id);
+        if (attachmentsVOS != null && attachmentsVOS.size() > 0) {
+            for (AttachmentsVO attachmentsVO : attachmentsVOS) {
+                if (Util.isNotEmpty(attachmentsVO.getOriginalFilename())){
+                    attachmentsVO.setTitle(attachmentsVO.getOriginalFilename());
+                }
+                    if (Util.isNotEmpty(attachmentsVO.getFileType())) {
+                        String s = FileContentTypeUtils.contentType("." + attachmentsVO.getFileType());
+                        if (Util.isNotEmpty(s)) {
+                            attachmentsVO.setContentType(s);
                         }
                     }
-                }
-                contractVO.setAttachmentsVOS(attachmentsVOS);
             }
+            contractVO.setAttachmentsVOS(attachmentsVOS);
+        }
 
 //        补充合同信息
         TConContractbill tConContractbill1 = mapper.selectById(vo.getId());
@@ -654,155 +663,149 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         return detailVOS;
     }
 
-        /**
-         * submit to oa  system
-         *
-         * @param vo
-         */
-        @Override
-        public ContractVO submitToOa (ContractVO vo){
-            ContractVO contractVO = new ContractVO();
-            String id = vo.getId();
-            ContractVO contractVO1 = saveContractBill(vo);
-            if (contractVO1.getId() != null) {
-                id = contractVO1.getId();
-            }
-            String saveResult = contractVO1.getResult();
-            if (Util.isNotEmpty(saveResult) && saveResult.contains("fault")) {
-                throw new ServiceException(UtilMessage.SUBMIT_FAULT);
-            }
+    /**
+     * submit to oa  system
+     *
+     * @param vo
+     */
+    @Override
+    public ContractVO submitToOa(ContractVO vo) {
+        ContractVO contractVO = new ContractVO();
+        String id = vo.getId();
+        ContractVO contractVO1 = saveContractBill(vo);
+        if (contractVO1.getId() != null) {
+            id = contractVO1.getId();
+        }
+        String saveResult = contractVO1.getResult();
+        if (Util.isNotEmpty(saveResult) && saveResult.contains("fault")) {
+            throw new ServiceException(UtilMessage.SUBMIT_FAULT);
+        }
 //      判断是否提交过被驳回  需要携带oaid
-            JSONObject obj = new JSONObject();
-            String oaId = null;
-            oaId = supplierapplyMapper.selectOaid(id);
+        JSONObject obj = new JSONObject();
+        String oaId = null;
+        oaId = supplierapplyMapper.selectOaid(id);
 //      基本参数
-            obj.put("id", id);
-            obj.put("tmplateId", "174046df325987eb1d487be4026b1b64");
-            obj.put("fdType", "1");
-            obj.put("docSubject", vo.getConName());
-            StringBuffer sb = new StringBuffer();
-            String token = RequestHolder.getCurrentUser().getToken();
-            String dencrypt = null;
+        obj.put("id", id);
+        obj.put("tmplateId", "174046df325987eb1d487be4026b1b64");
+        obj.put("fdType", "1");
+        obj.put("docSubject", vo.getConName());
+        StringBuffer sb = new StringBuffer();
+        String token = RequestHolder.getCurrentUser().getToken();
+        String dencrypt = null;
+        try {
+            dencrypt = RSAUtil.dencrypt(token, "pri.key");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        String[] split = dencrypt.split("&&");
+        String personNum = split[1];
+        PersonsVO person = supplierapplyMapper.selectCreator(personNum);
+
+        try {
+            token = URLEncoder.encode(token, "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        //        http://172.17.4.125:8082/easWeb/#/
+        String sendUrl = null;
+        StringBuffer sbv = new StringBuffer();
+        String appendUrl = supplierapplyMapper.selectViewUrl();
+//					审批单 approval
+        if (Util.isNotEmpty(appendUrl)) {
+            String appendType = "contract/view?from=oa&id=";
+
+            String appendId = null;
             try {
-                dencrypt = RSAUtil.dencrypt(token, "pri.key");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            String[] split = dencrypt.split("&&");
-            String personNum = split[1];
-            PersonsVO person = supplierapplyMapper.selectCreator(personNum);
-            if (vo.getAttachmentsVOS() != null && vo.getAttachmentsVOS().size() > 0) {
-                List<AttachmentsVO> attachmentsVOS = vo.getAttachmentsVOS();
-                supplierapplyMapper.deletAttach(id);
-                ftpUtil.saveAttachMent(attachmentsVOS, id);
-            } else {
-                supplierapplyMapper.deletAttach(id);
-            }
-            try {
-                token = URLEncoder.encode(token, "utf-8");
+                appendId = URLEncoder.encode(id, "utf-8");
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
-            //        http://172.17.4.125:8082/easWeb/#/
-            String sendUrl = null;
-            StringBuffer sbv = new StringBuffer();
-            String appendUrl = supplierapplyMapper.selectViewUrl();
-//					审批单 approval
-            if (Util.isNotEmpty(appendUrl)) {
-                String appendType = "contract/view?from=oa&id=";
-
-                String appendId = null;
-                try {
-                    appendId = URLEncoder.encode(id, "utf-8");
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
 //					token
-                String appendToken = "&token=";
-                sendUrl = String.valueOf(sbv.append(appendUrl).append(appendType).append(appendId)
-                        .append(appendToken).append(token));
-            }
+            String appendToken = "&token=";
+            sendUrl = String.valueOf(sbv.append(appendUrl).append(appendType).append(appendId)
+                    .append(appendToken).append(token));
+        }
 //        sb.append("http://172.17.4.125:8082/easWeb/#/supplier").append("?token=").append(token);
-            System.out.println("easweb详情link：" + sendUrl);
-            obj.put("loginName", "00561");
+        System.out.println("easweb详情link：" + sendUrl);
+        obj.put("loginName", "00561");
 //        附件参数 todo
-            JSONObject attFile = new JSONObject();
+        JSONObject attFile = new JSONObject();
 //        obj.put("attFile", attFile);
 //        表单参数
-            JSONObject data = new JSONObject();
-            data.put("fd_link", sendUrl);
-            data.put("fd_person", "谢凯伦");
+        JSONObject data = new JSONObject();
+        data.put("fd_link", sendUrl);
+        data.put("fd_person", "谢凯伦");
 //        data.put("createTime", vo.getCreateTime());
-            obj.put("data", data.toString());
-            //        当当前流程未提交时 oaidrecord没有对应oaid 调用oa新增提交方法
-            String result = null;
-            JSONObject str = null;
-            if (Util.isEmpty(oaId)) {
-                Call call = getCall("OAURL", "addEkpReview");
-                try {
-                    result = (String) call.invoke(new Object[]{obj.toString()});
-                    str = JSONObject.parseObject(result);
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                Call call = getCall("OAURL", "updateEkpReview");
-                try {
-                    obj.put("id", oaId);
-                    result = (String) call.invoke(new Object[]{obj.toString()});
-                    str = JSONObject.parseObject(result);
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-            }
-//        code 1 success 2 fault
-            String code = str.getString("code");
-            String oaid = str.getString("oaid");
-            if (oaid != null && id != null) {
-                oaIdUtil.getString(id, oaid);
-            }
-//       成功提交后，修改eas当前状态为审批中0
-            if (code != null && code.contains("1")) {
-//            修改单据状态为审批中
-                TConContractbill tConContractbill = mapper.selectById(id);
-                tConContractbill.setFstate("3AUDITTING");
-                mapper.updateById(tConContractbill);
-            } else {
-                throw new ServiceException(UtilMessage.SUBMIT_FAULT);
-            }
-            return contractVO;
-        }
-
-        @Override
-        public void deleteContractBills (ContractVO vo){
-            JSONObject jsonObject = new JSONObject();
-            JSONArray idArray = new JSONArray();
-            List<String> idList = vo.getIdList();
-            if (idList != null && idList.size() > 0) {
-                for (String s : idList) {
-                    JSONObject jsonObject1 = new JSONObject();
-                    jsonObject1.put("id", s);
-                    idArray.add(jsonObject1);
-                }
-            }
-            jsonObject.put("idArray", idArray);
-            Call call = getCall("EASURL", "deleteContractBill");
-            String result = null;
+        obj.put("data", data.toString());
+        //        当当前流程未提交时 oaidrecord没有对应oaid 调用oa新增提交方法
+        String result = null;
+        JSONObject str = null;
+        if (Util.isEmpty(oaId)) {
+            Call call = getCall("OAURL", "addEkpReview");
             try {
-                result = (String) call.invoke(new Object[]{jsonObject.toString()});
+                result = (String) call.invoke(new Object[]{obj.toString()});
+                str = JSONObject.parseObject(result);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        } else {
+            Call call = getCall("OAURL", "updateEkpReview");
+            try {
+                obj.put("id", oaId);
+                result = (String) call.invoke(new Object[]{obj.toString()});
+                str = JSONObject.parseObject(result);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
         }
+//        code 1 success 2 fault
+        String code = str.getString("code");
+        String oaid = str.getString("oaid");
+        if (Util.isNotEmpty(oaid) && Util.isNotEmpty(id)) {
+            oaIdUtil.getString(id, oaid);
+        }
+//       成功提交后，修改eas当前状态为审批中0
+        if (code != null && code.contains("1")) {
+//            修改单据状态为审批中
+            TConContractbill tConContractbill = mapper.selectById(id);
+            tConContractbill.setFstate("3AUDITTING");
+            mapper.updateById(tConContractbill);
+        } else {
+            throw new ServiceException(UtilMessage.SUBMIT_FAULT);
+        }
+        return contractVO;
+    }
 
-        @Override
-        public List<ContractVO> getMainContractNums (ContractVO vo){
-            if (Util.isEmpty(vo.getOrgId()) || Util.isEmpty(vo.getProjectId())) {
-                return null;
-            } else if (Util.isEmpty(vo.getConTypeId())) {
-                throw new ServiceException(UtilMessage.MISS_CONTRACTTYPE);
+    @Override
+    public void deleteContractBills(ContractVO vo) {
+        JSONObject jsonObject = new JSONObject();
+        JSONArray idArray = new JSONArray();
+        List<String> idList = vo.getIdList();
+        if (idList != null && idList.size() > 0) {
+            for (String s : idList) {
+                JSONObject jsonObject1 = new JSONObject();
+                jsonObject1.put("id", s);
+                idArray.add(jsonObject1);
             }
-            List<ContractVO> contracts = mapper.selectMainNums(vo);
-            return contracts;
+        }
+        jsonObject.put("idArray", idArray);
+        Call call = getCall("EASURL", "deleteContractBill");
+        String result = null;
+        try {
+            result = (String) call.invoke(new Object[]{jsonObject.toString()});
+        } catch (RemoteException e) {
+            e.printStackTrace();
         }
     }
+
+    @Override
+    public List<ContractVO> getMainContractNums(ContractVO vo) {
+        if (Util.isEmpty(vo.getOrgId()) || Util.isEmpty(vo.getProjectId())) {
+            return null;
+        } else if (Util.isEmpty(vo.getConTypeId())) {
+            throw new ServiceException(UtilMessage.MISS_CONTRACTTYPE);
+        }
+        List<ContractVO> contracts = mapper.selectMainNums(vo);
+        return contracts;
+    }
+}

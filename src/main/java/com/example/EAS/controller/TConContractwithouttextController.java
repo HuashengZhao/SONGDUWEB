@@ -32,7 +32,7 @@ public class TConContractwithouttextController {
     private TConContractwithouttextServiceImpl service;
 
     /**
-     * 合同付款申请单
+     * 无文本合同列表
      *
      * @param body
      * @return

@@ -42,7 +42,10 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         List<NoTextContractVO> noTextContractVOList = mapper.selectDatas(vo);
         if (noTextContractVOList!=null && noTextContractVOList.size()>0){
             for (NoTextContractVO noTextContractVO : noTextContractVOList) {
-
+                String personName = noTextContractVO.getPersonName();
+                if (Util.isNotEmpty(personName)){
+                    noTextContractVO.setReceiverName(personName);
+                }
             }
         }
         PageBean<NoTextContractVO> pageBean = new PageBean<>();
