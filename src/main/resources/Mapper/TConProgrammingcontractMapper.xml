@@ -12,10 +12,10 @@
              and e.FProjectID=#{projectId}
              and e.FIsLatest=1
              <if test="title!=null and title!=''">
-                 and m.fname_l2 like '%${title}%'
+                 and m.fname_l2 like '%#{title}%'
              </if>
              <if test="num!=null and num!=''">
-                 and m.flongnumber like '%${num}%'
+                 and m.fnumber like '%#{num}%'
              </if>
          </where>
          order by m.flongnumber
@@ -31,10 +31,10 @@
             and e.FIsLatest=1
             and m.FBILLID is null
             <if test="title!=null and title!=''">
-                and m.fname_l2 like '%${title}%'
+                and m.fname_l2 like '%#{title}%'
             </if>
             <if test="num!=null and num!=''">
-                and m.flongnumber like '%${num}%'
+                and m.fnumber like '%#{num}%'
             </if>
         </where>
         order by m.flongnumber

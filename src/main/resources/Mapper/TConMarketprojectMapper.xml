@@ -15,10 +15,10 @@
           <where>
               m.FORGUNITID=#{orgId}
               <if test="title!=null and title!=''">
-                  m.FNAME like CONCAT(CONCAT('%',#{title}),'%')
+                  m.FNAME like CONCAT(CONCAT('%',${title}),'%')
               </if>
               <if test="num!=null and num!=''">
-                  m.fnumber like CONCAT(CONCAT('%',#{num}),'%')
+                  m.fnumber like CONCAT(CONCAT('%',${num}),'%')
               </if>
           </where>
           order by m.fnumber
