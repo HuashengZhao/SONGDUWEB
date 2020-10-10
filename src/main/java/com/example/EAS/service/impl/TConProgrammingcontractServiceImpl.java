@@ -32,7 +32,6 @@ public class TConProgrammingcontractServiceImpl extends ServiceImpl<TConProgramm
     @Autowired
     private TConContractbillMapper contractbillMapper;
 
-
     @Override
     public PageBean<ProgramConVO> getProgramCon(ProgramConVO vo) {
         ProgramConVO programConVO = new ProgramConVO();
@@ -46,11 +45,11 @@ public class TConProgrammingcontractServiceImpl extends ServiceImpl<TConProgramm
 
         List<ProgramConVO> programConVOList = new ArrayList<>();
         PageHelper.startPage(vo.getCurrentPage(), vo.getPageSize());
-        if (Util.isNotEmpty(ifBeLinked) && ifBeLinked == 1) {
+//        if (Util.isNotEmpty(ifBeLinked) && ifBeLinked == 1) {
             programConVOList = mapper.selectDataCanBeLinked(vo);
-        } else {
-            programConVOList = mapper.selectDatas(vo);
-        }
+//        } else {
+//            programConVOList = mapper.selectDatas(vo);
+//        }
         if (Util.isNotEmpty(programConVOList)) {
             for (ProgramConVO conVO : programConVOList) {
                 Integer linked = 1;

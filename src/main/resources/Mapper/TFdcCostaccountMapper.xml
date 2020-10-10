@@ -3,7 +3,8 @@
 <mapper namespace="com.example.EAS.mapper.TFdcCostaccountMapper">
 
     <select id="selectDatas" resultType="com.example.EAS.vo.CostAccountVO">
-        select c.fnumber as num,c.flongnumber as longNumber,c.fname_l2 as title,
+        select c.fid as id,
+        c.fnumber as num,c.flongnumber as longNumber,c.fname_l2 as title,
         c.FAssigned as assigned,c.FLevel,c.FDescription_l2 as description,
         c.FCurProject as curProject,c.FFullOrgUnit as fullOrgUnit,
         b.FNAME_L2 as orgName,e.ftype as controlType
@@ -25,7 +26,8 @@
         order by c.fnumber
     </select>
     <select id="selectUnUseCostAccount" resultType="com.example.EAS.vo.CostAccountVO">
-         select c.fnumber as num,c.flongnumber as longNumber,c.fname_l2 as title,
+         select c.fid as id,
+         c.fnumber as num,c.flongnumber as longNumber,c.fname_l2 as title,
         c.FAssigned as assigned,c.FLevel,c.FDescription_l2 as description,
         c.FCurProject as curProject,c.FFullOrgUnit as fullOrgUnit,
         b.FNAME_L2 as orgName,e.ftype as controlType

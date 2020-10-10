@@ -9,6 +9,7 @@ import com.example.EAS.vo.CostAccountVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,7 +31,13 @@ public class TFdcCostaccountServiceImpl extends ServiceImpl<TFdcCostaccountMappe
         if (Util.isEmpty(vo.getMarketId())) {
             return null;
         }
-        List<CostAccountVO> costAccountVOList = mapper.selectDatas(vo);
+        List<CostAccountVO> costAccountVOList = new ArrayList<>();
+        String controlType = vo.getControlType();
+        if (Util.isNotEmpty(controlType) && controlType.equals("CONTRACT")) {
+            costAccountVOList = mapper.selectUnUseCostAccount(vo);
+        } else {
+            costAccountVOList = mapper.selectDatas(vo);
+        }
         if (costAccountVOList != null && costAccountVOList.size() > 0) {
             for (CostAccountVO costAccountVO : costAccountVOList) {
                 String longNumber = costAccountVO.getLongNumber();
@@ -52,8 +59,8 @@ public class TFdcCostaccountServiceImpl extends ServiceImpl<TFdcCostaccountMappe
         if (Util.isEmpty(marketId)) {
             return null;
         }
-        List<CostAccountVO> costAccountVOS = mapper.selectUnUseCostAccount(marketId);
-        if (costAccountVOS==null||costAccountVOS.size()==0){
+        List<CostAccountVO> costAccountVOS = mapper.selectUnUseCostAccount(vo);
+        if (costAccountVOS == null || costAccountVOS.size() == 0) {
             return null;
         }
         return costAccountVOS;

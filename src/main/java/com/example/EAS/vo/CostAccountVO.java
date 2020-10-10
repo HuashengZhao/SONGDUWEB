@@ -14,6 +14,7 @@ import java.util.List;
 @Data
 public class CostAccountVO {
 
+    private String id;
     private String marketId;
     private String title;
     private String orgId;
