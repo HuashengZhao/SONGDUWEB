@@ -172,6 +172,8 @@
 
     <insert id="insertAttachMent" parameterType="com.example.EAS.vo.AttachmentsVO">
         insert into webattachment(originalFilename,fileUUID,contentType,fileSize,easid,fileNum,url,webUrl,filetype,createtime,personName,fileName)
-        values(#{originalFilename},#{fileUUID},#{contentType,jdbcType=VARCHAR},#{fileSize},#{easId},#{num},#{fileUrl},#{webUrl},#{fileType},#{createTime},#{personName},#{title})
+        values(#{originalFilename,jdbcType=VARCHAR},#{fileUUID,jdbcType=VARCHAR},#{contentType,jdbcType=VARCHAR},
+        #{fileSize,jdbcType=VARCHAR},#{easId,jdbcType=VARCHAR},#{num,jdbcType=VARCHAR},#{fileUrl,jdbcType=VARCHAR},
+        #{webUrl,jdbcType=VARCHAR},#{fileType,jdbcType=VARCHAR},#{createTime},#{personName,jdbcType=VARCHAR},#{title,jdbcType=VARCHAR})
     </insert>
 </mapper>

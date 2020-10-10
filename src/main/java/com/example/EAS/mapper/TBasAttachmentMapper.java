@@ -20,4 +20,5 @@ public interface TBasAttachmentMapper extends BaseMapper<TBasAttachment> {
 
     List<AttachmentsVO> selectByNumber(String attachNum);
 
+    List<AttachmentsVO> selectWEBAttach(String id);
 }
