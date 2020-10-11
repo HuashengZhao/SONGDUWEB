@@ -19,4 +19,7 @@ public interface TFdcCostaccountMapper extends BaseMapper<TFdcCostaccount> {
     List<CostAccountVO> selectDatas(CostAccountVO vo);
 
     List<CostAccountVO> selectUnUseCostAccount(CostAccountVO vo);
+
+    List<String> selectCostAccountId(CostAccountVO vo);
+
 }

@@ -37,7 +37,7 @@
             <if test="contractName!=null and contractName!=''">
                 and con.FNAME like '%#{contractName}%'
             </if>
-            <if test="supplierName!=null and v!=''">
+            <if test="supplierName!=null and supplierName!=''">
                 and sup.FNAME_L2 like '%#{supplierName}%'
             </if>
             <if test="projectName!=null and projectName!=''">

@@ -7,7 +7,7 @@
         bill.FBOOKEDDATE as bizDate,bill.FSTATE as state,
         bill.FCONTRACTTYPEID as contractTypeId,ct.FNAME_L2 as contractTypeName,
         bill.FProgrammingContract as programContractId,pc.FNAME_L2 as programContractName,
-        bill.FCURRENCYID as currencyId,cur.FNAME_L2 as currenctName,
+        bill.FCURRENCYID as currencyId,cur.FNAME_L2 as currencyName,
         bill.FAMOUNT as amount,bill.FORIGINALAMOUNT as oriAmount,
         sup.FNAME_L2 as receiverName,bill.FSIGNDATE as signDate,
         u.FNAME_L2 as creatorName,bill.FCREATETIME as createTime,

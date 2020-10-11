@@ -25,6 +25,7 @@
         </where>
         order by c.fnumber
     </select>
+
     <select id="selectUnUseCostAccount" resultType="com.example.EAS.vo.CostAccountVO">
          select c.fid as id,
          c.fnumber as num,c.flongnumber as longNumber,c.fname_l2 as title,
@@ -34,7 +35,14 @@
         from T_FDC_CostAccount c
         left join T_ORG_BaseUnit b on b.fid=c.FFULLORGUNIT
         left join T_CON_MarketProjectCostEntry e on e.FCOSTACCOUNTID=c.FID
-         where c.fid not exists
-        (select fmpcostaccountid from T_CON_ContractBill where FMARKETPROJECTID=#{marketId})
+         where e.FHEADID=#{marketId}
+         c.fid not in
+        <foreach item="item" collection="costIDs" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+
+    </select>
+    <select id="selectCostAccountId" resultType="java.lang.String">
+        select fmpcostaccountid from T_CON_ContractBill where FMARKETPROJECTID=#{marketId}
     </select>
 </mapper>
