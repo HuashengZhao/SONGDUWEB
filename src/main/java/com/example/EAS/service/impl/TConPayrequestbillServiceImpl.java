@@ -13,7 +13,6 @@ import com.example.EAS.util.PageBean;
 import com.example.EAS.util.Util;
 import com.example.EAS.vo.AttachmentsVO;
 import com.example.EAS.vo.PayRequestBillVO;
-import com.example.EAS.vo.PaymentApplyVO;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -126,6 +125,19 @@ public class TConPayrequestbillServiceImpl extends ServiceImpl<TConPayrequestbil
         }
         PayRequestBillVO payRequestBillVO = mapper.selectDataById(vo);
         if (Util.isNotEmpty(payRequestBillVO)) {
+//           内外部合同
+            String orgType = payRequestBillVO.getOrgType();
+            if (Util.isNotEmpty(orgType)) {
+                if (orgType.contains("BIGRANGE")) {
+                    payRequestBillVO.setOrgType("集团/事业部/城市公司");
+                } else if (orgType.contains("SMALLRANGE")) {
+                    payRequestBillVO.setOrgType("项目部");
+                } else if (orgType.contains("ALLRANGE")) {
+                    payRequestBillVO.setOrgType("集团/事业部/城市公司-项目部");
+                } else if (orgType.contains("NEIBU")) {
+                    payRequestBillVO.setOrgType("内部关联公司往来类");
+                }
+            }
 //          扣款金额
             BigDecimal deductAmt = BigDecimal.ZERO;
             List<TConDeductofpayreqbill> billList = deductofpayreqbillMapper.selectList
@@ -217,12 +229,13 @@ public class TConPayrequestbillServiceImpl extends ServiceImpl<TConPayrequestbil
 //            累计完工工程比例
 //            累计进度款付款比例  （张佳萍说不要了）
 //            付款申请金额
-            PaymentApplyVO paymentApplyVO = new PaymentApplyVO();
-
-
-
+//            PaymentApplyVO paymentApplyVO = new PaymentApplyVO();
+//            BigDecimal requestAMT = payRequestBillVO.getRequestAMT();
+//            if (Util.isNotEmpty(requestAMT)){
+//                paymentApplyVO.setApplyAMT(requestAMT);
+//            }
         }
 
-        return null;
+        return payRequestBillVO;
     }
 }

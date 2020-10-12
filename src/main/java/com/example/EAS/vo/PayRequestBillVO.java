@@ -112,6 +112,7 @@ public class PayRequestBillVO {
     //    用款部门
     private String useDepartMentName;
     //   内外部合同
+//    集团/事业部/城市公司=BIGRANGE,项目部=SMALLRANGE,集团/事业部/城市公司-项目部=ALLRANGE,内部关联公司往来类=NEIBU,外部供应商客户往来类=WAIBU
     private String orgType;
     //后评估审核
     private Integer isJT;
@@ -131,6 +132,9 @@ public class PayRequestBillVO {
     //    合同结算价
     @JsonSerialize(using = CustomBigDecimalSerialize.class, nullsUsing = CustomBigDecimalSerialize.class)
     private BigDecimal settleAMT;
+    //    申请金额
+    @JsonSerialize(using = CustomBigDecimalSerialize.class, nullsUsing = CustomBigDecimalSerialize.class)
+    private BigDecimal requestAMT;
     // 同城异地
     private String isDifPlace;
     //    是否加急
@@ -138,6 +142,16 @@ public class PayRequestBillVO {
 
     //    付款申请金额集合
     private PaymentApplyVO paymentApplyVO;
+
     private List<PaymentApplyVO> payMentApplyList;
 
+    //    费用类别
+    private String costType;
+    //    会计科目
+    private String costAccountId;
+    private String costAccountName;
+
+//    申請金額
+    @JsonSerialize(using = CustomBigDecimalSerialize.class, nullsUsing = CustomBigDecimalSerialize.class)
+    private BigDecimal applyAMT;
 }

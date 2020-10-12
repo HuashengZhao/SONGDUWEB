@@ -686,6 +686,8 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         ContractVO contractVO = new ContractVO();
         String id = vo.getId();
         vo.setFlag(true);
+//        营销立项控制合同金额
+
         ContractVO contractVO1 = saveContractBill(vo);
         if (contractVO1.getId() != null) {
             id = contractVO1.getId();
