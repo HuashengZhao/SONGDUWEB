@@ -35,10 +35,8 @@ public class TFdcCostaccountServiceImpl extends ServiceImpl<TFdcCostaccountMappe
         String controlType = vo.getControlType();
         if (Util.isNotEmpty(controlType) && controlType.equals("CONTRACT")) {
             List<String> costIDs = mapper.selectCostAccountId(vo);
-            if (costIDs!=null&&costIDs.size()>0) {
                 vo.setCostIDs(costIDs);
                 costAccountVOList = mapper.selectUnUseCostAccount(vo);
-            }
         } else {
             costAccountVOList = mapper.selectDatas(vo);
         }

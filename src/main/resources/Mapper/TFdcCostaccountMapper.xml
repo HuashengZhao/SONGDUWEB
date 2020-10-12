@@ -6,7 +6,7 @@
         select c.fid as id,
         c.fnumber as num,c.flongnumber as longNumber,c.fname_l2 as title,
         c.FAssigned as assigned,c.FLevel,c.FDescription_l2 as description,
-        c.FCurProject as curProject,c.FFullOrgUnit as fullOrgUnit,
+        c.FCurProject as projectName,c.FFullOrgUnit as fullOrgUnit,
         b.FNAME_L2 as orgName,e.ftype as controlType
         from T_FDC_CostAccount c
         left join T_ORG_BaseUnit b on b.fid=c.FFULLORGUNIT
@@ -30,16 +30,18 @@
          select c.fid as id,
          c.fnumber as num,c.flongnumber as longNumber,c.fname_l2 as title,
         c.FAssigned as assigned,c.FLevel,c.FDescription_l2 as description,
-        c.FCurProject as curProject,c.FFullOrgUnit as fullOrgUnit,
+        c.FCurProject as projectName,c.FFullOrgUnit as fullOrgUnit,
         b.FNAME_L2 as orgName,e.ftype as controlType
         from T_FDC_CostAccount c
         left join T_ORG_BaseUnit b on b.fid=c.FFULLORGUNIT
         left join T_CON_MarketProjectCostEntry e on e.FCOSTACCOUNTID=c.FID
          where e.FHEADID=#{marketId}
-         c.fid not in
-        <foreach item="item" collection="costIDs" index="index" open="(" separator="," close=")">
-            #{item}
-        </foreach>
+         <if test="costIDs!=null and costIDs.size>0">
+            and  c.fid not in
+             <foreach item="item" collection="costIDs" index="index" open="(" separator="," close=")">
+                 #{item}
+             </foreach>
+         </if>
 
     </select>
     <select id="selectCostAccountId" resultType="java.lang.String">
