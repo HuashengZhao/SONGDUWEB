@@ -13,6 +13,7 @@ import com.example.EAS.util.PageBean;
 import com.example.EAS.util.Util;
 import com.example.EAS.vo.AttachmentsVO;
 import com.example.EAS.vo.PayRequestBillVO;
+import com.example.EAS.vo.PaymentApplyVO;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -197,6 +198,27 @@ public class TConPayrequestbillServiceImpl extends ServiceImpl<TConPayrequestbil
                     payRequestBillVO.setTaxerQua("非增值税纳税人");
                 }
             }
+//    累计完工工程量  合同对应的所有付款申请单本次完工工程量的和
+            BigDecimal allAMT = BigDecimal.ZERO;
+            String contractId = payRequestBillVO.getContractId();
+            if (Util.isNotEmpty(contractId)){
+                List<TConPayrequestbill> bills = mapper.selectList(new QueryWrapper<TConPayrequestbill>()
+                        .eq("FCONTRACTID", contractId));
+                if (bills!=null && bills.size()>0){
+                    for (TConPayrequestbill bill : bills) {
+                        Double fcompleteprjamt = bill.getFcompleteprjamt();
+                        if (Util.isNotEmpty(fcompleteprjamt)){
+                            allAMT=allAMT.add(new BigDecimal(fcompleteprjamt));
+                        }
+                    }
+                }
+                payRequestBillVO.setAllAMT(allAMT);
+            }
+//            累计完工工程比例
+//            累计进度款付款比例  （张佳萍说不要了）
+//            付款申请金额
+            PaymentApplyVO paymentApplyVO = new PaymentApplyVO();
+
 
 
         }

@@ -56,6 +56,7 @@
         select billl.fid as id,
         bill.FBOOKEDDATE as bizDate,bill.FNUMBER as num,bill.FSTATE as state,bill.FNAME as title,
         bill.FCREATORID as creatorId,u.FNAME_L2 as creatorName,bill.FCURPROJECTID as projectId,
+        bill.FCONTRACTID as contractId,
         cp.FNAME_L2 as projectName,con.FNUMBER as contractNumber,con.FNAME as contractName,
         bill.FSUPPLIERID as supplierId,sup.FNAME_L2 as supplierName,bill.FCURRENCYID as currencyId,
         cur.FNAME_L2 as currencyName,bill.FAMOUNT as amount,bill.FORIGINALAMOUNT as oriAmount,
@@ -66,7 +67,19 @@
         bill.FPAYCONTENTTYPEID as payContentTypeId,pc.FNAME_L2 as payContentTypeName,
         bill.FPAYDATE as payDate,con.FSTARTDATE as startDate,con.FENDDATE as endDate,
         con.FTAXERQUA as taxerQua,con.FTAXERNUM as taxerNum,bank.FNUMBER as unionBankNum,
-        bill.FEXCHANGERATE
+        bill.FEXCHANGERATE as exRate,bill.FGRTAMOUNT as grtAmount,bill.FApplierId as applierId,
+        per.FNAME_L2 as applierName,ad.FNAME_L2 as useDepartMentName,
+        com.FNAME_L2 as costCompanyName,cen.FNAME_L2 as costDeptName,
+        con.forgtype as orgType,con.FISJT as isJT,bill.FCOMPLETEPRJAMT as thisAMT,
+        con.FSETTLEAMT as settleAMT,bill.FDESCRIPTION as remark,
+        bill.FIsDifferPlace,
+        case when bill.FIsDifferPlace=0 then '同城'
+        when bill.FIsDifferPlace=1 then '异地'
+        end isDifPlace,
+        bill.FUrentDegree,
+        case when bill.FUrentDegree=1 then '普通'
+        when bill.FUrentDegree=2 then '加急'
+        end urtDegree,
 
         from T_CON_PayRequestBill bill
         left join t_pm_user u on u.fid=bill.FCREATORID
@@ -78,8 +91,12 @@
         left join T_BD_Supplier sup1 on sup1.fid=bill.FSUPPLIERID
         left join T_BD_CURRENCY cur on cur.fid=bill.FCURRENCYID
         left join T_CON_PayContentType pc on pc.fid=bill.FPAYCONTENTTYPEID
-         left join T_CON_BankNum bank on bank.fid=con.FLXNUMID
-         left join T_BD_SettlementType st on st.fid=bill.FSETTLEMENTTYPEID
+        left join T_CON_BankNum bank on bank.fid=con.FLXNUMID
+        left join T_BD_SettlementType st on st.fid=bill.FSETTLEMENTTYPEID
+        left join T_BD_Person per on per.fid=bill.FApplierId
+        left join T_ORG_Admin ad on ad.fid=bill.FUseDepartmentID
+        left join T_ORG_CostCenter cen on cen.fid=bill.FCostedCompanyId
+        left join T_ORG_Company com on com.fid=bill.FCostedCompanyId
         where bill.fid=#{id}
     </select>
 

@@ -53,6 +53,8 @@ public class PayRequestBillVO {
     //    原币
     @JsonSerialize(using = CustomBigDecimalSerialize.class, nullsUsing = CustomBigDecimalSerialize.class)
     private BigDecimal oriAmount;
+    @JsonSerialize(using = CustomBigDecimalSerialize.class, nullsUsing = CustomBigDecimalSerialize.class)
+    private BigDecimal grtAmount;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     @JsonDeserialize(using = DateJsonDeserializer.class)
@@ -101,6 +103,41 @@ public class PayRequestBillVO {
     private String taxerNum;
     //    结算方式
     private String settleMentTypeName;
+    //    汇率
+    private String exRate;
 
+    //    申请人信息
+    private String applierId;
+    private String applierName;
+    //    用款部门
+    private String useDepartMentName;
+    //   内外部合同
+    private String orgType;
+    //后评估审核
+    private Integer isJT;
+
+    //    本次完工工程量
+    @JsonSerialize(using = CustomBigDecimalSerialize.class, nullsUsing = CustomBigDecimalSerialize.class)
+    private BigDecimal thisAMT;
+    //    累计完工工程量
+    @JsonSerialize(using = CustomBigDecimalSerialize.class, nullsUsing = CustomBigDecimalSerialize.class)
+    private BigDecimal allAMT;
+    //    累计完工工程比例
+    @JsonSerialize(using = CustomBigDecimalSerialize.class, nullsUsing = CustomBigDecimalSerialize.class)
+    private BigDecimal allAMTRATE;
+    //    累计进度款付款比例   (张说不要了)
+    @JsonSerialize(using = CustomBigDecimalSerialize.class, nullsUsing = CustomBigDecimalSerialize.class)
+    private BigDecimal allProRATE;
+    //    合同结算价
+    @JsonSerialize(using = CustomBigDecimalSerialize.class, nullsUsing = CustomBigDecimalSerialize.class)
+    private BigDecimal settleAMT;
+    // 同城异地
+    private String isDifPlace;
+    //    是否加急
+    private String urtDegree;
+
+    //    付款申请金额集合
+    private PaymentApplyVO paymentApplyVO;
+    private List<PaymentApplyVO> payMentApplyList;
 
 }
