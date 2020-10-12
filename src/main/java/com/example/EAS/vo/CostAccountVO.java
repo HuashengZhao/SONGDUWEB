@@ -24,6 +24,7 @@ public class CostAccountVO {
     private String assigned;
     private String level;
     private String project;
+    private String projectName;
     private String description;
     private List<CostAccountVO> costAccountVOList;
     private List<String> costIDs;
