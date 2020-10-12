@@ -55,6 +55,9 @@ public class PayRequestBillVO {
     private BigDecimal oriAmount;
     @JsonSerialize(using = CustomBigDecimalSerialize.class, nullsUsing = CustomBigDecimalSerialize.class)
     private BigDecimal grtAmount;
+    //    最新造价
+    @JsonSerialize(using = CustomBigDecimalSerialize.class, nullsUsing = CustomBigDecimalSerialize.class)
+    private BigDecimal latestPrice;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     @JsonDeserialize(using = DateJsonDeserializer.class)
@@ -151,7 +154,7 @@ public class PayRequestBillVO {
     private String costAccountId;
     private String costAccountName;
 
-//    申請金額
+    //    申請金額
     @JsonSerialize(using = CustomBigDecimalSerialize.class, nullsUsing = CustomBigDecimalSerialize.class)
     private BigDecimal applyAMT;
 }

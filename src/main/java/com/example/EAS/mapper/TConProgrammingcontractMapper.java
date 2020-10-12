@@ -20,4 +20,7 @@ public interface TConProgrammingcontractMapper extends BaseMapper<TConProgrammin
 
     List<ProgramConVO> selectDataCanBeLinked(ProgramConVO vo);
 
+    List<String> selectIdsFromContract();
+
+
 }

@@ -33,4 +33,5 @@ public class ProgramConVO {
     private Integer currentPage;
     private Integer pageSize;
 
+    private List<String> ids;
 }

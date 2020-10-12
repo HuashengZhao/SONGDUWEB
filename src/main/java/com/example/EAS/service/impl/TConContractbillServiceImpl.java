@@ -110,6 +110,36 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         if (conTypeIdList != null && conTypeIdList.size() > 0) {
             vo.setConTypeIdList(conTypeIdList);
         }
+        String state1 = vo.getState();
+        if (Util.isNotEmpty(state1)) {
+            if (state1.contains("已提交")) {
+                vo.setState("2SUB");
+            } else if (state1.contains("保存")) {
+                vo.setState("1SAVED");
+            } else if (state1.contains("审批中")) {
+                vo.setState("3AUD");
+            } else if (state1.contains("已审批")) {
+                vo.setState("4");
+            } else if (state1.contains("终止")) {
+                vo.setState("5");
+            } else if (state1.contains("已下发")) {
+                vo.setState("7");
+            } else if (state1.contains("已签证")) {
+                vo.setState("8");
+            } else if (state1.contains("作废")) {
+                vo.setState("9");
+            } else if (state1.contains("已上报")) {
+                vo.setState("10");
+            } else if (state1.contains("被打回")) {
+                vo.setState("11");
+            } else if (state1.contains("修订中")) {
+                vo.setState("12REVISING");
+            } else if (state1.contains("已修订")) {
+                vo.setState("12REVISE");
+            } else if (state1.contains("已确认")) {
+                vo.setState("13");
+            }
+        }
         PageHelper.startPage(vo.getCurrentPage(), vo.getPageSize());
         List<ContractVO> contractVOList = mapper.selectDatas(vo);
         if (Util.isNotEmpty(contractVOList)) {
@@ -198,6 +228,15 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
 //        总JSONOBJECT
         ContractVO contractVO = new ContractVO();
         JSONObject easJson = new JSONObject();
+
+        //判断合约规划有没有被关联
+        String hyghId = vo.getHyghId();
+        if (Util.isNotEmpty(hyghId)) {
+            List<String> billIds = mapper.selectHYGHInContract(hyghId);
+            if(billIds!=null && billIds.size()>0){
+                throw new ServiceException(UtilMessage.HYGH_HAS_BELINKED);
+            }
+        }
 //        是否调用eas提交方法
         Boolean flag = vo.getFlag();
         //        根据是否携带单据id 判断新增 修改
@@ -213,7 +252,6 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         easJson.put("num", num);
         String conTypeId = vo.getConTypeId();
         easJson.put("conTypeId", conTypeId);
-        String hyghId = vo.getHyghId();
         easJson.put("hygh", hyghId);
         String partA = vo.getPartA();
         easJson.put("partA", partA);
@@ -232,6 +270,17 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                 easJson.put("isJT", "true");
             } else if (fisjt != null && fisjt == 0) {
                 easJson.put("isJT", "false");
+            }
+//            营销立项金额控制合同金额
+            Double famount = tConMarketproject.getFamount();
+
+            String voAmount = vo.getAmount();
+            if (Util.isNotEmpty(famount)&&Util.isNotEmpty(voAmount)){
+                BigDecimal famountDe = new BigDecimal(famount);
+                BigDecimal voAmountDe = new BigDecimal(voAmount);
+                if (famountDe.compareTo(voAmountDe)==-1){
+                    throw new ServiceException(UtilMessage.CONTRACT_AMOUNT_BEYOND);
+                }
             }
         }
 //       费用归属 需要验证是否被关联过  关联关系： 合同关联立项 以及组织，获取对应的费用归属信息  选择其中一个
@@ -304,7 +353,6 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         LocalDateTime createTime = LocalDateTime.now();
         String format = df.format(createTime);
         easJson.put("createTime", format);
-
 
 //      保存到EAS附件
         JSONArray attach = new JSONArray();
@@ -686,7 +734,6 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         ContractVO contractVO = new ContractVO();
         String id = vo.getId();
         vo.setFlag(true);
-//        营销立项控制合同金额
 
         ContractVO contractVO1 = saveContractBill(vo);
         if (contractVO1.getId() != null) {
