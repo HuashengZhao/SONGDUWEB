@@ -9,6 +9,7 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class NoTextContractVO {
@@ -66,4 +67,7 @@ public class NoTextContractVO {
     //    分页
     private Integer currentPage;
     private Integer pageSize;
+
+
+    private List<String> projectIdList;
 }

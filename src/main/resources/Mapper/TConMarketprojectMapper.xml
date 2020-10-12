@@ -13,7 +13,7 @@
           left join t_pm_user u on u.fid=m.FCREATORID
           left join t_pm_user u2 on u2.fid=m.FAUDITORID
           <where>
-              m.FORGUNITID=#{orgId}
+              m.FORGUNITID=#{orgId,jdbcType=VARCHAR}
               <if test="title!=null and title!=''">
                   m.FNAME like CONCAT(CONCAT('%',${title}),'%')
               </if>

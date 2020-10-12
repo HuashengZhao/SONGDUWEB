@@ -209,5 +209,13 @@
     <select id="selectUserByNum" resultType="java.lang.String">
         select fid from T_PM_USER where FNUMBER=#{number}
     </select>
+    <select id="selectHYGH" resultType="java.lang.String">
+        select FBILLID from T_CON_ProgrammingContract where fid=#{hyghId,jdbcType=VARCHAR}
+        and FBILLID is not null
+    </select>
+    <select id="selectHYGHInContract" resultType="java.lang.String">
+        select * from T_CON_ContractBill where FProgrammingContract=#{hyghId,jdbcType=VARCHAR}
+    </select>
+
 
 </mapper>

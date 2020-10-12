@@ -71,7 +71,7 @@
         per.FNAME_L2 as applierName,ad.FNAME_L2 as useDepartMentName,
         com.FNAME_L2 as costCompanyName,cen.FNAME_L2 as costDeptName,
         con.forgtype as orgType,con.FISJT as isJT,bill.FCOMPLETEPRJAMT as thisAMT,
-        con.FSETTLEAMT as settleAMT,bill.FDESCRIPTION as remark,
+        con.FSETTLEAMT as settleAMT,bill.FDESCRIPTION as remark,bill.FLATESTPRICE as latestPrice,
         bill.FIsDifferPlace,
         case when bill.FIsDifferPlace=0 then '同城'
         when bill.FIsDifferPlace=1 then '异地'

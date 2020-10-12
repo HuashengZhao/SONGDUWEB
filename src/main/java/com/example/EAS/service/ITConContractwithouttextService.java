@@ -17,4 +17,5 @@ public interface ITConContractwithouttextService extends IService<TConContractwi
 
     PageBean<NoTextContractVO> getNoTextBills(NoTextContractVO vo);
 
+    NoTextContractVO viewNoTextBill(NoTextContractVO vo);
 }

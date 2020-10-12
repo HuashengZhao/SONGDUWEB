@@ -43,13 +43,13 @@ public class TConProgrammingcontractServiceImpl extends ServiceImpl<TConProgramm
         }
         Integer ifBeLinked = vo.getIfBeLinked();
 
+        List<String> ids = mapper.selectIdsFromContract();
         List<ProgramConVO> programConVOList = new ArrayList<>();
         PageHelper.startPage(vo.getCurrentPage(), vo.getPageSize());
-//        if (Util.isNotEmpty(ifBeLinked) && ifBeLinked == 1) {
+        if (ids!=null && ids.size()>0) {
+            vo.setIds(ids);
             programConVOList = mapper.selectDataCanBeLinked(vo);
-//        } else {
-//            programConVOList = mapper.selectDatas(vo);
-//        }
+        }
         if (Util.isNotEmpty(programConVOList)) {
             for (ProgramConVO conVO : programConVOList) {
                 Integer linked = 1;

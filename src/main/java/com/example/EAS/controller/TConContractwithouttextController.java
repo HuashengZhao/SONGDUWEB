@@ -49,5 +49,22 @@ public class TConContractwithouttextController {
         return R.ok(result);
     }
 
+    /**
+     * 无文本详情信息
+     *
+     * @param body
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/viewNoTextBill", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public R viewNoTextBill(@RequestBody String body) throws Exception {
+        HashMap<String, Object> result = new HashMap<>(10);
+        NoTextContractVO vo = BodyDecodeUtil.decodeBody(body, NoTextContractVO.class);
+        NoTextContractVO notext = service.viewNoTextBill(vo);
+        result.put("data", notext);
+        result.put("msg", UtilMessage.GET_MSG_SUCCESS);
+        result.put("code", HttpStatus.SC_OK);
+        return R.ok(result);
+    }
 
 }

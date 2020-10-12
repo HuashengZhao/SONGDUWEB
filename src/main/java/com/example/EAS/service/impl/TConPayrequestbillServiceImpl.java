@@ -136,6 +136,8 @@ public class TConPayrequestbillServiceImpl extends ServiceImpl<TConPayrequestbil
                     payRequestBillVO.setOrgType("集团/事业部/城市公司-项目部");
                 } else if (orgType.contains("NEIBU")) {
                     payRequestBillVO.setOrgType("内部关联公司往来类");
+                }else if (orgType.contains("WAIBU")){
+                    payRequestBillVO.setOrgType("外部供应商客户往来类");
                 }
             }
 //          扣款金额
