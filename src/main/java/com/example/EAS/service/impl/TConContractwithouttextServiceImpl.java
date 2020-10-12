@@ -83,4 +83,6 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         pageBean.setPageData(noTextContractVOList);
         return pageBean;
     }
+
+
 }

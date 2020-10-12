@@ -5,7 +5,7 @@
 
     <select id="selectDatas" resultType="com.example.EAS.vo.PayRequestBillVO">
         select bill.fid as id,
-         bill.FBOOKEDDATE as bizDate,bill.FNUMBER as num,bill.FSTATE as state,bill.FNAME as title,
+        bill.FBOOKEDDATE as bizDate,bill.FNUMBER as num,bill.FSTATE as state,bill.FNAME as title,
         bill.FCREATORID as creatorId,u.FNAME_L2 as creatorName,bill.FCURPROJECTID as projectId,
         cp.FNAME_L2 as projectName,con.FNUMBER as contractNumber,con.FNAME as contractName,
         bill.FSUPPLIERID as supplierId,sup.FNAME_L2 as supplierName,bill.FCURRENCYID as currencyId,
@@ -53,14 +53,21 @@
         order by bill.FBOOKEDDATE desc,bill.fnumber
     </select>
     <select id="selectDataById" resultType="com.example.EAS.vo.PayRequestBillVO">
-        select bill.FBOOKEDDATE as bizDate,bill.FNUMBER as num,bill.FSTATE as state,bill.FNAME as title,
+        select billl.fid as id,
+        bill.FBOOKEDDATE as bizDate,bill.FNUMBER as num,bill.FSTATE as state,bill.FNAME as title,
         bill.FCREATORID as creatorId,u.FNAME_L2 as creatorName,bill.FCURPROJECTID as projectId,
         cp.FNAME_L2 as projectName,con.FNUMBER as contractNumber,con.FNAME as contractName,
         bill.FSUPPLIERID as supplierId,sup.FNAME_L2 as supplierName,bill.FCURRENCYID as currencyId,
         cur.FNAME_L2 as currencyName,bill.FAMOUNT as amount,bill.FORIGINALAMOUNT as oriAmount,
         bill.FRECBANK as recBank,bill.FRECACCOUNT as recAccount,bill.FUSAGE as remark,
         pt.FNAME_L2 as paymentTypeName,bill.FAUDITORID as auditorId,u1.FNAME_L2 as auditorName,
-        bill.FAUDITTIME auditTime,bill.FCREATETIME creatTime
+        bill.FAUDITTIME auditTime,bill.FCREATETIME creatTime,bill.FRealSupplierID as realSupplierId,
+        sup1.FNAME_L2 as realSupplierName, st.FNAME_L2 as settleMentTypeName,
+        bill.FPAYCONTENTTYPEID as payContentTypeId,pc.FNAME_L2 as payContentTypeName,
+        bill.FPAYDATE as payDate,con.FSTARTDATE as startDate,con.FENDDATE as endDate,
+        con.FTAXERQUA as taxerQua,con.FTAXERNUM as taxerNum,bank.FNUMBER as unionBankNum,
+        bill.FEXCHANGERATE
+
         from T_CON_PayRequestBill bill
         left join t_pm_user u on u.fid=bill.FCREATORID
         left join t_pm_user u1 on u1.fid=bill.FAUDITORID
@@ -68,7 +75,11 @@
         left join T_FDC_CurProject cp on cp.fid=bill.FCURPROJECTID
         left join T_CON_CONTRACTBILL con on con.fid=bill.FCONTRACTID
         left join T_BD_Supplier sup on sup.fid=bill.FSUPPLIERID
+        left join T_BD_Supplier sup1 on sup1.fid=bill.FSUPPLIERID
         left join T_BD_CURRENCY cur on cur.fid=bill.FCURRENCYID
+        left join T_CON_PayContentType pc on pc.fid=bill.FPAYCONTENTTYPEID
+         left join T_CON_BankNum bank on bank.fid=con.FLXNUMID
+         left join T_BD_SettlementType st on st.fid=bill.FSETTLEMENTTYPEID
         where bill.fid=#{id}
     </select>
 

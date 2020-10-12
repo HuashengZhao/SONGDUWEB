@@ -9,10 +9,10 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class PayRequestBillVO {
-
     //     基参
     private String id;
     private String title;
@@ -39,6 +39,8 @@ public class PayRequestBillVO {
     //   收款单位信息
     private String supplierId;
     private String supplierName;
+    private String realSupplierId;
+    private String realSupplierName;
     //  币别
     private String currencyId;
     private String currencyName;
@@ -64,15 +66,41 @@ public class PayRequestBillVO {
     @JsonDeserialize(using = DateJsonDeserializer.class)
     private LocalDateTime bizDate;
 
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonDeserialize(using = DateJsonDeserializer.class)
+    private LocalDateTime payDate;
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonDeserialize(using = DateJsonDeserializer.class)
+    private LocalDateTime startDate;
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonDeserialize(using = DateJsonDeserializer.class)
+    private LocalDateTime endDate;
+
     //    银行
     private String recBank;
     private String recAccount;
+    private String unionBankNum;
     //    备注
     private String remark;
 
     //    分页参数
     private Integer currentPage;
     private Integer pageSize;
-//    附件
+    //    附件
     private Integer ifHasAttach;
+    private List<AttachmentsVO> attachmentsVOS;
+
+    //    付款事项
+    private String payContentTypeId;
+    private String payContentTypeName;
+
+    //    纳税人
+    private String taxerQua;
+    private String taxerNum;
+    //    结算方式
+    private String settleMentTypeName;
+
+
 }
