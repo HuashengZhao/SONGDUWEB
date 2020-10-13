@@ -19,4 +19,5 @@ public interface TConContractwithouttextMapper extends BaseMapper<TConContractwi
 
     List<NoTextContractVO> selectDatas(NoTextContractVO vo);
 
+    NoTextContractVO selectDataByID(String id);
 }

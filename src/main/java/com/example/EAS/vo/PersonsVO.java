@@ -23,6 +23,7 @@ public class PersonsVO {
 //    行政组织
     private String orgName;
     private String orgLongNumber;
+    private String unitId;
 //    员工类型
     private String typeName;
     private String userId;

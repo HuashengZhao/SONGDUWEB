@@ -27,7 +27,6 @@
             and e.FProjectID=#{projectId}
             and e.FIsLatest=1
             and  not exists (select fid  from T_CON_CONTRACTBILL where FProgrammingContract= m.fid)
-
             <if test="title!=null and title!=''">
                 and m.fname_l2 like CONCAT(CONCAT('%',#{title}),'%')
             </if>

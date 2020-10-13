@@ -366,15 +366,16 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                 String originalFilename = attachmentsVO.getOriginalFilename();
 //                    List<AttachmentsVO> attachmentsVOSList = attachmentMapper.selectByNumber(attachNum);
 //                    if (attachmentsVOSList != null && attachmentsVOSList.size() > 0) {
-                        if (Util.isNotEmpty(webUrl) && Util.isNotEmpty(fileUUID) && Util.isNotEmpty(originalFilename)) {
-                            StringBuffer stringBuffer = new StringBuffer();
-                            String s = stringBuffer.append(webUrl).append("/").append(fileUUID).toString();
-                            object.put("FName", originalFilename == null ? "none" : originalFilename);
-                            object.put("FRemotePath", s == null ? "none" : s);
-                            attach.add(object);
+                if (Util.isNotEmpty(webUrl) && Util.isNotEmpty(fileUUID) && Util.isNotEmpty(originalFilename)) {
+                    StringBuffer stringBuffer = new StringBuffer();
+                    String s = stringBuffer.append(webUrl).append("/").append(fileUUID).toString();
+                    object.put("FName", originalFilename == null ? "none" : originalFilename);
+                    object.put("FRemotePath", s == null ? "none" : s);
+                    attach.add(object);
 //                        }
                 }
             }
+        }
             easJson.put("attach", attach);
 
 //       税务信息+收款信息
@@ -516,7 +517,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             } else {
                 supplierapplyMapper.deletAttach(contractBillId);
             }
-        }
+
         return contractVO;
     }
 

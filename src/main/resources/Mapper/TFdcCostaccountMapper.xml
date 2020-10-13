@@ -42,6 +42,9 @@
                  #{item}
              </foreach>
          </if>
+         <if test="controlType!=null and controlType!=''">
+             and e.ftype=#{controlType}
+         </if>
 
     </select>
     <select id="selectCostAccountId" resultType="java.lang.String">
