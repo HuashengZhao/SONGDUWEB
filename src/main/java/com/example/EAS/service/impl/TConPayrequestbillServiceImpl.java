@@ -51,6 +51,36 @@ public class TConPayrequestbillServiceImpl extends ServiceImpl<TConPayrequestbil
         if (Util.isEmpty(projectId)) {
             return null;
         }
+        String state1 = vo.getState();
+        if (Util.isNotEmpty(state1)) {
+            if (state1.contains("已提交")) {
+                vo.setState("2SUB");
+            } else if (state1.contains("保存")) {
+                vo.setState("1SAVED");
+            } else if (state1.contains("审批中")) {
+                vo.setState("3AUD");
+            } else if (state1.contains("已审批")) {
+                vo.setState("4");
+            } else if (state1.contains("终止")) {
+                vo.setState("5");
+            } else if (state1.contains("已下发")) {
+                vo.setState("7");
+            } else if (state1.contains("已签证")) {
+                vo.setState("8");
+            } else if (state1.contains("作废")) {
+                vo.setState("9");
+            } else if (state1.contains("已上报")) {
+                vo.setState("10");
+            } else if (state1.contains("被打回")) {
+                vo.setState("11");
+            } else if (state1.contains("修订中")) {
+                vo.setState("12REVISING");
+            } else if (state1.contains("已修订")) {
+                vo.setState("12REVISE");
+            } else if (state1.contains("已确认")) {
+                vo.setState("13");
+            }
+        }
         PageHelper.startPage(vo.getCurrentPage(), vo.getPageSize());
         List<PayRequestBillVO> payRequestBillVOS = mapper.selectDatas(vo);
         if (payRequestBillVOS != null && payRequestBillVOS.size() > 0) {

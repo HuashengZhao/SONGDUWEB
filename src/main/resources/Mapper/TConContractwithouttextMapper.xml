@@ -21,9 +21,9 @@
         left join T_BD_Person p on p.fid=bill.FPERSONID
         <where>
             and bill.FControlUnitID=#{orgId}
-            <if test="projectIds != null and projectIds.size > 0">
+            <if test="projectIdList != null and projectIdList.size > 0">
                 and bill.FCurProjectID in
-                <foreach item="item" collection="projectIds" index="index" open="(" separator="," close=")">
+                <foreach item="item" collection="projectIdList" index="index" open="(" separator="," close=")">
                     #{item}
                 </foreach>
             </if>
@@ -49,7 +49,49 @@
             <if test="oriAmount!=null and oriAmount!=''">
                 and bill.FORIGINALAMOUNT like CONCAT(CONCAT('%',#{oriAmount}),'%')
             </if>
+            <if test="state!=null and state!=''">
+                and bill.fstate like CONCAT(CONCAT('%',#{state},'%'))
+            </if>
         </where>
         order by bill.FBOOKEDDATE desc,bill.fnumber
+    </select>
+    <select id="selectDataByID" resultType="com.example.EAS.vo.NoTextContractVO">
+        select bill.fid as id,bill.FNUMBER as num,bill.FNAME as title,bill.FBOOKEDDATE as bizDate,bill.FSTATE as state,
+        bill.FCONTRACTTYPEID as contractTypeId,ct.FNAME_L2 as contractTypeName,bill.FLXNUMID as unionBankId,
+        bill.FProgrammingContract as programContractId,pc.FNAME_L2 as programContractName,
+        bill.FCURRENCYID as currencyId,cur.FNAME_L2 as currencyName,bill.FAMOUNT as amount,bill.FORIGINALAMOUNT as oriAmount,
+        sup.FNAME_L2 as receiverName,bill.FSIGNDATE as signDate,u.FNAME_L2 as creatorName,bill.FCREATETIME as createTime,
+        bill.FAUDITTIME as auditTime,bill.FAUDITORID as auditorId,u1.FNAME_L2 as auditorName,
+        bill.FPERSONID as personId,p.FNAME_L2 as personName,unit.FNAME_L2 as orgName,pro.FNAME_L2 as projectName,
+        pbt.FNAME_L2 as payBillTypeName,bill.FCONTROLUNITID as orgId,pct.FNAME_L2 as payContentName,bill.FPERIODID as periodId,
+        per.FPERIODYEAR as periodYear,per.FPERIODNUMBER as periodNumber,bill.FTAXERQUA as taxerQua,bill.FTAXERNUM as taxerNumber,
+        bank.fnumber as unionBankNum,bill.FBANKACCT as bankAccount,bill.bank as bank,bill.FSETTLEMENTTYPEID as settlementTypeId,
+        st.FNAME_L2 as settlementTypeName,bill.FApplierId as applierId,p1.FNAME_L2 as applierName,bill.FUseDepartmentID as useDeptId,
+        org.FNAME_L2 as useDeptName,bill.FCostedDeptId as costDeptId,bill.FCOSTEDCOMPANYID as costCompanyId,
+        cc.FNAME_L2 as costDeptName,cp.FNAME_L2 as costCompanyName,bill.FMarketProjectId as marketProjectId,
+        mar.FNAME as marketProjectName,cost.FNAME_L2 as costAccountName,bill.FMpCostAccountId as costAccountId,
+        bill.FInvoiceAmt as invoiceAMT,bill.FRATEAMOUNT as rateAmount,bill.FDESCRIPTION as description
+        from T_CON_CONTRACTWITHOUTTEXT bill
+        left join T_FDC_ContractType ct on ct.fid=bill.FCONTRACTTYPEID
+        left join T_FDC_CostAccount cost on cost.fid=bill.FMPCOSTACCOUNTID
+        left join T_CON_ProgrammingContract pc on pc.fid=bill.FProgrammingContract
+        left join T_BD_CURRENCY cur on cur.fid=bill.FCURRENCYID
+        left join t_bd_supplier sup on sup.fid=bill.FRECEIVEUNITID
+        left join T_PM_USER u on u.fid=bill.FCREATORID
+        left join T_PM_User u1 on u1.fid=bill.FAUDITORID
+        left join T_BD_Person p on p.fid=bill.FPERSONID
+        left join T_BD_Person p1 on p1.fid=bill.FPERSONID
+        left join T_ORG_CTRLUNIT unit on unit.fid=bill.FControlUnitID
+        left join T_FDC_CurProject pro on pro.fid=bill.FCURPROJECTID
+        left join T_CAS_PaymentBillType pbt on pbt.fid=bill.FPAYBILLTYPEID
+        left join T_CON_PayContentType pct on pct.fid=bill.FPAYCONTENTTYPEID
+        left join T_BD_Period per on per.fid = bill.FPERIODID
+        left join T_CON_BankNum bank on bank.fid = bill.FLXNUMID
+        left join T_BD_SettlementType st on st.fid=bill.FSETTLEMENTTYPEID
+        left join T_ORG_Admin org on org.fid=bill.FUseDepartmentID
+        left join T_ORG_CostCenter cc on cc.fid=bill.FCOSTEDDEPTID
+        left join T_ORG_Company cp on cp.fid=bill.FCOSTEDCOMPANYID
+        left join T_CON_MarketProject mar on mar.fid=bill.FMARKETPROJECTID
+        where bill.fid=#{id}
     </select>
 </mapper>

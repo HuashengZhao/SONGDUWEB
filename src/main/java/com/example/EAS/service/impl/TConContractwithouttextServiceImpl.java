@@ -1,25 +1,31 @@
 package com.example.EAS.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.EAS.mapper.TBasAttachmentMapper;
-import com.example.EAS.mapper.TConContractbillMapper;
-import com.example.EAS.mapper.TConContractwithouttextMapper;
+import com.example.EAS.mapper.*;
+import com.example.EAS.model.TBcExpensetype;
 import com.example.EAS.model.TConContractwithouttext;
+import com.example.EAS.model.TConCwtextbgentry;
 import com.example.EAS.service.ITConContractwithouttextService;
+import com.example.EAS.util.FileContentTypeUtils;
 import com.example.EAS.util.PageBean;
 import com.example.EAS.util.Util;
+import com.example.EAS.vo.AttachmentsVO;
+import com.example.EAS.vo.CWTextBgVO;
+import com.example.EAS.vo.MarketContDetailVO;
 import com.example.EAS.vo.NoTextContractVO;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
  * @author watson
@@ -34,6 +40,12 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
     private TBasAttachmentMapper attachmentMapper;
     @Autowired
     private TConContractbillMapper contractbillMapper;
+    @Autowired
+    private TBcExpensetypeMapper expensetypeMapper;
+
+    @Autowired
+    private TConCwtextbgentryMapper cwtextbgentryMapper;
+
 
     @Override
     public PageBean<NoTextContractVO> getNoTextBills(NoTextContractVO vo) {
@@ -80,13 +92,13 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
                 vo.setState("13");
             }
         }
-        if (Util.isEmpty(orgId)||Util.isEmpty(projectIdList)){
+        if (Util.isEmpty(orgId) || Util.isEmpty(projectIdList)) {
             return null;
         }
         vo.setProjectIdList(projectIdList);
-        PageHelper.startPage(vo.getCurrentPage(),vo.getPageSize());
+        PageHelper.startPage(vo.getCurrentPage(), vo.getPageSize());
         List<NoTextContractVO> noTextContractVOList = mapper.selectDatas(vo);
-        if (noTextContractVOList!=null && noTextContractVOList.size()>0){
+        if (noTextContractVOList != null && noTextContractVOList.size() > 0) {
             for (NoTextContractVO noTextContractVO : noTextContractVOList) {
                 String state = noTextContractVO.getState();
                 if (Util.isNotEmpty(state)) {
@@ -119,7 +131,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
                     }
                 }
                 String personName = noTextContractVO.getPersonName();
-                if (Util.isNotEmpty(personName)){
+                if (Util.isNotEmpty(personName)) {
                     noTextContractVO.setReceiverName(personName);
                 }
             }
@@ -132,8 +144,84 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
 
     @Override
     public NoTextContractVO viewNoTextBill(NoTextContractVO vo) {
+        String id = vo.getId();
+        if (Util.isNotEmpty(vo.getId())) {
+            return null;
+        }
+        NoTextContractVO returnVO = mapper.selectDataByID(id);
 
-        return null;
+        if (Util.isNotEmpty(returnVO)) {
+            //            附件信息
+            List<AttachmentsVO> attachmentsVOS = attachmentMapper.selectWEBAttach(id);
+            if (attachmentsVOS != null && attachmentsVOS.size() > 0) {
+                for (AttachmentsVO attachmentsVO : attachmentsVOS) {
+                    if (Util.isNotEmpty(attachmentsVO.getOriginalFilename())) {
+                        attachmentsVO.setTitle(attachmentsVO.getOriginalFilename());
+                    }
+                    if (Util.isNotEmpty(attachmentsVO.getFileType())) {
+                        String s = FileContentTypeUtils.contentType("." + attachmentsVO.getFileType());
+                        if (Util.isNotEmpty(s)) {
+                            attachmentsVO.setContentType(s);
+                        }
+                    }
+                }
+                returnVO.setAttachmentsVOS(attachmentsVOS);
+            }
+//            期間
+            String periodYear = returnVO.getPeriodYear();
+            String periodNumber = returnVO.getPeriodNumber();
+            if (Util.isNotEmpty(periodYear) && Util.isNotEmpty(periodNumber)) {
+                String period = new StringBuffer().append(periodYear + "年").append(periodNumber + "期").toString();
+                returnVO.setPeriod(period);
+            }
+//            納稅人
+            String taxerQua = returnVO.getTaxerQua();
+            if (Util.isNotEmpty(taxerQua)) {
+                if (taxerQua.contains("NOMAL")) {
+                    returnVO.setTaxerQua("一般纳税人");
+                } else if (taxerQua.contains("SMALL")) {
+                    returnVO.setTaxerQua("小规模纳税人");
+                } else if (taxerQua.contains("UNNOMAL")) {
+                    returnVO.setTaxerQua("非增值税纳税人");
+                }
+            }
+//           收款人類型
+            returnVO.setReceiverType("供应商");
+            String personId = returnVO.getPersonId();
+            if (Util.isNotEmpty(personId)) {
+                returnVO.setReceiverType("职员");
+            }
+//          费用清单
+            List<CWTextBgVO> cwTextBgVOS = new ArrayList<>();
+            List<TConCwtextbgentry> entrys = cwtextbgentryMapper.selectList(new QueryWrapper<TConCwtextbgentry>()
+                    .eq("FHEADID", id));
+            if (entrys != null && entrys.size() > 0) {
+                CWTextBgVO cwTextBgVO = new CWTextBgVO();
+                for (TConCwtextbgentry entry : entrys) {
+                    if (entry != null) {
+                        if (entry.getFexpensetypeid() != null) {
+                            TBcExpensetype tBcExpensetype = expensetypeMapper.selectById(entry.getFexpensetypeid());
+                            if (tBcExpensetype != null) {
+                                cwTextBgVO.setExpenseTypeName(tBcExpensetype.getFnameL2());
+                            }
+                        }
+                        if (entry.getFrequestamount()!=null){
+                            cwTextBgVO.setRequestAMT(new BigDecimal(entry.getFrequestamount()));
+                        }
+                    }
+                    returnVO.setCwTextBgVOS(cwTextBgVOS);
+                }
+            }
+            //        营销合同分摊明细
+            List<MarketContDetailVO> marketContDetailVOS = contractbillMapper.selectMarketCons(vo.getId());
+            if (marketContDetailVOS != null && marketContDetailVOS.size() > 0) {
+                for (MarketContDetailVO marketContDetailVO : marketContDetailVOS) {
+
+                }
+                returnVO.setMarketContDetailVOS(marketContDetailVOS);
+            }
+        }
+        return returnVO;
     }
 
 

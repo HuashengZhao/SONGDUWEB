@@ -51,13 +51,22 @@ public class TBdPersonServiceImpl extends ServiceImpl<TBdPersonMapper, TBdPerson
     }
 //      根据组织ids 获取对应的员工集合
         PageHelper.startPage(vo.getCurrentPage(), vo.getPageSize());
-        List<PersonsVO> personsVOList = personMapper.selectDataByOrgIds(counts);
+        List<PersonsVO> personsVOList = personMapper.selectDataByOrgIds();
         if (personsVOList.size()>0){
-            for (PersonsVO personsVO : personsVOList) {
-                if (personsVO.getDeleteStatus()==1){
-                    personsVO.setStatus("普通");
-                }else if (personsVO.getDeleteStatus()==2){
-                    personsVO.setStatus("禁用");
+                for(int i=0;i<personsVOList.size();i++){
+                    PersonsVO personsVO = personsVOList.get(i);
+                    if (Util.isNotEmpty(personsVO.getDeleteStatus())) {
+                    if (personsVO.getDeleteStatus() == 1) {
+                        personsVO.setStatus("普通");
+                    } else if (personsVO.getDeleteStatus() == 2) {
+                        personsVO.setStatus("禁用");
+                    }
+                }
+                String unitId = personsVO.getUnitId();
+                if (Util.isNotEmpty(unitId)){
+                    if (!counts.contains(unitId)){
+                        personsVOList.remove(personsVO);
+                    }
                 }
             }
         }
