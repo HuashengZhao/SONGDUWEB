@@ -753,6 +753,9 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         obj.put("tmplateId", "174046df325987eb1d487be4026b1b64");
         obj.put("fdType", "1");
         obj.put("docSubject", vo.getConName());
+        obj.put("fd_38cf1780c1c14a",vo.getContractWFTypeId());
+        obj.put("fd_38cf1798043f94",vo.getOriginalAmount());
+        obj.put("fd_38cf17bb650026",vo.getContractWFStartType());
         StringBuffer sb = new StringBuffer();
         String token = RequestHolder.getCurrentUser().getToken();
         String dencrypt = null;

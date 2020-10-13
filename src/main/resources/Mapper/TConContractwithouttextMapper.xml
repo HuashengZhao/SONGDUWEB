@@ -21,9 +21,9 @@
         left join T_BD_Person p on p.fid=bill.FPERSONID
         <where>
             and bill.FControlUnitID=#{orgId}
-            <if test="projectIds != null and projectIds.size > 0">
+            <if test="projectIdList != null and projectIdList.size > 0">
                 and bill.FCurProjectID in
-                <foreach item="item" collection="projectIds" index="index" open="(" separator="," close=")">
+                <foreach item="item" collection="projectIdList" index="index" open="(" separator="," close=")">
                     #{item}
                 </foreach>
             </if>
