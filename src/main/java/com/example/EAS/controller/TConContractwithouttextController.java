@@ -67,4 +67,40 @@ public class TConContractwithouttextController {
         return R.ok(result);
     }
 
+    /**
+     * 保存无文本合同
+     *
+     * @param body
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/saveNoTextBill", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public R saveNoTextBill(@RequestBody String body) throws Exception {
+        HashMap<String, Object> result = new HashMap<>(10);
+        NoTextContractVO vo = BodyDecodeUtil.decodeBody(body, NoTextContractVO.class);
+        NoTextContractVO notext = service.saveNoTextBill(vo);
+        result.put("data", notext);
+        result.put("msg", UtilMessage.GET_MSG_SUCCESS);
+        result.put("code", HttpStatus.SC_OK);
+        return R.ok(result);
+    }
+
+    /**
+     * 新增时获取无文本合同编码
+     *
+     * @param body
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/getNoTextNum", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public R getNoTextNum(@RequestBody String body) throws Exception {
+        HashMap<String, Object> result = new HashMap<>(10);
+        NoTextContractVO vo = BodyDecodeUtil.decodeBody(body, NoTextContractVO.class);
+        String newNumber = service.getNoTextNum(vo);
+        result.put("data", newNumber);
+        result.put("msg", UtilMessage.GET_MSG_SUCCESS);
+        result.put("code", HttpStatus.SC_OK);
+        return R.ok(result);
+    }
+
 }

@@ -1,5 +1,7 @@
 package com.example.EAS.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.EAS.mapper.*;
@@ -7,19 +9,22 @@ import com.example.EAS.model.TBcExpensetype;
 import com.example.EAS.model.TConContractwithouttext;
 import com.example.EAS.model.TConCwtextbgentry;
 import com.example.EAS.service.ITConContractwithouttextService;
-import com.example.EAS.util.FileContentTypeUtils;
-import com.example.EAS.util.PageBean;
-import com.example.EAS.util.Util;
+import com.example.EAS.util.*;
 import com.example.EAS.vo.AttachmentsVO;
 import com.example.EAS.vo.CWTextBgVO;
 import com.example.EAS.vo.MarketContDetailVO;
 import com.example.EAS.vo.NoTextContractVO;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import org.apache.axis.client.Call;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.rmi.RemoteException;
+import java.text.DecimalFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,11 +46,43 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
     @Autowired
     private TConContractbillMapper contractbillMapper;
     @Autowired
+    private TConSupplierapplyMapper csMapper;
+    @Autowired
     private TBcExpensetypeMapper expensetypeMapper;
-
     @Autowired
     private TConCwtextbgentryMapper cwtextbgentryMapper;
+    @Autowired
+    private TOrgBaseunitMapper orgMapper;
+    @Autowired
+    private TConSupplierapplyMapper supplierapplyMapper;
+    @Autowired
+    private FtpUtil ftpUtil;
 
+    DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    org.apache.axis.client.Service service = new org.apache.axis.client.Service();
+
+
+    public Call getCall(String type, String operationName) {
+
+        String url = null;
+        if (type.contains("EAS")) {
+            url = csMapper.selectEASURL();
+        } else {
+            url = csMapper.selectOAURL();
+        }
+        Call call = null;
+        try {
+            call = (Call) service.createCall();
+            call.setOperationName(operationName);
+            call.setTargetEndpointAddress(new java.net.URL(url));
+            call.addParameter("arg0", org.apache.axis.encoding.XMLType.XSD_STRING, javax.xml.rpc.ParameterMode.IN);
+            call.setReturnType(org.apache.axis.encoding.XMLType.XSD_STRING);
+            call.setUseSOAPAction(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return call;
+    }
 
     @Override
     public PageBean<NoTextContractVO> getNoTextBills(NoTextContractVO vo) {
@@ -205,8 +242,8 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
                                 cwTextBgVO.setExpenseTypeName(tBcExpensetype.getFnameL2());
                             }
                         }
-                        if (entry.getFrequestamount()!=null){
-                            cwTextBgVO.setRequestAMT(new BigDecimal(entry.getFrequestamount()));
+                        if (entry.getFrequestamount() != null) {
+                            cwTextBgVO.setAmount(new BigDecimal(entry.getFamount()));
                         }
                     }
                     returnVO.setCwTextBgVOS(cwTextBgVOS);
@@ -224,5 +261,220 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         return returnVO;
     }
 
+    @Override
+    public NoTextContractVO saveNoTextBill(NoTextContractVO vo) {
+        JSONObject easJson = new JSONObject();
+        NoTextContractVO noTextContractVO = new NoTextContractVO();
+//        是否调用eas提交方法
+        Boolean flag = vo.getFlag();
+        String id = vo.getId();
+        easJson.put("id", id);
+        String num = vo.getNum();
+        easJson.put("number", num);
+        String title = vo.getTitle();
+        easJson.put("name", title);
+        String orgId = vo.getOrgId();
+        easJson.put("orgId", orgId);
+        String projectId = vo.getProjectId();
+        easJson.put("projectId", projectId);
+        String contractTypeId = vo.getContractTypeId();
+        easJson.put("conTypeId", contractTypeId);
+        String programContractId = vo.getProgramContractId();
+        easJson.put("hygh", programContractId);
+        String marketProjectId = vo.getMarketProjectId();
+        easJson.put("marketProjectId", marketProjectId);
+        String costAccountId = vo.getCostAccountId();
+        easJson.put("costAccountId", costAccountId);
+        String currencyId = vo.getCurrencyId();
+        easJson.put("currencyId", currencyId);
+        BigDecimal oriAmount = vo.getOriAmount();
+        easJson.put("originalAmount", oriAmount.toString());
+//        BigDecimal amount = vo.getAmount();
+        easJson.put("amount", oriAmount.toString());
+        String payBillTypeId = vo.getPayBillTypeId();
+        easJson.put("payBillTypeId", payBillTypeId);
+        String payContentId = vo.getPayContentId();
+        easJson.put("payContentTypeId", payContentId);
+        LocalDateTime bizDate = vo.getBizDate();
+        easJson.put("bizDate", bizDate);
+        String unionBankId = vo.getUnionBankId();
+        easJson.put("unionBankId", unionBankId);
+        String bank = vo.getBank();
+        easJson.put("bank", bank);
+        String bankAccount = vo.getBankAccount();
+        easJson.put("bankAccount", bankAccount);
+        String taxerQua = vo.getTaxerQua();
+        if (Util.isNotEmpty(taxerQua)) {
+            if (taxerQua.contains("NOMAL")) {
+                easJson.put("taxerQua", "一般纳税人");
+            } else if (taxerQua.contains("SMALL")) {
+                easJson.put("taxerQua", "小规模纳税人");
+            } else if (taxerQua.contains("UNNOMAL")) {
+                easJson.put("taxerQua", "非增值税纳税人");
+            }
+        }
+        String taxerNumber = vo.getTaxerNumber();
+        easJson.put("taxerNum", taxerNumber);
+        String receiveUnitID = vo.getReceiveUnitID();
+        easJson.put("receiveUnitId", receiveUnitID);
+        String personId = vo.getPersonId();
+        easJson.put("personId", personId);
+        String settlementTypeId = vo.getSettlementTypeId();
+        easJson.put("settlementTypeId", settlementTypeId);
+        String applierId = vo.getApplierId();
+        easJson.put("applierId", applierId);
+        String useDeptId = vo.getUseDeptId();
+        easJson.put("useDepartmentId", useDeptId);
+        String costDeptId = vo.getCostDeptId();
+        easJson.put("costedDeptId", costDeptId);
+        String costCompanyId = vo.getCostCompanyId();
+        easJson.put("costedCompanyId", costCompanyId);
+        Integer isJT = vo.getIsJT();
+        easJson.put("isJT", isJT);
+        BigDecimal invoiceAMT = vo.getInvoiceAMT();
+        easJson.put("invoiceAmt", invoiceAMT);
+        BigDecimal rateAmount = vo.getRateAmount();
+        easJson.put("rateAmount", rateAmount);
+        String description = vo.getDescription();
+        easJson.put("description",description);
+//      立项分录
+        JSONArray marketConArray = new JSONArray();
+        List<MarketContDetailVO> marketContDetailVOS = vo.getMarketContDetailVOS();
+        if (marketContDetailVOS != null && marketContDetailVOS.size() > 0) {
+            for (MarketContDetailVO marketContDetailVO : marketContDetailVOS) {
+                JSONObject marketObj = new JSONObject();
+                marketObj.put("rate", marketContDetailVO.getRate());
+                marketObj.put("remark", marketContDetailVO.getRemark());
+                marketObj.put("date", marketContDetailVO.getFsdate());
+                marketObj.put("amount", marketContDetailVO.getAmount());
+                marketObj.put("content", marketContDetailVO.getContent());
+                marketConArray.add(marketObj);
+            }
+        }
+        easJson.put("marketConArray", marketConArray);
+//       费用清单
+        JSONArray costArray = new JSONArray();
+        List<CWTextBgVO> cwTextBgVOS = vo.getCwTextBgVOS();
+        if (cwTextBgVOS != null && cwTextBgVOS.size() > 0) {
+            for (CWTextBgVO cwTextBgVO : cwTextBgVOS) {
+                JSONObject costObj = new JSONObject();
+                costObj.put("amount", cwTextBgVO.getAmount());
+                costObj.put("expenseTypeId", cwTextBgVO.getExpenseTypeId());
+                costArray.add(costArray);
+            }
+        }
+        easJson.put("bgArray", costArray);
 
+//      保存到EAS附件
+        JSONArray attach = new JSONArray();
+        List<AttachmentsVO> attachmentsVOS = vo.getAttachmentsVOS();
+        if (attachmentsVOS != null && attachmentsVOS.size() > 0) {
+            for (AttachmentsVO attachmentsVO : attachmentsVOS) {
+                JSONObject object = new JSONObject();
+                String attachNum = attachmentsVO.getNum();
+                String webUrl = attachmentsVO.getWebUrl();
+                String fileUUID = attachmentsVO.getFileUUID();
+                String originalFilename = attachmentsVO.getOriginalFilename();
+//                    List<AttachmentsVO> attachmentsVOSList = attachmentMapper.selectByNumber(attachNum);
+//                    if (attachmentsVOSList != null && attachmentsVOSList.size() > 0) {
+                if (Util.isNotEmpty(webUrl) && Util.isNotEmpty(fileUUID) && Util.isNotEmpty(originalFilename)) {
+                    StringBuffer stringBuffer = new StringBuffer();
+                    String s = stringBuffer.append(webUrl).append("/").append(fileUUID).toString();
+                    object.put("FName", originalFilename == null ? "none" : originalFilename);
+                    object.put("FRemotePath", s == null ? "none" : s);
+                    attach.add(object);
+//                        }
+                }
+            }
+        }
+        easJson.put("attach", attach);
+        String result = null;
+        Call call = null;
+//        调用eas 保存方法进行保存
+        if (Util.isEmpty(flag) || flag.compareTo(false) == 0) {
+            call = getCall("EASURL", "saveContractwithouttext");
+            try {
+                System.out.println(easJson.toJSONString());
+                result = (String) call.invoke(new Object[]{easJson.toString()});
+            } catch (RemoteException e) {
+                e.printStackTrace();
+                throw new ServiceException(e.getMessage());
+            }
+        } else {
+            //            如果是驳回后重新提交 调用eas合同提交方法
+            call = getCall("EASURL", "submitContractwithouttext");
+            try {
+                System.out.println(easJson.toJSONString());
+                result = (String) call.invoke(new Object[]{easJson.toString()});
+            } catch (RemoteException e) {
+                e.printStackTrace();
+                throw new ServiceException(e.getMessage());
+            }
+        }
+//        接收返回eas信息
+        JSONObject object = JSONObject.parseObject(result);
+        if (result != null && object.get("result").toString().contains("fault")) {
+            noTextContractVO.setResult("fault");
+            throw new ServiceException(object.getString("message"));
+        } else if (result != null && object.get("result").toString().contains("success")) {
+//            成功保存后更改创建人为当前登录人
+            id = object.getString("id");
+            noTextContractVO.setId(id);
+            noTextContractVO.setResult("success");
+            TConContractwithouttext tConContractwithouttext = mapper.selectById(id);
+            JSONObject token = getToken();
+            String person = token.getString("person");
+            String creatorId = mapper.selectPersonId(person);
+            tConContractwithouttext.setFcreatorid(creatorId);
+            mapper.updateById(tConContractwithouttext);
+        }
+        //        保存附件到web表
+        if (Util.isNotEmpty(id) && vo.getAttachmentsVOS() != null && vo.getAttachmentsVOS().size() > 0) {
+            supplierapplyMapper.deletAttach(id);
+            ftpUtil.saveAttachMent(attachmentsVOS, id);
+        } else {
+            supplierapplyMapper.deletAttach(id);
+        }
+        return noTextContractVO;
+    }
+
+    @Override
+    public String getNoTextNum(NoTextContractVO vo) {
+        //        生成合同编码规则额："web"+组织编码+8位数流水号
+        DecimalFormat decimalFormat = new DecimalFormat("00000000");
+        Integer numRecord = mapper.selectNewNum();
+        int value = 0;
+        String format = null;
+        if (numRecord != null) {
+            value = value + numRecord + 1;
+            mapper.updateNumRecord(value);
+            format = decimalFormat.format(value);
+        }
+        JSONObject token = getToken();
+        String org = token.getString("org");
+        StringBuffer sb = new StringBuffer();
+        String newNumber = sb.append("WEB").append(org).append(format).toString();
+
+        return newNumber;
+    }
+
+    //    获取系统登录信息
+    private JSONObject getToken() {
+        JSONObject object = new JSONObject();
+
+        //       获取当前用户组织
+        String token = RequestHolder.getCurrentUser().getToken();
+        String dencrypt = null;
+        try {
+            dencrypt = RSAUtil.dencrypt(token, "pri.key");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        String[] split = dencrypt.split("&&");
+        String org = split[0];
+        String person = split[1];
+        object.put("org", org);
+        object.put("person", person);
+        return object;
+    }
 }

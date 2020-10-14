@@ -15,6 +15,7 @@ import java.util.List;
 public class NoTextContractVO {
 
     //    基参
+    private Boolean flag;
     private String id;
     private String title;
     private String num;
@@ -34,6 +35,7 @@ public class NoTextContractVO {
     //    附件
     private Integer ifHasAttach;
     private List<AttachmentsVO> attachmentsVOS;
+
     //    本位币金额
     @JsonSerialize(using = CustomBigDecimalSerialize.class, nullsUsing = CustomBigDecimalSerialize.class)
     private BigDecimal amount;
@@ -52,6 +54,9 @@ public class NoTextContractVO {
     //框架合约
     private String programContractId;
     private String programContractName;
+//    费用归属
+    private String costAccountId;
+    private String costAccountName;
     //  币别
     private String currencyId;
     private String currencyName;
@@ -60,7 +65,7 @@ public class NoTextContractVO {
     private String receiverType;
     private String personId;
     private String personName;
-    private String FReceiveUnitID;
+    private String receiveUnitID;
     //付款类别
     private String payBillTypeId;
     private String payBillTypeName;
@@ -96,7 +101,11 @@ public class NoTextContractVO {
 
     //    预算承担公司、部门
     private String costDeptId;
+    private String costDeptName;
     private String costCompanyId;
+    private String costCompanyName;
+//是否后评估审核 0 1
+    private Integer isJT;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     @JsonDeserialize(using = DateJsonDeserializer.class)
@@ -122,4 +131,7 @@ public class NoTextContractVO {
     private String marketProjectId;
     private String marketProjectName;
     private List<MarketContDetailVO> marketContDetailVOS;
+//    eas返回
+    private String result;
+    private String message;
 }
