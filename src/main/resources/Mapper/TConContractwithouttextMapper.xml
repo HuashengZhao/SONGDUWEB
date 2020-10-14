@@ -65,7 +65,7 @@
         bill.FPERSONID as personId,p.FNAME_L2 as personName,unit.FNAME_L2 as orgName,pro.FNAME_L2 as projectName,
         pbt.FNAME_L2 as payBillTypeName,bill.FCONTROLUNITID as orgId,pct.FNAME_L2 as payContentName,bill.FPERIODID as periodId,
         per.FPERIODYEAR as periodYear,per.FPERIODNUMBER as periodNumber,bill.FTAXERQUA as taxerQua,bill.FTAXERNUM as taxerNumber,
-        bank.fnumber as unionBankNum,bill.FBANKACCT as bankAccount,bill.bank as bank,bill.FSETTLEMENTTYPEID as settlementTypeId,
+        bank.fnumber as unionBankNum,bill.FBANKACCT as bankAccount,bill.fbank as bank,bill.FSETTLEMENTTYPEID as settlementTypeId,
         st.FNAME_L2 as settlementTypeName,bill.FApplierId as applierId,p1.FNAME_L2 as applierName,bill.FUseDepartmentID as useDeptId,
         org.FNAME_L2 as useDeptName,bill.FCostedDeptId as costDeptId,bill.FCOSTEDCOMPANYID as costCompanyId,
         cc.FNAME_L2 as costDeptName,cp.FNAME_L2 as costCompanyName,bill.FMarketProjectId as marketProjectId,
