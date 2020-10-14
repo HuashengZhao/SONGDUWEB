@@ -24,4 +24,6 @@ public interface TConContractwithouttextMapper extends BaseMapper<TConContractwi
     Integer selectNewNum();
 
     void updateNumRecord(int value);
+
+    String selectPersonId(String person);
 }

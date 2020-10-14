@@ -100,4 +100,7 @@
     <select id="selectNewNum" resultType="java.lang.Integer">
               select value from oaNumberRecord where type like '%notext%'
     </select>
+    <select id="selectPersonId" resultType="java.lang.String">
+        select fid from T_PM_USER where FNUMBER=#{person}
+    </select>
 </mapper>
