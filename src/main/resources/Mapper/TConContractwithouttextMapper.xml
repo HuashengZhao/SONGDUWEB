@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.EAS.mapper.TConContractwithouttextMapper">
+    <update id="updateNumRecord">
+        update oaNumberRecord set value=#{value} where type='notext'
+    </update>
 
     <select id="selectDatas" resultType="com.example.EAS.vo.NoTextContractVO">
         select bill.fid as id,bill.FNUMBER as num,bill.FNAME as title,
@@ -93,5 +96,8 @@
         left join T_ORG_Company cp on cp.fid=bill.FCOSTEDCOMPANYID
         left join T_CON_MarketProject mar on mar.fid=bill.FMARKETPROJECTID
         where bill.fid=#{id}
+    </select>
+    <select id="selectNewNum" resultType="java.lang.Integer">
+              select value from oaNumberRecord where type like '%notext%'
     </select>
 </mapper>

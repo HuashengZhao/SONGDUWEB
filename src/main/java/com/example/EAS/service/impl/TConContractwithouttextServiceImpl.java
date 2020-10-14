@@ -1,5 +1,6 @@
 package com.example.EAS.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.EAS.mapper.*;
@@ -7,9 +8,7 @@ import com.example.EAS.model.TBcExpensetype;
 import com.example.EAS.model.TConContractwithouttext;
 import com.example.EAS.model.TConCwtextbgentry;
 import com.example.EAS.service.ITConContractwithouttextService;
-import com.example.EAS.util.FileContentTypeUtils;
-import com.example.EAS.util.PageBean;
-import com.example.EAS.util.Util;
+import com.example.EAS.util.*;
 import com.example.EAS.vo.AttachmentsVO;
 import com.example.EAS.vo.CWTextBgVO;
 import com.example.EAS.vo.MarketContDetailVO;
@@ -20,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,6 +45,8 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
 
     @Autowired
     private TConCwtextbgentryMapper cwtextbgentryMapper;
+    @Autowired
+    private TOrgBaseunitMapper orgMapper;
 
 
     @Override
@@ -224,5 +226,43 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         return returnVO;
     }
 
+    @Override
+    public NoTextContractVO saveNoTextBill(NoTextContractVO vo) {
+        JSONObject easJson = new JSONObject();
+        NoTextContractVO noTextContractVO = new NoTextContractVO();
 
+        String id = vo.getId();
+        easJson.put("id",id);
+
+        return null;
+    }
+
+    @Override
+    public String getNoTextNum(NoTextContractVO vo) {
+        //        生成合同编码规则额："web"+组织编码+8位数流水号
+        DecimalFormat decimalFormat=new DecimalFormat("00000000");
+        Integer numRecord = mapper.selectNewNum();
+        int value=0;
+        String format=null;
+        if (numRecord != null) {
+            value = value + numRecord + 1;
+            mapper.updateNumRecord(value);
+            format = decimalFormat.format(value);
+        }
+//       获取当前用户组织
+        String token = RequestHolder.getCurrentUser().getToken();
+        String dencrypt = null;
+        try {
+            dencrypt = RSAUtil.dencrypt(token, "pri.key");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        String[] split = dencrypt.split("&&");
+        String org = split[0];
+        String person = split[1];
+        StringBuffer sb = new StringBuffer();
+        String newNumber = sb.append("WEB").append(org).append(format).toString();
+
+        return newNumber;
+    }
 }

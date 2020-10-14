@@ -18,7 +18,6 @@ public class InterceptorConfig extends WebMvcConfigurationSupport {
     @Autowired
     AuthTokenInterceptor authTokenInterceptor;
 
-
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(authTokenInterceptor)
