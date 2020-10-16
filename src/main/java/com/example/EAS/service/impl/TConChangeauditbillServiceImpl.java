@@ -155,7 +155,7 @@ public class TConChangeauditbillServiceImpl extends ServiceImpl<TConChangeauditb
             List<AttachmentsVO> attachmentsVOS = attachmentMapper.selectAttachMent(id);
             if (attachmentsVOS != null && attachmentsVOS.size() > 0) {
                 for (AttachmentsVO attachmentsVO : attachmentsVOS) {
-                    String fileUrl = attachmentsVO.getFileUrl();
+                    String fileUrl = attachmentsVO.getWebUrl();
                     if (Util.isNotEmpty(fileUrl)) {
                         String type = fileUrl.split("\\.")[fileUrl.split("\\.").length - 1];
                         attachmentsVO.setFileType(type);

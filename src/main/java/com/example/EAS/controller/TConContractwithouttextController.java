@@ -86,6 +86,24 @@ public class TConContractwithouttextController {
     }
 
     /**
+     * 提交无文本合同
+     *
+     * @param body
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/submitNoTextBill", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public R submitNoTextBill(@RequestBody String body) throws Exception {
+        HashMap<String, Object> result = new HashMap<>(10);
+        NoTextContractVO vo = BodyDecodeUtil.decodeBody(body, NoTextContractVO.class);
+        NoTextContractVO notext = service.submitNoTextBill(vo);
+        result.put("data", notext);
+        result.put("msg", UtilMessage.GET_MSG_SUCCESS);
+        result.put("code", HttpStatus.SC_OK);
+        return R.ok(result);
+    }
+
+    /**
      * 新增时获取无文本合同编码
      *
      * @param body
@@ -98,7 +116,25 @@ public class TConContractwithouttextController {
         NoTextContractVO vo = BodyDecodeUtil.decodeBody(body, NoTextContractVO.class);
         String newNumber = service.getNoTextNum(vo);
         result.put("data", newNumber);
-        result.put("msg", UtilMessage.GET_MSG_SUCCESS);
+        result.put("msg", UtilMessage.SAVE_MSG_SUCCESS);
+        result.put("code", HttpStatus.SC_OK);
+        return R.ok(result);
+    }
+
+
+    /**
+     * 批量刪除无文本合同编码
+     *
+     * @param body
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/deleteNoTextBills", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public R deleteNoTextNum(@RequestBody String body) throws Exception {
+        HashMap<String, Object> result = new HashMap<>(10);
+        NoTextContractVO vo = BodyDecodeUtil.decodeBody(body, NoTextContractVO.class);
+        service.deleteNoTextNum(vo);
+        result.put("msg", UtilMessage.DELETE_SUCCESS);
         result.put("code", HttpStatus.SC_OK);
         return R.ok(result);
     }

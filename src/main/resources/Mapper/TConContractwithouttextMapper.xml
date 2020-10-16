@@ -103,4 +103,13 @@
     <select id="selectPersonId" resultType="java.lang.String">
         select fid from T_PM_USER where FNUMBER=#{person}
     </select>
+    <select id="selectMarketProjectName" resultType="java.lang.String">
+        select FNAME from T_CON_MarketProject where fid=#{marketProjectId}
+    </select>
+    <select id="selectContractType" resultType="java.lang.String">
+        select FNAME_L2  from T_FDC_CONTRACTTYPE where fid=#{contractTypeId}
+    </select>
+    <select id="selectPayContentName" resultType="java.lang.String">
+        select FNAME_L2 from T_CON_PayContentType where fid=#{payContentId}
+    </select>
 </mapper>

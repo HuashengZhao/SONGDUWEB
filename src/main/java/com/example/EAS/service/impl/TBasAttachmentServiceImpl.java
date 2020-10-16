@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
  * @author watson
@@ -28,9 +28,11 @@ public class TBasAttachmentServiceImpl extends ServiceImpl<TBasAttachmentMapper,
     private FtpUtil ftpUtil;
 
     @Override
-    public void downLoadFile(HttpServletRequest request, HttpServletResponse response, String fileUrl, String title) {
-          String fileName = fileUrl.split("/")[fileUrl.split("/").length-1];
-          fileUrl=fileUrl.replace(fileName,"");
-        ftpUtil.downLoadEASAttachments(request,response,fileUrl,fileName);
+    public void downLoadFile(HttpServletRequest request, HttpServletResponse response, String webUrl) {
+        String fileName = webUrl.split("/")[webUrl.split("/").length - 1];
+        webUrl = webUrl.replace(fileName, "");
+        String replace = webUrl.replace("/data", "");
+        ftpUtil.downLoadEASAttachments(request, response, replace, fileName);
     }
+
 }

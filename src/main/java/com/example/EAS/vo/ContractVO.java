@@ -158,4 +158,7 @@ public class ContractVO {
     private Integer isMarket;
 //    是否调用eas提交方法
     private Boolean flag;
+//   附件预览地址
+    private String attLink;
+
 }

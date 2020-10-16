@@ -22,4 +22,8 @@ public interface ITConContractwithouttextService extends IService<TConContractwi
     NoTextContractVO saveNoTextBill(NoTextContractVO vo);
 
     String getNoTextNum(NoTextContractVO vo);
+
+    NoTextContractVO submitNoTextBill(NoTextContractVO vo);
+
+    void deleteNoTextNum(NoTextContractVO vo);
 }

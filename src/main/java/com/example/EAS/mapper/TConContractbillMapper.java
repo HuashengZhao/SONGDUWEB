@@ -53,4 +53,8 @@ public interface TConContractbillMapper extends BaseMapper<TConContractbill> {
     List<String> selectHYGH(String hyghId);
 
     List<String> selectHYGHInContract(String hyghId);
+
+    String selectContractType(String contractWFTypeId);
+
+
 }
