@@ -168,12 +168,12 @@
     select cb.FID id,cb.fbookeddate bizDate,cb.FState state,cb.FHasSettled hasSettled,ct.fname_l2 as conTypeName,
     cb.fnumber num,cb.FNAME as conName,pc.fname_l2 as hygh,cb.fmaincontractnumber as mainNumber,
     cur.fname_l2 curName,cb.FSrcAmount srcAmount,cb.FOriginalAmount originalAmount,cb.famount amount,
-    supb.fname_l2 as partBName,supb.FID as partB,supc.fname_l2 as partCName,supc.fid as partC,cb.FCONTRACTSOURCE as csName,
+    supb.fname_l2 as partBName,supb.FID as partB,supc.fname_l2 as partCName,supc.fid as partC,cs.FNAME_L2 as csName,
     cb.fsigndate signDate,oa.fname_l2 as deptName,p.fname_l2 as personName,oaa.FNAME_L2 creatDept,
     ldp.fname_l2 as partAName,ldp.FID as partA,cb.FCostProperty costProperty,cb.FContractPropert contractNature,
     cb.FIsArchived isArchived, u.fname_l2 auditor,cb.FLastUpdateTime lastAuditTime,uc.fname_l2 as creator,
     cb.fcreatetime createTime,cb.FIsRespite isRespite,cb.FCONTRACTTYPEID as conTypeId,cb.FEXRATE as exRate,
-    cb.FMARKETPROJECTID as marketProjectId,
+    cb.FMARKETPROJECTID as marketProjectId,cb.FMPCOSTACCOUNTID as costAccountId,
     cb.FCURRENCYID as currencyId,p.FNUMBER as person,cb.FCURPROJECTID as projectId,cp.FNAME_L2 as projectName,
     cb.FORGUNITID as orgId,un.FNAME_L2 as orgName,mar.FNAME as marketProjectName,cost.FNAME_L2 as costAccountName,
     cb.FGRTRATE as grtRate,cb.FGRTAMOUNT as grtAmount,cb.FSTARTDATE as startDate,cb.FENDDATE as endDate,
@@ -198,6 +198,7 @@
     left join T_FDC_CostAccount cost on cost.fid=cb.FMPCOSTACCOUNTID
     left join T_CON_ContractWFType wf on wf.fid=cb.FCONTRACTWFTYPEID
     left join T_CON_BankNum bank on bank.fid=cb.FLXNUMID
+    left join T_FDC_ContractSource cs on cs.fid=cb.FCONTRACTSOURCEID
 
     where cb.FID=#{id}
     </select>

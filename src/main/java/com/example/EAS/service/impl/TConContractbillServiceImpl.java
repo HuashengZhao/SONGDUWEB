@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.EAS.mapper.*;
 import com.example.EAS.model.TConContractbill;
-import com.example.EAS.model.TConContractmarketentry;
+import com.example.EAS.model.TConMarketprojectcostentry;
 import com.example.EAS.service.ITConContractbillService;
 import com.example.EAS.util.*;
 import com.example.EAS.vo.*;
@@ -49,12 +49,13 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
     @Autowired
     private TConContractmarketentryMapper contractmarketentryMapper;
     @Autowired
+    private TConMarketprojectcostentryMapper tConMarketprojectcostentryMapper;
+    @Autowired
     private FtpUtil ftpUtil;
     @Autowired
     private OaIdUtil oaIdUtil;
     DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     org.apache.axis.client.Service service = new org.apache.axis.client.Service();
-
 
     public Call getCall(String type, String operationName) {
 
@@ -267,8 +268,10 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             easJson.put("isJT", "false");
         }
         if (Util.isNotEmpty(marketProjectId)) {
-            TConContractmarketentry contractmarketentry = contractmarketentryMapper.selectOne(new QueryWrapper<TConContractmarketentry>()
-                    .eq("FHEADID", marketProjectId));
+            TConMarketprojectcostentry contractmarketentry =
+                    tConMarketprojectcostentryMapper.selectOne(new QueryWrapper<TConMarketprojectcostentry>()
+                    .eq("FHEADID", marketProjectId)
+                    .eq("FTYPE","CONTRACT"));
 
 //            Long fisjt = tConMarketproject.getFisjt();
 //            if (fisjt != null && fisjt == 1) {
@@ -283,7 +286,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             if (Util.isNotEmpty(famount) && Util.isNotEmpty(voAmount)) {
                 BigDecimal famountDe = new BigDecimal(famount);
                 BigDecimal voAmountDe = new BigDecimal(voAmount);
-                if (famountDe.compareTo(voAmountDe) == -1) {
+                if (voAmountDe.compareTo(famountDe) == 1) {
                     throw new ServiceException(UtilMessage.CONTRACT_AMOUNT_BEYOND);
                 }
             }
@@ -342,7 +345,9 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
 //        合同流程发起类型 前端写死 后端存值
         String contractWFStartType = vo.getContractWFStartType();
         easJson.put("contractWFStartType", contractWFStartType);
-        String creator = vo.getCreator();
+//        获取当前登录人
+        JSONObject token = getToken();
+        String creator = token.getString("person");
         String creatorId = null;
         if (creator != null) {
             creatorId = mapper.selectUserByNum(creator);

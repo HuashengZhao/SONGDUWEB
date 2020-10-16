@@ -8,6 +8,7 @@ import com.example.EAS.mapper.*;
 import com.example.EAS.model.TBcExpensetype;
 import com.example.EAS.model.TConContractwithouttext;
 import com.example.EAS.model.TConCwtextbgentry;
+import com.example.EAS.model.TConMarketprojectcostentry;
 import com.example.EAS.service.ITConContractwithouttextService;
 import com.example.EAS.util.*;
 import com.example.EAS.vo.*;
@@ -54,6 +55,8 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
     private TOrgBaseunitMapper orgMapper;
     @Autowired
     private TConSupplierapplyMapper supplierapplyMapper;
+    @Autowired
+    private TConMarketprojectcostentryMapper tConMarketprojectcostentryMapper;
     @Autowired
     private FtpUtil ftpUtil;
     @Autowired
@@ -252,9 +255,14 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             }
             //        营销合同分摊明细
             List<MarketContDetailVO> marketContDetailVOS = contractbillMapper.selectMarketCons(vo.getId());
+            TConContractwithouttext tConContractwithouttext = mapper.selectById(id);
+            Long fisjt = tConContractwithouttext.getFisjt();
             if (marketContDetailVOS != null && marketContDetailVOS.size() > 0) {
                 for (MarketContDetailVO marketContDetailVO : marketContDetailVOS) {
-
+                    returnVO.setIsjt(0);
+                    if (Util.isNotEmpty(fisjt) && fisjt == 1) {
+                        returnVO.setIsjt(1);
+                    }
                 }
                 returnVO.setMarketContDetailVOS(marketContDetailVOS);
             }
@@ -284,6 +292,24 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         easJson.put("hygh", programContractId);
         String marketProjectId = vo.getMarketProjectId();
         easJson.put("marketProjectId", marketProjectId);
+//        立项金额控制合同金额
+        if (Util.isNotEmpty(marketProjectId)){
+            TConMarketprojectcostentry contractmarketentry =
+                    tConMarketprojectcostentryMapper.selectOne(new QueryWrapper<TConMarketprojectcostentry>()
+                            .eq("FHEADID", marketProjectId)
+                            .eq("FTYPE","CONTRACT"));
+
+            if (Util.isNotEmpty(contractmarketentry)) {
+                Double famount = contractmarketentry.getFamount();
+                BigDecimal voAmount = vo.getAmount();
+                if (Util.isNotEmpty(famount) && Util.isNotEmpty(voAmount)) {
+                    BigDecimal famountDe = new BigDecimal(famount);
+                    if (voAmount.compareTo(famountDe) == 1) {
+                        throw new ServiceException(UtilMessage.CONTRACT_AMOUNT_BEYOND);
+                    }
+                }
+            }
+        }
         String costAccountId = vo.getCostAccountId();
         easJson.put("costAccountId", costAccountId);
         String currencyId = vo.getCurrencyId();
@@ -330,7 +356,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         easJson.put("costedDeptId", costDeptId);
         String costCompanyId = vo.getCostCompanyId();
         easJson.put("costedCompanyId", costCompanyId);
-        Integer isJT = vo.getIsJT();
+        Integer isJT = vo.getIsjt();
         easJson.put("isJT", isJT);
         BigDecimal invoiceAMT = vo.getInvoiceAMT();
         easJson.put("invoiceAmt", invoiceAMT);

@@ -22,7 +22,7 @@
         update T_CON_SUPPLIERAPPLY set FCREATORID = #{creatorId} where fid=#{id}
     </update>
     <delete id="deleteData">
-        delete from oridrecord where billid=#{billId}
+        delete from OAIDRECORD where billid=#{billId}
     </delete>
     <delete id="deletAttach">
         delete from webattachment where easId=#{id}

@@ -105,7 +105,7 @@ public class NoTextContractVO {
     private String costCompanyId;
     private String costCompanyName;
 //是否后评估审核 0 1
-    private Integer isJT;
+    private Integer isjt;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     @JsonDeserialize(using = DateJsonDeserializer.class)
