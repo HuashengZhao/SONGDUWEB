@@ -106,7 +106,7 @@ public class TConContractbillController {
         HashMap<String, Object> result = new HashMap<>(10);
         ContractVO vo = BodyDecodeUtil.decodeBody(body, ContractVO.class);
         service.deleteContractBills(vo);
-        result.put("msg", UtilMessage.SUBMIT_SUCCESS);
+        result.put("msg", UtilMessage.DELETE_SUCCESS);
         result.put("code", HttpStatus.SC_OK);
         return R.ok(result);
     }
@@ -120,7 +120,7 @@ public class TConContractbillController {
         ContractVO vo = BodyDecodeUtil.decodeBody(body, ContractVO.class);
         List<ContractVO> vos =  service.getMainContractNums(vo);
         result.put("data", vos);
-        result.put("msg", UtilMessage.SUBMIT_SUCCESS);
+        result.put("msg", UtilMessage.GET_MSG_SUCCESS);
         result.put("code", HttpStatus.SC_OK);
         return R.ok(result);
     }

@@ -16,6 +16,6 @@ import javax.servlet.http.HttpServletResponse;
  */
 public interface ITBasAttachmentService extends IService<TBasAttachment> {
 
-    void downLoadFile(HttpServletRequest request, HttpServletResponse response, String fileUrl, String title);
+    void downLoadFile(HttpServletRequest request, HttpServletResponse response, String webUrl);
 
 }

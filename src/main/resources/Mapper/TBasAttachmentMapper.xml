@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.EAS.mapper.TBasAttachmentMapper">
+    <update id="updateAttLink">
+    update webattachment set attLink =#{attLink} where easid=#{id} and ORIGINALFILENAME like '%#{attName}%'
+    </update>
 
     <select id="selectAttachMent" resultType="com.example.EAS.vo.AttachmentsVO">
         select att.FNAME_L2 as title,att.FREMOTEPATH as webUrl,ass.FBOID as easId,att.FCREATETIME as createTime,

@@ -36,6 +36,8 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
     private TConChangeauditbillMapper auditMapper;
     @Autowired
     private TConContractchangesettlebillMapper settleMapper;
+    @Autowired
+    private TConContractwithouttextMapper noTextMapper;
 
 
     org.apache.axis.client.Service service = new org.apache.axis.client.Service();
@@ -122,16 +124,21 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
             }
             try {
 
-//        如果oa作废 修改状态为保存
+//        如果oa作废 修改状态为保存 删除easid 跟oaid的关联
                 if (result.contains("02")) {
                     if (oaid != null && easid != null) {
-                        oaIdUtil.getString(easid, oaid);
+                        oaIdUtil.deleteId(easid, oaid);
                     }
                     if (type.contains("01")) {
+                        TConContractbill tConContractbill = contractbillMapper.selectById(easid);
+                        tConContractbill.setFstate("1SAVED");
+                        contractbillMapper.updateById(tConContractbill);
                     } else if (type.contains("02")) {
 
                     } else if (type.contains("03")) {
-
+                        TConContractwithouttext tConContractwithouttext = noTextMapper.selectById(easid);
+                        tConContractwithouttext.setFstate("1SAVED");
+                        noTextMapper.updateById(tConContractwithouttext);
                     } else if (type.contains("04")) {
                         TConSupplierapply tConSupplierapply = supplierapplyMapper.selectById(easid);
                         tConSupplierapply.setFstate("1SAVED");
@@ -156,13 +163,21 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
 //        如果驳回 修改状态为已提交 并保留oaid
             if (result.contains("03")) {
                 if (type.contains("01")) {
+                    if (oaid != null && easid != null) {
+                        oaIdUtil.getString(easid, oaid);
+                    }
                     TConContractbill tConContractbill = contractbillMapper.selectById(easid);
                     tConContractbill.setFstate("2SUBMITTED");
                     contractbillMapper.updateById(tConContractbill);
                 } else if (type.contains("02")) {
 
                 } else if (type.contains("03")) {
-
+                    if (oaid != null && easid != null) {
+                        oaIdUtil.getString(easid, oaid);
+                    }
+                    TConContractwithouttext tConContractwithouttext = noTextMapper.selectById(easid);
+                    tConContractwithouttext.setFstate("2SUBMITTED");
+                    noTextMapper.updateById(tConContractwithouttext);
                 } else if (type.contains("04")) {
                     if (oaid != null && easid != null) {
                         oaIdUtil.getString(easid, oaid);
@@ -243,7 +258,12 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
         } else if (type.contains("02")) {
 
         } else if (type.contains("03")) {
-
+            TConContractwithouttext tConContractwithouttext = noTextMapper.selectById(easId);
+            if (Util.isEmpty(tConContractwithouttext)) {
+                obj.put("code", "2");
+                obj.put("msg", "fault");
+                obj.put("content", "目标eas单据不存在");
+            }
         } else if (type.contains("04")) {
             TConSupplierapply tConSupplierapply = supplierapplyMapper.selectById(easId);
             if (Util.isEmpty(tConSupplierapply)) {

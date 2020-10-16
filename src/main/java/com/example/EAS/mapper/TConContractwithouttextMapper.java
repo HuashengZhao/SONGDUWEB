@@ -26,4 +26,11 @@ public interface TConContractwithouttextMapper extends BaseMapper<TConContractwi
     void updateNumRecord(int value);
 
     String selectPersonId(String person);
+
+    String selectMarketProjectName(String marketProjectId);
+
+    String selectContractType(String contractTypeId);
+
+    String selectPayContentName(String payContentId);
+
 }

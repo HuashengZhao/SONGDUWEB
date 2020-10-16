@@ -1,7 +1,5 @@
 package com.example.EAS.util;
 
-import org.springframework.context.annotation.Configuration;
-
 public class FileContentTypeUtils {
 
     public static String contentType(String FilenameExtension) {

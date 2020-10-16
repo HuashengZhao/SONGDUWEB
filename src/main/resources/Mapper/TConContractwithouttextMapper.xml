@@ -83,7 +83,7 @@
         left join T_PM_USER u on u.fid=bill.FCREATORID
         left join T_PM_User u1 on u1.fid=bill.FAUDITORID
         left join T_BD_Person p on p.fid=bill.FPERSONID
-        left join T_BD_Person p1 on p1.fid=bill.FPERSONID
+        left join T_BD_Person p1 on p1.fid=bill.FApplierId
         left join T_ORG_CTRLUNIT unit on unit.fid=bill.FControlUnitID
         left join T_FDC_CurProject pro on pro.fid=bill.FCURPROJECTID
         left join T_CAS_PaymentBillType pbt on pbt.fid=bill.FPAYBILLTYPEID
@@ -102,5 +102,14 @@
     </select>
     <select id="selectPersonId" resultType="java.lang.String">
         select fid from T_PM_USER where FNUMBER=#{person}
+    </select>
+    <select id="selectMarketProjectName" resultType="java.lang.String">
+        select FNAME from T_CON_MarketProject where fid=#{marketProjectId}
+    </select>
+    <select id="selectContractType" resultType="java.lang.String">
+        select FNAME_L2  from T_FDC_CONTRACTTYPE where fid=#{contractTypeId}
+    </select>
+    <select id="selectPayContentName" resultType="java.lang.String">
+        select FNAME_L2 from T_CON_PayContentType where fid=#{payContentId}
     </select>
 </mapper>

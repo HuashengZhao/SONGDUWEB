@@ -37,5 +37,7 @@ public class AttachmentsVO {
     private List<MultipartFile> multipartFileList;
 
     private String fboid;
+//    附件预览地址
+    private String attLink;
 
 }

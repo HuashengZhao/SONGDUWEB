@@ -32,7 +32,7 @@ public class TBasAttachmentController {
      * @return
      */
     @RequestMapping(value = "/downLoadEASAttachment",method = RequestMethod.GET)
-    public void download(HttpServletRequest request, HttpServletResponse response, String fileUrl, String title) throws Exception{
-        service.downLoadFile(request,response,fileUrl,title);
+    public void download(HttpServletRequest request, HttpServletResponse response, String webUrl) throws Exception{
+        service.downLoadFile(request,response,webUrl);
     }
 }

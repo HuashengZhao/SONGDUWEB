@@ -134,4 +134,6 @@ public class NoTextContractVO {
 //    eas返回
     private String result;
     private String message;
+
+    private List<String> idList;
 }

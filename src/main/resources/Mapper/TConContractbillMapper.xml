@@ -158,7 +158,7 @@
     </select>
 
     <select id="selectMarketCons" resultType="com.example.EAS.vo.MarketContDetailVO">
-    select FID as id,FAMOUNT as amount,FCONTENT as content,
+    select FID as id,FAMOUNT as amount,FCONTENT as content,frate as rate,
     FDATE as fsdate,fremark as remark
     from T_CON_ContractMarketEntry
     where fheadid=#{id}
@@ -173,6 +173,7 @@
     ldp.fname_l2 as partAName,ldp.FID as partA,cb.FCostProperty costProperty,cb.FContractPropert contractNature,
     cb.FIsArchived isArchived, u.fname_l2 auditor,cb.FLastUpdateTime lastAuditTime,uc.fname_l2 as creator,
     cb.fcreatetime createTime,cb.FIsRespite isRespite,cb.FCONTRACTTYPEID as conTypeId,cb.FEXRATE as exRate,
+    cb.FMARKETPROJECTID as marketProjectId,
     cb.FCURRENCYID as currencyId,p.FNUMBER as person,cb.FCURPROJECTID as projectId,cp.FNAME_L2 as projectName,
     cb.FORGUNITID as orgId,un.FNAME_L2 as orgName,mar.FNAME as marketProjectName,cost.FNAME_L2 as costAccountName,
     cb.FGRTRATE as grtRate,cb.FGRTAMOUNT as grtAmount,cb.FSTARTDATE as startDate,cb.FENDDATE as endDate,
@@ -215,6 +216,9 @@
     </select>
     <select id="selectHYGHInContract" resultType="java.lang.String">
         select * from T_CON_ContractBill where FProgrammingContract=#{hyghId,jdbcType=VARCHAR}
+    </select>
+    <select id="selectContractType" resultType="java.lang.String">
+        select FNAME_L2 from T_CON_ContractWFType where fid=#{contractWFTypeId}
     </select>
 
 
