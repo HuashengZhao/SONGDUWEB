@@ -183,7 +183,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
     @Override
     public NoTextContractVO viewNoTextBill(NoTextContractVO vo) {
         String id = vo.getId();
-        if (Util.isNotEmpty(vo.getId())) {
+        if (Util.isEmpty(vo.getId())) {
             return null;
         }
         NoTextContractVO returnVO = mapper.selectDataByID(id);
