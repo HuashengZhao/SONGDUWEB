@@ -57,4 +57,6 @@ public interface TConContractbillMapper extends BaseMapper<TConContractbill> {
     String selectContractType(String contractWFTypeId);
 
 
+    String selectContractSourceId(String csName);
+
 }

@@ -221,6 +221,9 @@
     <select id="selectContractType" resultType="java.lang.String">
         select FNAME_L2 from T_CON_ContractWFType where fid=#{contractWFTypeId}
     </select>
+    <select id="selectContractSourceId" resultType="java.lang.String">
+        select fid from T_FDC_ContractSource where FNAME_L2 like CONCAT(CONCAT('%',#{csName}),'%')
+    </select>
 
 
 </mapper>

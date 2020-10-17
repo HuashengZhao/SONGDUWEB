@@ -313,7 +313,8 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         String grtRate = vo.getGrtRate();
         easJson.put("grtRate", grtRate);
         String csName = vo.getCsName();
-        easJson.put("csName", csName);
+       String contractSourceId = mapper.selectContractSourceId(csName);
+        easJson.put("contractSourceId", contractSourceId);
         LocalDateTime startDate = vo.getStartDate();
         if (Util.isNotEmpty(startDate)) {
             String format = df.format(startDate);
