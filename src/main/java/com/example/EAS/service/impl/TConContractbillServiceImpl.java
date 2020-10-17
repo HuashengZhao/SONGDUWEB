@@ -304,7 +304,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         String amount = vo.getAmount();
         easJson.put("amount", amount);
         String amountBIG = vo.getAmountBIG();
-        String exRate = vo.getExRate();
+        BigDecimal exRate = vo.getExRate();
         easJson.put("exRate", exRate);
         LocalDateTime bizDate = vo.getBizDate();
         easJson.put("bizDate", bizDate);

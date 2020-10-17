@@ -1,10 +1,13 @@
 package com.example.EAS.vo;
 
+import com.example.EAS.util.CustomBigDecimalSerialize;
 import com.example.EAS.util.DateJsonDeserializer;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -38,7 +41,8 @@ public class ContractVO {
     private String currencyId;
     private String curName;
     //    汇率
-    private String exRate;
+    @JsonSerialize(using = CustomBigDecimalSerialize.class, nullsUsing = CustomBigDecimalSerialize.class)
+    private BigDecimal exRate;
     //    原主合同金额
     private String srcAmount;
     //    原币金额
