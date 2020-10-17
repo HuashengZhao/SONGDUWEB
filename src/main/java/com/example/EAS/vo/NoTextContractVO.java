@@ -60,12 +60,16 @@ public class NoTextContractVO {
     //  币别
     private String currencyId;
     private String currencyName;
-    //收款人  收款单位
+    //收款人  收款单位 收款单位来自对应的付款申请单的receiveUnitId
+//    收款单位id  存到付款申请单中的id
+    private String supplierId;
     private String receiverName;
     private String receiverType;
     private String personId;
     private String personName;
+    //    实际收款单位 存到表中的 freceiveUnitId
     private String receiveUnitID;
+    private String realReceiveUnitName;
     //付款类别
     private String payBillTypeId;
     private String payBillTypeName;

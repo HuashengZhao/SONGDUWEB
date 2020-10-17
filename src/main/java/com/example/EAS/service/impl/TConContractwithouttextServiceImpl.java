@@ -208,6 +208,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
                 }
                 returnVO.setAttachmentsVOS(attachmentsVOS);
             }
+//
 //            期間
             String periodYear = returnVO.getPeriodYear();
             String periodNumber = returnVO.getPeriodNumber();
@@ -226,11 +227,12 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
                     returnVO.setTaxerQua("非增值税纳税人");
                 }
             }
-//           收款人類型
+//           收款人類型 收款单位名称
             returnVO.setReceiverType("供应商");
             String personId = returnVO.getPersonId();
             if (Util.isNotEmpty(personId)) {
                 returnVO.setReceiverType("职员");
+                returnVO.setReceiverName(returnVO.getPersonName()==null?null:returnVO.getPersonName());
             }
 //          费用清单
             List<CWTextBgVO> cwTextBgVOS = new ArrayList<>();
@@ -364,6 +366,10 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         easJson.put("rateAmount", rateAmount);
         String description = vo.getDescription();
         easJson.put("description", description);
+        String supplierId = vo.getSupplierId();
+        easJson.put("realSupplierId",supplierId);
+        String receiverType = vo.getReceiverType();
+        easJson.put("receiverType",vo.getReceiverType());
 //      立项分录
         JSONArray marketConArray = new JSONArray();
         List<MarketContDetailVO> marketContDetailVOS = vo.getMarketContDetailVOS();

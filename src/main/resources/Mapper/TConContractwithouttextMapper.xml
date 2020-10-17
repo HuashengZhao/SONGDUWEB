@@ -63,7 +63,7 @@
         bill.FCONTRACTTYPEID as contractTypeId,ct.FNAME_L2 as contractTypeName,bill.FLXNUMID as unionBankId,
         bill.FProgrammingContract as programContractId,pc.FNAME_L2 as programContractName,
         bill.FCURRENCYID as currencyId,cur.FNAME_L2 as currencyName,bill.FAMOUNT as amount,bill.FORIGINALAMOUNT as oriAmount,
-        sup.FNAME_L2 as receiverName,bill.FSIGNDATE as signDate,u.FNAME_L2 as creatorName,bill.FCREATETIME as createTime,
+        sup.FNAME_L2 as realReceiveUnitName,bill.FSIGNDATE as signDate,u.FNAME_L2 as creatorName,bill.FCREATETIME as createTime,
         bill.FAUDITTIME as auditTime,bill.FAUDITORID as auditorId,u1.FNAME_L2 as auditorName,
         bill.FPERSONID as personId,p.FNAME_L2 as personName,unit.FNAME_L2 as orgName,pro.FNAME_L2 as projectName,
         pbt.FNAME_L2 as payBillTypeName,bill.FCONTROLUNITID as orgId,pct.FNAME_L2 as payContentName,bill.FPERIODID as periodId,
@@ -73,7 +73,8 @@
         org.FNAME_L2 as useDeptName,bill.FCostedDeptId as costDeptId,bill.FCOSTEDCOMPANYID as costCompanyId,
         cc.FNAME_L2 as costDeptName,cp.FNAME_L2 as costCompanyName,bill.FMarketProjectId as marketProjectId,
         mar.FNAME as marketProjectName,cost.FNAME_L2 as costAccountName,bill.FMpCostAccountId as costAccountId,
-        bill.FInvoiceAmt as invoiceAMT,bill.FRATEAMOUNT as rateAmount,bill.FDESCRIPTION as description
+        bill.FInvoiceAmt as invoiceAMT,bill.FRATEAMOUNT as rateAmount,bill.FDESCRIPTION as description,
+        pb.FREALSUPPLIERID as receiveUnitId,sup2.FNAME_L2 as receiverName
         from T_CON_CONTRACTWITHOUTTEXT bill
         left join T_FDC_ContractType ct on ct.fid=bill.FCONTRACTTYPEID
         left join T_FDC_CostAccount cost on cost.fid=bill.FMPCOSTACCOUNTID
@@ -95,6 +96,9 @@
         left join T_ORG_CostCenter cc on cc.fid=bill.FCOSTEDDEPTID
         left join T_ORG_Company cp on cp.fid=bill.FCOSTEDCOMPANYID
         left join T_CON_MarketProject mar on mar.fid=bill.FMARKETPROJECTID
+        left join T_CON_PayRequestBill pb on pb.FCONTRACTID = bill.fid
+        left join t_bd_supplier sup2 on sup2.fid=pb.FREALSUPPLIERID
+        left join
         where bill.fid=#{id}
     </select>
     <select id="selectNewNum" resultType="java.lang.Integer">
