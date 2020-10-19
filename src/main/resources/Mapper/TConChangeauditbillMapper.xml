@@ -54,7 +54,7 @@
         bill.FCHANGEREASONID as changeReasonId,cra.FNAME_L2 as changeReason,bill.FOFFER as offer,
         bill.FSTATE as auditState,bill.FBOOKEDDATE as bizDate,bill.FCURPROJECTID as projectId,pro.FNAME_L2 as projectName,
         bill.FAUDITTYPEID as auditTypeId,ct.FNAME_L2 as auditType,bill.FTOTALCOST as totalCost,bill.FREADESC as reaDesc,
-        bill.FAUDITORID as auditorId,pu.FNAME_L2 as auditor,bill.FAUDITTIME as auditTime,
+        bill.FAUDITORID as auditorId,pu.FNAME_L2 as auditor,bill.FAUDITTIME as auditTime,bill.FSOURCEFUNCTION as sourceFunction,
         org.FNAME_L2 as conductDeptName,sup.FNAME_L2 as conductUnitName,wf.FNAME_L2 as wfType,bill.FOFFER as offer,
         bill.FISFEE as isFee,bill.FCOSTUNIT as costUnit,bill.FIsChangeContract as isChangeContract,
         bill.FIsReceipts as isReceipts,bill.FIsImportChange as isImportChange,bill.FIsAlreadyExecuted as isAlreadyDo,

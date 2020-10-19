@@ -21,6 +21,6 @@
                   m.fnumber like CONCAT(CONCAT('%',${num}),'%')
               </if>
           </where>
-          order by m.fnumber
+          order by m.FBOOKEDDATE desc,m.fnumber desc
     </select>
 </mapper>

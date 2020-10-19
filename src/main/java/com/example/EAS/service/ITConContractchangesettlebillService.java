@@ -17,5 +17,5 @@ public interface ITConContractchangesettlebillService extends IService<TConContr
 
     PageBean<ChangeSettleVO> getChangeSettleList(ChangeSettleVO vo);
 
-    ChangeSettleVO viewChangeSettle(ChangeSettleVO vo);
+    ChangeSettleVO viewChangeSettle(ChangeSettleVO vo) throws Exception;
 }

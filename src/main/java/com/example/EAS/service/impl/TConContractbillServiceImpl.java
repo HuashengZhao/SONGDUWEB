@@ -852,6 +852,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                 result = (String) call.invoke(new Object[]{obj.toString()});
                 System.out.println(vo.getConName() + "本次提交传给oa的参数" + obj.toString());
                 str = JSONObject.parseObject(result);
+                System.out.println("这次是新增流程："+str);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -862,6 +863,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                 result = (String) call.invoke(new Object[]{obj.toString()});
                 System.out.println(vo.getConName() + "本次提交传给oa的参数" + obj.toString());
                 str = JSONObject.parseObject(result);
+                System.out.println("这次是修改流程："+str+"原流程id"+oaId);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }

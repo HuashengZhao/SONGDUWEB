@@ -155,6 +155,7 @@
     FCONTENT as content
     from T_CON_CONTRACTBILLENTRY
     where FPARENTID=#{id}
+    order by fcontent
     </select>
 
     <select id="selectMarketCons" resultType="com.example.EAS.vo.MarketContDetailVO">

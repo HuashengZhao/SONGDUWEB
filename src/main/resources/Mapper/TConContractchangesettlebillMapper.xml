@@ -47,7 +47,7 @@
         select bill.fid as id,bill.FSTATE as state,bill.FNUMBER as num,bill.FNAME as title,
         con.FNUMBER as contractNumber,con.FNAME as contractName,bill.FLASTAMOUNT as lastAmount,
         con.FORIGINALAMOUNT as oriAmount,con.FAMOUNT as amount,bill.FCOLSEDESCRIPTION closeDescription,
-        pro.FNAME_L2 as projectName,bill.FREPORTAMOUNT as reportAmount,
+        pro.FNAME_L2 as projectName,bill.FREPORTAMOUNT as reportAmount,bill.FSOURCEFUNCTION as sourceFunction,
         bill.FALLOWAMOUNT as allowAmount,en.FCHANGECONTENT as executeContent,
         u.FNAME_L2 as auditorName,u1.FNAME_L2 as creatorName,bill.FAUDITTIME auditTime,bill.FCREATETIME as createTime,
         cb.FORIGINALAMOUNT as calOriAmount,cb.FAMOUNT as calAmount,sup.FNAME_L2 as supplierName,bill.FISFINISH as isFinish,

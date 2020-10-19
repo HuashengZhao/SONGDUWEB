@@ -6,9 +6,7 @@ import com.example.EAS.mapper.TConChangeauditbillMapper;
 import com.example.EAS.mapper.TConContractchangesettlebillMapper;
 import com.example.EAS.model.TConContractchangesettlebill;
 import com.example.EAS.service.ITConContractchangesettlebillService;
-import com.example.EAS.util.FileContentTypeUtils;
-import com.example.EAS.util.PageBean;
-import com.example.EAS.util.Util;
+import com.example.EAS.util.*;
 import com.example.EAS.vo.AttachmentsVO;
 import com.example.EAS.vo.ChangeSettleEntryVO;
 import com.example.EAS.vo.ChangeSettleVO;
@@ -17,6 +15,7 @@ import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.net.URLEncoder;
 import java.util.List;
 
 /**
@@ -124,7 +123,7 @@ public class TConContractchangesettlebillServiceImpl extends ServiceImpl<TConCon
     }
 
     @Override
-    public ChangeSettleVO viewChangeSettle(ChangeSettleVO vo) {
+    public ChangeSettleVO viewChangeSettle(ChangeSettleVO vo) throws Exception {
         ChangeSettleVO settleVO = new ChangeSettleVO();
         String id = vo.getId();
         if (Util.isNotEmpty(id)) {
@@ -145,6 +144,33 @@ public class TConContractchangesettlebillServiceImpl extends ServiceImpl<TConCon
                 List<ChangeSettleEntryVO> entryVOS = mapper.selectEntryInfo(id);
                 if (entryVOS != null && entryVOS.size() > 0) {
                     settleVO.setEntryVOS(entryVOS);
+                }
+//                查看oa流程link
+                String oaId = settleVO.getSourceFunction();
+                if (Util.isNotEmpty(oaId)){
+//                                获取当前登录信息 取用户账号用作oa流程查看登录
+                    String token = RequestHolder.getCurrentUser().getToken();
+                    String dencrypt = RSAUtil.dencrypt(token, "pri.key");
+                    String[] split = dencrypt.split("&&");
+                    String org = split[0];
+                    String person = split[1];
+                    if (Util.isEmpty(person)) {
+                        throw new ServiceException(UtilMessage.PERSON_MISSING);
+                    }
+                    String mtLoginNum = OaUtil.encrypt(person);
+
+//          返回oa流程link 例如
+//          http://122.224.88.138:58080/km/review/km_review_main/
+//          kmReviewMain.do?method=view&fdId=173c6b9e6dd55fccb9a0be942b2b074d&MtFdLoinName
+//          =gdjjXmldhhTqgDyrFOTunA==
+                    String s1 = "http://122.224.88.138:58080/km/review/km_review_main/kmReviewMain.do?method=view&fdId=";
+                    String s2 = "&MtFdLoinName=";
+                    StringBuffer stringBuffer = new StringBuffer();
+                    oaId = URLEncoder.encode(oaId);
+                    String link = String.valueOf(stringBuffer.append(s1).append(oaId).append(s2).append(mtLoginNum));
+                    System.out.println("OA流程路径：" + link);
+                    settleVO.setLink(link);
+                    settleVO.setOaId(oaId);
                 }
             }
             //            附件信息
