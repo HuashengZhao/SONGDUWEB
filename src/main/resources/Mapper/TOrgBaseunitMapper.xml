@@ -4,8 +4,7 @@
 
     <select id="selectDatas" resultType="com.example.EAS.vo.OrgVO">
         select fid as id,FNAME_L2 as title,FDESCRIPTION_L2 as description,fnumber as num,
-        FLONGNUMBER as longNumber,flevel,FPartCostCenterID as costCenterId,FISLEAF as isLeaf,
-        FCOSTCENTERTYPE as costCenterType,FSIMPLENAME as simpleName
+        FLONGNUMBER as longNumber,flevel,FPartCostCenterID as costCenterId,FISLEAF as isLeaf,FSIMPLENAME as simpleName
         from T_ORG_BASEUNIT
         <where>
             FISADMINORGUNIT=1
@@ -20,9 +19,6 @@
             </if>
             <if test="isCompany!=null">
                 and fid in (select fid from T_ORG_Company)
-            </if>
-            <if test="isCost!=null and isCost==1">
-                and FPartCostCenterID in (select fid from T_ORG_OUPartCostCenter)
             </if>
         </where>
         order by FLONGNUMBER
