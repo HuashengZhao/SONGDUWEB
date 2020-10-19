@@ -3,9 +3,11 @@
 <mapper namespace="com.example.EAS.mapper.TOrgBaseunitMapper">
 
     <select id="selectDatas" resultType="com.example.EAS.vo.OrgVO">
-        select fid as id,FNAME_L2 as title,FDESCRIPTION_L2 as description,fnumber as num,
-        FLONGNUMBER as longNumber,flevel,FPartCostCenterID as cbid,FISLEAF as isLeaf
-        from T_ORG_BASEUNIT
+        select main.fid as id,main.FNAME_L2 as title,main.FDESCRIPTION_L2 as description,main.fnumber as num,
+        main.FLONGNUMBER as longNumber,mainflevel,FPartCostCenterID as cbid,main.FISLEAF as isLeaf,
+        cc.FCOSTCENTERTYPE as costCenterType,main.FSIMPLENAME as simpleName
+        from T_ORG_BASEUNIT main
+        left join T_ORG_OUPartCostCenter cc on cc.fid=main.FPARTCOSTCENTERID
         <where>
             FISADMINORGUNIT=1
             <if test="id!=null and id!=''">

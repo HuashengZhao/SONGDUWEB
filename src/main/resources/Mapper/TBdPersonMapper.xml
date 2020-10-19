@@ -23,7 +23,7 @@
         </where>
         order by c.fnumber
     </select>
-    <select id="selectDataByOrgIds" parameterType="java.util.List" resultType="com.example.EAS.vo.PersonsVO">
+    <select id="selectDataByOrgIds" resultType="com.example.EAS.vo.PersonsVO">
         select m.FPersonID as id, m.fpersonid,m.FPositionID,p.fname_l2 as zwName,c.fname_l2 as personName ,c.fid as
         userId,c.fnumber as person,c.FDELETEDSTATUS as deleteStatus,p.FAdminOrgUnitID as unitId,
         o.FLONGNUMBER as orgLongNumber,o.FNAME_L2 as orgName,t.FNAME_L2 as typeName
@@ -40,5 +40,6 @@
             </if>
         </where>
     </select>
+
 
 </mapper>

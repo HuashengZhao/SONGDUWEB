@@ -27,4 +27,9 @@ public class OrgVO {
 
     private List<OrgVO> orgVOList;
     private List<OrgVO> children;
+
+//    成本中心類型 直接生产部门=0,辅助生产部门=1,管理部门=2,销售部门=3
+    private String costCenterType;
+//    簡稱
+    private String simpleName;
 }

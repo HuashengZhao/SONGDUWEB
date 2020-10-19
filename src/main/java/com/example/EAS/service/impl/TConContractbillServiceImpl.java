@@ -773,7 +773,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         if (Util.isNotEmpty(vo.getContractWFTypeId())) {
             String contractWFTypeName = mapper.selectContractType(vo.getContractWFTypeId());
             data.put("fd_38cf1780c1c14a", contractWFTypeName);
-            System.out.println("提交分支新增字段：" + contractWFTypeName);
+            System.out.println("合同提交分支新增字段：" + contractWFTypeName);
         }
 //        原币金额
         if (Util.isNotEmpty(vo.getOriginalAmount())) {

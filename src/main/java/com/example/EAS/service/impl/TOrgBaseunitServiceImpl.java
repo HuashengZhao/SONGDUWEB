@@ -31,8 +31,8 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
         List<OrgVO> orgVOS = baseunitMapper.selectDatas(vo);
         if (orgVOS.size() > 0) {
             for (OrgVO orgVO : orgVOS) {
-//                是否展示下级，前提是传入orgID;
-                if (Util.isNotEmpty(vo.getId())) {
+//                是否展示下级，前提是传入orgID; 注意成本中心不需要展示下級 直接返回
+                if (Util.isNotEmpty(vo.getId())&&(vo.getIsCost()==null||vo.getIsCost()==0)) {
                     getChildren(orgVOS);
                 }
 //                是否实体财务组织
@@ -44,7 +44,19 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
                         orgVO.setIsCompany(1);
                     }
                 }
-//                是否成本中心
+//                成本中心
+                String costCenterType = orgVO.getCostCenterType();
+                if (Util.isNotEmpty(costCenterType)){
+                    if (costCenterType.contains("0")){
+                        orgVO.setCostCenterType("直接生产部门");
+                    }else if (costCenterType.contains("1")){
+                        orgVO.setCostCenterType("辅助生产部门");
+                    }else if (costCenterType.contains("2")){
+                        orgVO.setCostCenterType("管理部门");
+                    }else if (costCenterType.contains("3")){
+                        orgVO.setCostCenterType("销售部门");
+                    }
+                }
                 orgVO.setIsCost(0);
                 String cbId = orgVO.getCbid();
                 Integer pc = baseunitMapper.selectIsCost(cbId);
