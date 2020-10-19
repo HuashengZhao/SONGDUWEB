@@ -5,9 +5,7 @@ import com.example.EAS.mapper.TBasAttachmentMapper;
 import com.example.EAS.mapper.TConChangeauditbillMapper;
 import com.example.EAS.model.TConChangeauditbill;
 import com.example.EAS.service.ITConChangeauditbillService;
-import com.example.EAS.util.FileContentTypeUtils;
-import com.example.EAS.util.PageBean;
-import com.example.EAS.util.Util;
+import com.example.EAS.util.*;
 import com.example.EAS.vo.AttachmentsVO;
 import com.example.EAS.vo.ChangeAuditContentVO;
 import com.example.EAS.vo.ChangeAuditVO;
@@ -16,6 +14,7 @@ import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.net.URLEncoder;
 import java.util.List;
 
 /**
@@ -96,12 +95,39 @@ public class TConChangeauditbillServiceImpl extends ServiceImpl<TConChangeauditb
     }
 
     @Override
-    public ChangeAuditVO viewChangeAudit(ChangeAuditVO vo) {
+    public ChangeAuditVO viewChangeAudit(ChangeAuditVO vo) throws Exception {
         ChangeAuditVO auditVO = new ChangeAuditVO();
         String id = vo.getId();
         if (Util.isNotEmpty(id)) {
             auditVO = mapper.selectDataById(id);
             if (Util.isNotEmpty(auditVO)) {
+                //                查看oa流程link
+                String oaId = auditVO.getSourceFunction();
+                if (Util.isNotEmpty(oaId)){
+//                                获取当前登录信息 取用户账号用作oa流程查看登录
+                    String token = RequestHolder.getCurrentUser().getToken();
+                    String dencrypt = RSAUtil.dencrypt(token, "pri.key");
+                    String[] split = dencrypt.split("&&");
+                    String org = split[0];
+                    String person = split[1];
+                    if (Util.isEmpty(person)) {
+                        throw new ServiceException(UtilMessage.PERSON_MISSING);
+                    }
+                    String mtLoginNum = OaUtil.encrypt(person);
+
+//          返回oa流程link 例如
+//          http://122.224.88.138:58080/km/review/km_review_main/
+//          kmReviewMain.do?method=view&fdId=173c6b9e6dd55fccb9a0be942b2b074d&MtFdLoinName
+//          =gdjjXmldhhTqgDyrFOTunA==
+                    String s1 = "http://122.224.88.138:58080/km/review/km_review_main/kmReviewMain.do?method=view&fdId=";
+                    String s2 = "&MtFdLoinName=";
+                    StringBuffer stringBuffer = new StringBuffer();
+                    oaId = URLEncoder.encode(oaId);
+                    String link = String.valueOf(stringBuffer.append(s1).append(oaId).append(s2).append(mtLoginNum));
+                    System.out.println("OA流程路径：" + link);
+                    auditVO.setLink(link);
+                    auditVO.setOaId(oaId);
+                }
 //                变更期间
                 String s = auditVO.getBizDate().toString();
                 if (Util.isNotEmpty(s)) {

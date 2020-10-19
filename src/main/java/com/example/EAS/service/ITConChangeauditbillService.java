@@ -17,5 +17,5 @@ public interface ITConChangeauditbillService extends IService<TConChangeauditbil
 
     PageBean<ChangeAuditVO> getChangeAuditList(ChangeAuditVO vo);
 
-    ChangeAuditVO viewChangeAudit(ChangeAuditVO vo);
+    ChangeAuditVO viewChangeAudit(ChangeAuditVO vo) throws Exception;
 }

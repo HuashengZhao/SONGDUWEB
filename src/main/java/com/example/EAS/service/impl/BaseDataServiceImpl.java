@@ -123,7 +123,6 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
                 }
             }
             try {
-
 //        如果oa作废 修改状态为保存 删除easid 跟oaid的关联
                 if (result.contains("02")) {
                     if (oaid != null && easid != null) {

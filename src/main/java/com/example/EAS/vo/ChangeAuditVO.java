@@ -114,4 +114,9 @@ public class ChangeAuditVO {
     private List<CalculationInfoVO> calculationInfoVOS;
     //    附件信息集合
     private List<AttachmentsVO> attachmentsVOS;
+    //    来源功能===记录了提交oa流程后返回的oaid
+    private String sourceFunction;
+    //    查看返回的oa流程link
+    private String oaId;
+    private String link;
 }
