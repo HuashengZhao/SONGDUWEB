@@ -53,7 +53,7 @@
     </select>
 
     <select id="selectDataById" resultType="com.example.EAS.vo.ChangeAuditVO">
-        select distinct bill.fid as id,bill.FNAME as title ,bill.FNUMBER as num,bill.FCHANGESTATE as changeState,
+        select  bill.fid as id,bill.FNAME as title ,bill.FNUMBER as num,bill.FCHANGESTATE as changeState,
         bill.FCHANGEREASONID as changeReasonId,cra.FNAME_L2 as changeReason,bill.FOFFER as offer,
         bill.FSTATE as auditState,bill.FBOOKEDDATE as bizDate,bill.FCURPROJECTID as projectId,pro.FNAME_L2 as projectName,
         bill.FAUDITTYPEID as auditTypeId,ct.FNAME_L2 as auditType,bill.FTOTALCOST as totalCost,bill.FREADESC as reaDesc,
@@ -83,6 +83,7 @@
         left join T_BD_Supplier sup3 on sup3.FID=nmse.FMAINSUPPID
 
         where bill.fid=#{id}
+        order by aen.FNUMBER
     </select>
 
     <select id="selectChangeContents" resultType="com.example.EAS.vo.ChangeAuditContentVO">
