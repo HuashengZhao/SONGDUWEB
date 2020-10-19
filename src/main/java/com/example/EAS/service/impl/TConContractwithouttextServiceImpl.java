@@ -348,6 +348,9 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         String currencyId = vo.getCurrencyId();
         easJson.put("currencyId", currencyId);
         BigDecimal oriAmount = vo.getOriAmount();
+        if (Util.isEmpty(oriAmount)){
+            new ServiceException(UtilMessage.CONTRACT_AMOUNT_NOT_FOUND);
+        }
         easJson.put("originalAmount", oriAmount.toString());
 //        BigDecimal amount = vo.getAmount();
         easJson.put("amount", oriAmount.toString());
