@@ -9,6 +9,7 @@ import com.example.EAS.vo.OrgVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,7 +33,7 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
         if (orgVOS.size() > 0) {
             for (OrgVO orgVO : orgVOS) {
 //                是否展示下级，前提是传入orgID; 注意成本中心不需要展示下級 直接返回
-                if (Util.isNotEmpty(vo.getId())&&(vo.getIsCost()==null||vo.getIsCost()==0)) {
+                if (Util.isNotEmpty(vo.getId())) {
                     getChildren(orgVOS);
                 }
 //                是否实体财务组织
@@ -44,21 +45,9 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
                         orgVO.setIsCompany(1);
                     }
                 }
-//                成本中心
-                String costCenterType = orgVO.getCostCenterType();
-                if (Util.isNotEmpty(costCenterType)){
-                    if (costCenterType.contains("0")){
-                        orgVO.setCostCenterType("直接生产部门");
-                    }else if (costCenterType.contains("1")){
-                        orgVO.setCostCenterType("辅助生产部门");
-                    }else if (costCenterType.contains("2")){
-                        orgVO.setCostCenterType("管理部门");
-                    }else if (costCenterType.contains("3")){
-                        orgVO.setCostCenterType("销售部门");
-                    }
-                }
+
                 orgVO.setIsCost(0);
-                String cbId = orgVO.getCbid();
+                String cbId = orgVO.getCostCenterId();
                 Integer pc = baseunitMapper.selectIsCost(cbId);
                 if (pc != null && pc == 1) {
                     orgVO.setIsCost(1);
@@ -76,22 +65,58 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
     }
 
     @Override
-    public OrgVO getCostEntitys(OrgVO vo) {
-//        String id = vo.getId();
-//        List<OrgVO> orgVOS = baseunitMapper.selectCostEntities(id);
-        return null;
+    public List<OrgVO> getCostEntitys(OrgVO vo) {
+        String id = vo.getId();
+        List<String> counts = new ArrayList<>();
+        if (Util.isNotEmpty(id)) {
+            counts.add(id);
+            getChildIds(id,counts);
+        }
+        List<OrgVO> orgVOS = baseunitMapper.selectCostEntities(counts);
+        if (orgVOS!=null && orgVOS.size()>0){
+            for (OrgVO orgVO : orgVOS) {
+                //                成本中心
+                String costCenterType = orgVO.getCostCenterType();
+                if (Util.isNotEmpty(costCenterType)) {
+                    if (costCenterType.contains("0")) {
+                        orgVO.setCostCenterType("直接生产部门");
+                    } else if (costCenterType.contains("1")) {
+                        orgVO.setCostCenterType("辅助生产部门");
+                    } else if (costCenterType.contains("2")) {
+                        orgVO.setCostCenterType("管理部门");
+                    } else if (costCenterType.contains("3")) {
+                        orgVO.setCostCenterType("销售部门");
+                    }
+                }
+            }
+        }
+        return orgVOS;
     }
 
     //    获取children
     public List<OrgVO> getChildren(List<OrgVO> list) {//参数为数据库的（原数据，一级id）
-            for (OrgVO orgVO : list) {
-                String id = orgVO.getId();
-                List<OrgVO> orgVOS = baseunitMapper.selectNexts(id);
-                if (orgVOS != null && orgVOS.size() > 0) {
-                    orgVO.setChildren(orgVOS);
-                    getChildren(orgVOS);
-                }
+        for (OrgVO orgVO : list) {
+            String id = orgVO.getId();
+            List<OrgVO> orgVOS = baseunitMapper.selectNexts(id);
+            if (orgVOS != null && orgVOS.size() > 0) {
+                orgVO.setChildren(orgVOS);
+                getChildren(orgVOS);
+            }
         }
         return list;
+    }
+
+    //           获取下级组织id集合counts
+    public List<String> getChildIds(String orgId,List<String> counts) {//参数为数据库的（原数据，一级id）
+            List<String> orgIds = baseunitMapper.selectNextIds(orgId);
+            if (orgIds != null && orgIds.size() > 0) {
+                counts.addAll(orgIds);
+                if (orgIds!=null && orgIds.size()>0) {
+                    for (String id : orgIds) {
+                        getChildIds(id, counts);
+                    }
+                }
+            }
+        return counts;
     }
 }

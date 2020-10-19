@@ -9,7 +9,7 @@ public class OrgVO {
 
     private String id;
     //    成本中心组织单元扩展id
-    private String cbid;
+    private String costCenterId;
     private String parentId;
     private Integer isLeaf;
     private String num;
@@ -22,7 +22,7 @@ public class OrgVO {
     private Integer isCost;
     //    是否包含下级 0否1是
     private Integer hasNext;
-    //    是否实体组织
+    //    是否实体组织 0 否 1 是
     private Integer isBizUnit;
 
     private List<OrgVO> orgVOList;

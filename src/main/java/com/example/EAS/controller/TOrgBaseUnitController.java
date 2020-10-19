@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * <p>
@@ -59,7 +60,7 @@ public class TOrgBaseUnitController {
     public R getCostEntitys(@RequestBody String body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         OrgVO vo = BodyDecodeUtil.decodeBody(body, OrgVO.class);
-        OrgVO orgVOS= orgBaseunitService.getCostEntitys(vo);
+        List<OrgVO> orgVOS= orgBaseunitService.getCostEntitys(vo);
         result.put("data", orgVOS);
         result.put("msg", UtilMessage.GET_MSG_SUCCESS);
         result.put("code", HttpStatus.SC_OK);

@@ -3,18 +3,17 @@
 <mapper namespace="com.example.EAS.mapper.TOrgBaseunitMapper">
 
     <select id="selectDatas" resultType="com.example.EAS.vo.OrgVO">
-        select main.fid as id,main.FNAME_L2 as title,main.FDESCRIPTION_L2 as description,main.fnumber as num,
-        main.FLONGNUMBER as longNumber,mainflevel,FPartCostCenterID as cbid,main.FISLEAF as isLeaf,
-        cc.FCOSTCENTERTYPE as costCenterType,main.FSIMPLENAME as simpleName
-        from T_ORG_BASEUNIT main
-        left join T_ORG_OUPartCostCenter cc on cc.fid=main.FPARTCOSTCENTERID
+        select fid as id,FNAME_L2 as title,FDESCRIPTION_L2 as description,fnumber as num,
+        FLONGNUMBER as longNumber,flevel,FPartCostCenterID as costCenterId,FISLEAF as isLeaf,
+        FCOSTCENTERTYPE as costCenterType,FSIMPLENAME as simpleName
+        from T_ORG_BASEUNIT
         <where>
             FISADMINORGUNIT=1
             <if test="id!=null and id!=''">
                 and fid=#{id}
             </if>
             <if test="title!=null and title!=''">
-                and fname_l2 like CONCAT(CONCAT('%',#{title}),'%')
+                and FNAME_L2 like CONCAT(CONCAT('%',#{title}),'%')
             </if>
             <if test="num!=null and num!=''">
                 and fnumber like CONCAT(CONCAT('%',#{num}),'%')
@@ -22,8 +21,8 @@
             <if test="isCompany!=null">
                 and fid in (select fid from T_ORG_Company)
             </if>
-            <if test="isCost!=null">
-                and cbid in (select fid from T_ORG_CostCenter)
+            <if test="isCost!=null and isCost==1">
+                and FPartCostCenterID in (select fid from T_ORG_OUPartCostCenter)
             </if>
         </where>
         order by FLONGNUMBER
@@ -36,7 +35,7 @@
     </select>
     <select id="selectNexts" resultType="com.example.EAS.vo.OrgVO">
         select fid as id,FNAME_L2 as title,FDESCRIPTION_L2 as description,fnumber as num,
-        FLONGNUMBER as longNumber,flevel,FPartCostCenterID as cbid
+        FLONGNUMBER as longNumber,flevel,FPartCostCenterID as costCenterId
         from T_ORG_BASEUNIT
         <where>
             FISADMINORGUNIT=1
@@ -52,6 +51,23 @@
             and FParentID=#{id,jdbcType=VARCHAR}
         </where>
         order by flongnumber
+    </select>
+    <select id="selectCostEntities" resultType="com.example.EAS.vo.OrgVO">
+        select m.fid as id,m.FNAME_L2 as title,m.FNUMBER as num,m.FLONGNUMBER as longNumber,
+        m.FSIMPLENAME as simpleName,cc.FCOSTCENTERTYPE as costCenterType,cc.FISBIZUNIT as isBizUnit
+        from T_ORG_BASEUNIT m
+        left join T_ORG_OUPartCostCenter cc on cc.fid=m.FPARTCOSTCENTERID
+        <where>
+            <if test="list != null and list.size > 0">
+                and m.FID in
+                <foreach item="item" collection="list" index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            and m.FPARTCOSTCENTERID in (select fid from T_ORG_OUPartCostCenter)
+            and cc.FIsBizUnit=1
+        </where>
+        order by m.fnumber
     </select>
 
 </mapper>
