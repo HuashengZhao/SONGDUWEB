@@ -29,4 +29,6 @@ public interface TConChangeauditbillMapper extends BaseMapper<TConChangeauditbil
     List<CalculationInfoVO> selectCalcuInfos(String id);
 
     List<String> selectProjectInfo(String projectId);
+
+    void updateData(String easid);
 }

@@ -8,17 +8,18 @@ import java.util.List;
 public class OrgVO {
 
     private String id;
-    //    成本中心组织单元扩展id
-    private String costCenterId;
-    private String parentId;
     private Integer isLeaf;
     private String num;
     private String longNumber;
     private String title;
+    //    是否财务室体组织 0否1是
     private Integer isCompany;
     private String description;
     private Long flevel;
-//    是否成本中心
+    //    成本中心组织单元扩展id
+    private String parentId;
+    private String costCenterId;
+    //    是否成本中心
     private Integer isCost;
     //    是否包含下级 0否1是
     private Integer hasNext;
@@ -28,8 +29,8 @@ public class OrgVO {
     private List<OrgVO> orgVOList;
     private List<OrgVO> children;
 
-//    成本中心類型 直接生产部门=0,辅助生产部门=1,管理部门=2,销售部门=3
+    //    成本中心類型 直接生产部门=0,辅助生产部门=1,管理部门=2,销售部门=3
     private String costCenterType;
-//    簡稱
+    //    簡稱
     private String simpleName;
 }

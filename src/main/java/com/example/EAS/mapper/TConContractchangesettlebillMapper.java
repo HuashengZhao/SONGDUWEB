@@ -1,10 +1,9 @@
 package com.example.EAS.mapper;
 
-import com.example.EAS.model.TConContractchangesettlebill;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.example.EAS.model.TConContractchangesettlebill;
 import com.example.EAS.vo.ChangeSettleEntryVO;
 import com.example.EAS.vo.ChangeSettleVO;
-import com.example.EAS.vo.ContractVO;
 
 import java.util.List;
 
@@ -26,4 +25,5 @@ public interface TConContractchangesettlebillMapper extends BaseMapper<TConContr
 
     List<ChangeSettleEntryVO> selectEntryInfo(String id);
 
+    void updateData(String easid);
 }

@@ -66,4 +66,7 @@ spring:
 mybatis-plus:
  mapper-locations: classpath*:Mapper/*.xml
  type-aliases-package: com.example.EAS.model
+ global-config:
+   db-config:
+     field-strategy: ignored
 

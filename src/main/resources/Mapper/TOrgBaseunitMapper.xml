@@ -20,6 +20,9 @@
             <if test="isCompany!=null">
                 and fid in (select fid from T_ORG_Company)
             </if>
+            <if test="isCompany!=null and isCompany==1">
+                and fid in (select fid from T_ORG_Company)
+            </if>
         </where>
         order by FLONGNUMBER
     </select>
