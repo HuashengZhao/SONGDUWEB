@@ -331,7 +331,6 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
                     tConMarketprojectcostentryMapper.selectOne(new QueryWrapper<TConMarketprojectcostentry>()
                             .eq("FHEADID", marketProjectId)
                             .eq("FTYPE","CONTRACT"));
-
             if (Util.isNotEmpty(contractmarketentry)) {
                 Double famount = contractmarketentry.getFamount();
                 BigDecimal voAmount = vo.getAmount();
@@ -348,6 +347,9 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         String currencyId = vo.getCurrencyId();
         easJson.put("currencyId", currencyId);
         BigDecimal oriAmount = vo.getOriAmount();
+        if (Util.isEmpty(oriAmount)){
+            throw new ServiceException(UtilMessage.CONTRACT_AMOUNT_NOT_FOUND);
+        }
         easJson.put("originalAmount", oriAmount.toString());
 //        BigDecimal amount = vo.getAmount();
         easJson.put("amount", oriAmount.toString());
