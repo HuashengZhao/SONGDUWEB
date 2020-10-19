@@ -49,4 +49,21 @@ public class TOrgBaseUnitController {
         result.put("code", HttpStatus.SC_OK);
         return R.ok(result);
     }
+    /**
+     * 获取实体成本组织--用于无文本的预算承担部门
+     * getOrgs
+     * @param
+     * @return
+     */
+    @RequestMapping(value = "/getCostEntities", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public R getCostEntitys(@RequestBody String body) throws Exception {
+        HashMap<String, Object> result = new HashMap<>(10);
+        OrgVO vo = BodyDecodeUtil.decodeBody(body, OrgVO.class);
+        OrgVO orgVOS= orgBaseunitService.getCostEntitys(vo);
+        result.put("data", orgVOS);
+        result.put("msg", UtilMessage.GET_MSG_SUCCESS);
+        result.put("code", HttpStatus.SC_OK);
+        return R.ok(result);
+    }
+
 }

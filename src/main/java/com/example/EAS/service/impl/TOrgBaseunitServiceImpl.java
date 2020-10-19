@@ -63,6 +63,13 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
         return orgVO1;
     }
 
+    @Override
+    public OrgVO getCostEntitys(OrgVO vo) {
+//        String id = vo.getId();
+//        List<OrgVO> orgVOS = baseunitMapper.selectCostEntities(id);
+        return null;
+    }
+
     //    获取children
     public List<OrgVO> getChildren(List<OrgVO> list) {//参数为数据库的（原数据，一级id）
             for (OrgVO orgVO : list) {

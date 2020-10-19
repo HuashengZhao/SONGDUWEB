@@ -46,12 +46,12 @@ public class TBdPersonServiceImpl extends ServiceImpl<TBdPersonMapper, TBdPerson
             List<String> orgIds = new ArrayList<>();
             orgIds.add(orgId);
             if (orgIds.size() > 0){
-                getChildren(orgIds,counts);
-        }
+                counts = getChildren(orgIds, counts);
+            }
     }
 //      根据组织ids 获取对应的员工集合
         PageHelper.startPage(vo.getCurrentPage(), vo.getPageSize());
-        List<PersonsVO> personsVOList = personMapper.selectDataByOrgIds();
+        List<PersonsVO> personsVOList = personMapper.selectDataByOrgIds(counts);
         if (personsVOList.size()>0){
                 for(int i=0;i<personsVOList.size();i++){
                     PersonsVO personsVO = personsVOList.get(i);

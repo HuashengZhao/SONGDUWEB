@@ -18,6 +18,7 @@ public class OrgVO {
     private Integer isCompany;
     private String description;
     private Long flevel;
+//    是否成本中心
     private Integer isCost;
     //    是否包含下级 0否1是
     private Integer hasNext;

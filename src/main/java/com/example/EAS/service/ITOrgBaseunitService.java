@@ -15,4 +15,6 @@ import com.example.EAS.vo.OrgVO;
 public interface ITOrgBaseunitService extends IService<TOrgBaseunit> {
 
     OrgVO getData(OrgVO vo);
+
+    OrgVO getCostEntitys(OrgVO vo);
 }

@@ -271,10 +271,12 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
                 CWTextBgVO cwTextBgVO = new CWTextBgVO();
                 for (TConCwtextbgentry entry : entrys) {
                     if (entry != null) {
+                        cwTextBgVO.setId(entry.getFid());
                         if (entry.getFexpensetypeid() != null) {
                             TBcExpensetype tBcExpensetype = expensetypeMapper.selectById(entry.getFexpensetypeid());
                             if (tBcExpensetype != null) {
                                 cwTextBgVO.setExpenseTypeName(tBcExpensetype.getFnameL2());
+                                cwTextBgVO.setExpenseTypeId(tBcExpensetype.getFid());
                             }
                         }
                         if (entry.getFrequestamount() != null) {
