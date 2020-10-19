@@ -98,7 +98,7 @@
         left join T_CON_MarketProject mar on mar.fid=bill.FMARKETPROJECTID
         left join T_CON_PayRequestBill pb on pb.FCONTRACTID = bill.fid
         left join t_bd_supplier sup2 on sup2.fid=pb.FREALSUPPLIERID
-        left join
+
         where bill.fid=#{id}
     </select>
     <select id="selectNewNum" resultType="java.lang.Integer">

@@ -271,7 +271,8 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             TConMarketprojectcostentry contractmarketentry =
                     tConMarketprojectcostentryMapper.selectOne(new QueryWrapper<TConMarketprojectcostentry>()
                     .eq("FHEADID", marketProjectId)
-                    .eq("FTYPE","CONTRACT"));
+                    .eq("FTYPE","CONTRACT")
+                    .eq("fcostaccountid",vo.getCostAccountId()==null?null:vo.getCostAccountId()));
 
 //            Long fisjt = tConMarketproject.getFisjt();
 //            if (fisjt != null && fisjt == 1) {

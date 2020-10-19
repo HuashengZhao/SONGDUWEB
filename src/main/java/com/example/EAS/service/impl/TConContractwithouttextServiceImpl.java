@@ -190,7 +190,36 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             return null;
         }
         NoTextContractVO returnVO = mapper.selectDataByID(id);
-
+        String state = returnVO.getState();
+        if (Util.isNotEmpty(state)) {
+            if (state.contains("2SUBMIT")) {
+                returnVO.setState("已提交");
+            } else if (state.contains("1SAVED")) {
+                returnVO.setState("保存");
+            } else if (state.contains("3AUD")) {
+                returnVO.setState("审批中");
+            } else if (state.contains("4")) {
+                returnVO.setState("已审批");
+            } else if (state.contains("5")) {
+                returnVO.setState("终止");
+            } else if (state.contains("7")) {
+                returnVO.setState("已下发");
+            } else if (state.contains("8")) {
+                returnVO.setState("已签证");
+            } else if (state.contains("9")) {
+                returnVO.setState("作废");
+            } else if (state.contains("10")) {
+                returnVO.setState("已上报");
+            } else if (state.contains("11")) {
+                returnVO.setState("被打回");
+            } else if (state.contains("12REVISING")) {
+                returnVO.setState("修订中");
+            } else if (state.contains("12REVISE")) {
+                returnVO.setState("已修订");
+            } else if (state.contains("13")) {
+                returnVO.setState("已确认");
+            }
+        }
         if (Util.isNotEmpty(returnVO)) {
             //            附件信息
             List<AttachmentsVO> attachmentsVOS = attachmentMapper.selectWEBAttach(id);
