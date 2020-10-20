@@ -45,7 +45,6 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
                         orgVO.setIsCompany(1);
                     }
                 }
-
                 orgVO.setIsCost(0);
                 String cbId = orgVO.getCostCenterId();
                 Integer pc = baseunitMapper.selectIsCost(cbId);

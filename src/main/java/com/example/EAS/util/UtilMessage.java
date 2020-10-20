@@ -93,4 +93,5 @@ public class UtilMessage {
     public static final String TOTAL_RATE_NOT_ONE = "分摊比例的总和不为百分百！";
     public static final String HYGH_HAS_BELINKED = "合约规划已被其他合同关联，请重新选择!";
     public static final String CONTRACT_AMOUNT_NOT_FOUND = "合同金额不能为空!";
+    public static final String UNSUPPORTED_DOWNLOAD_FILE = "该附件不支持下载，请到eas查看!";
 }
