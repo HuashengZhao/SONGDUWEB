@@ -37,7 +37,6 @@ public class TBdPersonServiceImpl extends ServiceImpl<TBdPersonMapper, TBdPerson
         if (Util.isEmpty(vo.getOrgId())) {
             return null;
         }
-
         List<String> counts=new ArrayList<>();
         counts.add(vo.getOrgId());
 //      判断是否获取当前组织下所有组织对应的员工 ，以下为获取当前组织下的所有组织id

@@ -67,3 +67,4 @@ mybatis-plus:
  mapper-locations: classpath*:Mapper/*.xml
  type-aliases-package: com.example.EAS.model
 
+

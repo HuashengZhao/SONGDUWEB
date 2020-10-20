@@ -143,16 +143,11 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
                         tConSupplierapply.setFstate("1SAVED");
                         supplierapplyMapper.updateById(tConSupplierapply);
                     } else if (type.contains("05")) {
-                        TConChangeauditbill tConChangeauditbill = auditMapper.selectById(easid);
-                        tConChangeauditbill.setFstate("1SAVED");
-                        tConChangeauditbill.setFchangestate("1Saved");
-                        tConChangeauditbill.setFsourcefunction(null);
-                        auditMapper.updateById(tConChangeauditbill);
+//                       删除单据里fsourcefunction存储的oaid
+                        auditMapper.updateData(easid);
                     } else if (type.contains("06")) {
-                        TConContractchangesettlebill tConContractchangesettlebill = settleMapper.selectById(easid);
-                        tConContractchangesettlebill.setFstate("1SAVED");
-                        tConContractchangesettlebill.setFsourcefunction(null);
-                        settleMapper.updateById(tConContractchangesettlebill);
+//                         删除单据里fsourcefunction存储的oaid
+                        settleMapper.updateData(easid);
                     }
                 }
             } catch (Exception e) {

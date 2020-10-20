@@ -33,4 +33,6 @@ public interface TConContractwithouttextMapper extends BaseMapper<TConContractwi
 
     String selectPayContentName(String payContentId);
 
+    String selectPeriodId(String periodNumber);
+
 }

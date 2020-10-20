@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.EAS.mapper.TConChangeauditbillMapper">
+    <update id="updateData">
+        update T_CON_CHANGEAUDITBILL set FSTATE='1SAVED',FCHANGESTATE='1Saved',FSOURCEFUNCTION=null where fid=#{easid}
+    </update>
 
     <select id="selectDatas" resultType="com.example.EAS.vo.ChangeAuditVO">
         select bill.fid as id,bill.FNAME as title ,bill.FNUMBER as num,bill.FCHANGESTATE as changeState,
@@ -50,7 +53,7 @@
     </select>
 
     <select id="selectDataById" resultType="com.example.EAS.vo.ChangeAuditVO">
-        select bill.fid as id,bill.FNAME as title ,bill.FNUMBER as num,bill.FCHANGESTATE as changeState,
+        select  bill.fid as id,bill.FNAME as title ,bill.FNUMBER as num,bill.FCHANGESTATE as changeState,
         bill.FCHANGEREASONID as changeReasonId,cra.FNAME_L2 as changeReason,bill.FOFFER as offer,
         bill.FSTATE as auditState,bill.FBOOKEDDATE as bizDate,bill.FCURPROJECTID as projectId,pro.FNAME_L2 as projectName,
         bill.FAUDITTYPEID as auditTypeId,ct.FNAME_L2 as auditType,bill.FTOTALCOST as totalCost,bill.FREADESC as reaDesc,
@@ -80,6 +83,7 @@
         left join T_BD_Supplier sup3 on sup3.FID=nmse.FMAINSUPPID
 
         where bill.fid=#{id}
+        order by aen.FNUMBER
     </select>
 
     <select id="selectChangeContents" resultType="com.example.EAS.vo.ChangeAuditContentVO">

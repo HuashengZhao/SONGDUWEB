@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.EAS.mapper.TConContractchangesettlebillMapper">
+    <update id="updateData">
+        update T_CON_ContractChangeSettleBill set FSTATE='1SAVED',FSOURCEFUNCTION=null where fid=#{easid}
+    </update>
 
     <select id="selectDatas" resultType="com.example.EAS.vo.ChangeSettleVO">
         select bill.fid as id,bill.FSTATE as state,bill.FNUMBER as num,bill.FNAME as title,

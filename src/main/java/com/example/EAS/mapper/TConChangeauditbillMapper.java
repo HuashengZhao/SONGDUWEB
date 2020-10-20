@@ -22,11 +22,13 @@ public interface TConChangeauditbillMapper extends BaseMapper<TConChangeauditbil
 
     List<ChangeAuditVO> selectDatas(ChangeAuditVO vo);
 
-    ChangeAuditVO selectDataById(String id);
+    List<ChangeAuditVO> selectDataById(String id);
 
     List<ChangeAuditContentVO> selectChangeContents(String id);
 
     List<CalculationInfoVO> selectCalcuInfos(String id);
 
     List<String> selectProjectInfo(String projectId);
+
+    void updateData(String easid);
 }

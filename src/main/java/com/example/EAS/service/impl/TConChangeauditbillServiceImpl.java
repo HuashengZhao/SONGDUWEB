@@ -99,8 +99,9 @@ public class TConChangeauditbillServiceImpl extends ServiceImpl<TConChangeauditb
         ChangeAuditVO auditVO = new ChangeAuditVO();
         String id = vo.getId();
         if (Util.isNotEmpty(id)) {
-            auditVO = mapper.selectDataById(id);
-            if (Util.isNotEmpty(auditVO)) {
+            List<ChangeAuditVO> vos = mapper.selectDataById(id);
+            if (vos!=null && vos.size()>0) {
+                auditVO = vos.get(0);
                 //                查看oa流程link
                 String oaId = auditVO.getSourceFunction();
                 if (Util.isNotEmpty(oaId)){

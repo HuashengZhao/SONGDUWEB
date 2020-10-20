@@ -359,6 +359,16 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         easJson.put("payContentTypeId", payContentId);
         LocalDateTime bizDate = vo.getBizDate();
         easJson.put("bizDate", bizDate);
+//       转业务期间
+        if (Util.isNotEmpty(bizDate)){
+            String format = df.format(bizDate);
+            String[] split = format.split("-");
+            String periodYear = split[0];
+            String periodMonth = split[1];
+            String periodNumber = new StringBuffer().append(periodYear).append(periodMonth).toString();
+            String periodId = mapper.selectPeriodId(periodNumber);
+            easJson.put("periodId", periodId);
+        }
         String unionBankId = vo.getUnionBankId();
         easJson.put("unionBankId", unionBankId);
         String bank = vo.getBank();
