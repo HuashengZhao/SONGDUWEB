@@ -351,8 +351,13 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             throw new ServiceException(UtilMessage.CONTRACT_AMOUNT_NOT_FOUND);
         }
         easJson.put("originalAmount", oriAmount.toString());
-//        BigDecimal amount = vo.getAmount();
-        easJson.put("amount", oriAmount.toString());
+//        此处疑问 前端合同金额字段 存值到原币与本位币两个字段 加判断 若传本位币则赋值 否则都一样
+        BigDecimal amount = vo.getAmount();
+        if (Util.isNotEmpty(amount)) {
+            easJson.put("amount", amount.toString());
+        }else {
+            easJson.put("amount", oriAmount.toString());
+        }
         String payBillTypeId = vo.getPayBillTypeId();
         easJson.put("payBillTypeId", payBillTypeId);
         String payContentId = vo.getPayContentId();

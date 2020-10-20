@@ -57,9 +57,9 @@ public class TOrgBaseUnitController {
      * @return
      */
     @RequestMapping(value = "/getCostEntities", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public R getCostEntitys(@RequestBody OrgVO vo) throws Exception {
+    public R getCostEntitys(@RequestBody String body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
-//        OrgVO vo = BodyDecodeUtil.decodeBody(body, OrgVO.class);
+        OrgVO vo = BodyDecodeUtil.decodeBody(body, OrgVO.class);
         List<OrgVO> orgVOS= orgBaseunitService.getCostEntitys(vo);
         result.put("data", orgVOS);
         result.put("msg", UtilMessage.GET_MSG_SUCCESS);
