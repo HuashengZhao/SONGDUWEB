@@ -310,21 +310,37 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
 //        是否调用eas提交方法
         Boolean flag = vo.getFlag();
         String id = vo.getId();
-        easJson.put("id", id);
+        if (Util.isNotEmpty(id)) {
+            easJson.put("id", id);
+        }
         String num = vo.getNum();
-        easJson.put("number", num);
+        if (Util.isNotEmpty(num)) {
+            easJson.put("number", num);
+        }
         String title = vo.getTitle();
-        easJson.put("name", title);
+        if (Util.isNotEmpty(title)) {
+            easJson.put("name", title);
+        }
         String orgId = vo.getOrgId();
-        easJson.put("orgId", orgId);
+        if (Util.isNotEmpty(orgId)) {
+            easJson.put("orgId", orgId);
+        }
         String projectId = vo.getProjectId();
-        easJson.put("projectId", projectId);
+        if (Util.isNotEmpty(projectId)) {
+            easJson.put("projectId", projectId);
+        }
         String contractTypeId = vo.getContractTypeId();
-        easJson.put("conTypeId", contractTypeId);
+        if (Util.isNotEmpty(contractTypeId)) {
+            easJson.put("conTypeId", contractTypeId);
+        }
         String programContractId = vo.getProgramContractId();
-        easJson.put("hygh", programContractId);
+        if (Util.isNotEmpty(programContractId)) {
+            easJson.put("hygh", programContractId);
+        }
         String marketProjectId = vo.getMarketProjectId();
-        easJson.put("marketProjectId", marketProjectId);
+        if (Util.isNotEmpty(marketProjectId)) {
+            easJson.put("marketProjectId", marketProjectId);
+        }
 //        立项金额控制合同金额
         if (Util.isNotEmpty(marketProjectId)){
             TConMarketprojectcostentry contractmarketentry =
@@ -343,22 +359,37 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             }
         }
         String costAccountId = vo.getCostAccountId();
-        easJson.put("costAccountId", costAccountId);
+        if (Util.isNotEmpty(costAccountId)) {
+            easJson.put("costAccountId", costAccountId);
+        }
         String currencyId = vo.getCurrencyId();
-        easJson.put("currencyId", currencyId);
+        if (Util.isNotEmpty(currencyId)) {
+            easJson.put("currencyId", currencyId);
+        }
         BigDecimal oriAmount = vo.getOriAmount();
         if (Util.isEmpty(oriAmount)){
             throw new ServiceException(UtilMessage.CONTRACT_AMOUNT_NOT_FOUND);
         }
         easJson.put("originalAmount", oriAmount.toString());
-//        BigDecimal amount = vo.getAmount();
-        easJson.put("amount", oriAmount.toString());
+//        此处疑问 前端合同金额字段 存值到原币与本位币两个字段 加判断 若传本位币则赋值 否则都一样
+        BigDecimal amount = vo.getAmount();
+        if (Util.isNotEmpty(amount)) {
+            easJson.put("amount", amount.toString());
+        }else {
+            easJson.put("amount", oriAmount.toString());
+        }
         String payBillTypeId = vo.getPayBillTypeId();
-        easJson.put("payBillTypeId", payBillTypeId);
+        if (Util.isNotEmpty(payBillTypeId)) {
+            easJson.put("payBillTypeId", payBillTypeId);
+        }
         String payContentId = vo.getPayContentId();
-        easJson.put("payContentTypeId", payContentId);
+        if (Util.isNotEmpty(payContentId)) {
+            easJson.put("payContentTypeId", payContentId);
+        }
         LocalDateTime bizDate = vo.getBizDate();
-        easJson.put("bizDate", bizDate);
+        if (Util.isNotEmpty(bizDate)) {
+            easJson.put("bizDate", bizDate);
+        }
 //       转业务期间
         if (Util.isNotEmpty(bizDate)){
             String format = df.format(bizDate);
@@ -367,14 +398,22 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             String periodMonth = split[1];
             String periodNumber = new StringBuffer().append(periodYear).append(periodMonth).toString();
             String periodId = mapper.selectPeriodId(periodNumber);
-            easJson.put("periodId", periodId);
+            if (Util.isNotEmpty(periodId)) {
+                easJson.put("periodId", periodId);
+            }
         }
         String unionBankId = vo.getUnionBankId();
-        easJson.put("unionBankId", unionBankId);
+        if (Util.isNotEmpty(unionBankId)) {
+            easJson.put("unionBankId", unionBankId);
+        }
         String bank = vo.getBank();
-        easJson.put("bank", bank);
+        if (Util.isNotEmpty(bank)) {
+            easJson.put("bank", bank);
+        }
         String bankAccount = vo.getBankAccount();
-        easJson.put("bankAccount", bankAccount);
+        if (Util.isNotEmpty(bankAccount)) {
+            easJson.put("bankAccount", bankAccount);
+        }
         String taxerQua = vo.getTaxerQua();
         if (Util.isNotEmpty(taxerQua)) {
             if (taxerQua.contains("NOMAL")) {
@@ -386,31 +425,57 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             }
         }
         String taxerNumber = vo.getTaxerNumber();
-        easJson.put("taxerNum", taxerNumber);
+        if (Util.isNotEmpty(taxerNumber)) {
+            easJson.put("taxerNum", taxerNumber);
+        }
         String receiveUnitID = vo.getReceiveUnitID();
-        easJson.put("receiveUnitId", receiveUnitID);
+        if (Util.isNotEmpty(receiveUnitID)) {
+            easJson.put("receiveUnitId", receiveUnitID);
+        }
         String personId = vo.getPersonId();
-        easJson.put("personId", personId);
+        if (Util.isNotEmpty(personId)) {
+            easJson.put("personId", personId);
+        }
         String settlementTypeId = vo.getSettlementTypeId();
-        easJson.put("settlementTypeId", settlementTypeId);
+        if (Util.isNotEmpty(settlementTypeId)) {
+            easJson.put("settlementTypeId", settlementTypeId);
+        }
         String applierId = vo.getApplierId();
-        easJson.put("applierId", applierId);
+        if (Util.isNotEmpty(applierId)) {
+            easJson.put("applierId", applierId);
+        }
         String useDeptId = vo.getUseDeptId();
-        easJson.put("useDepartmentId", useDeptId);
+        if (Util.isNotEmpty(useDeptId)) {
+            easJson.put("useDepartmentId", useDeptId);
+        }
         String costDeptId = vo.getCostDeptId();
-        easJson.put("costedDeptId", costDeptId);
+        if (Util.isNotEmpty(costDeptId)) {
+            easJson.put("costedDeptId", costDeptId);
+        }
         String costCompanyId = vo.getCostCompanyId();
-        easJson.put("costedCompanyId", costCompanyId);
+        if (Util.isNotEmpty(costCompanyId)) {
+            easJson.put("costedCompanyId", costCompanyId);
+        }
         Integer isJT = vo.getIsjt();
-        easJson.put("isJT", isJT);
+        if (Util.isNotEmpty(isJT)) {
+            easJson.put("isJT", isJT);
+        }
         BigDecimal invoiceAMT = vo.getInvoiceAMT();
-        easJson.put("invoiceAmt", invoiceAMT);
+        if (Util.isNotEmpty(invoiceAMT)) {
+            easJson.put("invoiceAmt", invoiceAMT);
+        }
         BigDecimal rateAmount = vo.getRateAmount();
-        easJson.put("rateAmount", rateAmount);
+        if (Util.isNotEmpty(rateAmount)) {
+            easJson.put("rateAmount", rateAmount);
+        }
         String description = vo.getDescription();
-        easJson.put("description", description);
+        if (Util.isNotEmpty(description)) {
+            easJson.put("description", description);
+        }
         String supplierId = vo.getSupplierId();
-        easJson.put("realSupplierId",supplierId);
+        if (Util.isNotEmpty(supplierId)) {
+            easJson.put("realSupplierId", supplierId);
+        }
         String receiverType = vo.getReceiverType();
         easJson.put("receiverType",vo.getReceiverType());
 //      立项分录
@@ -427,7 +492,9 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
                 marketConArray.add(marketObj);
             }
         }
-        easJson.put("marketConArray", marketConArray);
+        if (marketConArray!=null && marketConArray.size()>0) {
+            easJson.put("marketConArray", marketConArray);
+        }
 //       费用清单
         JSONArray costArray = new JSONArray();
         List<CWTextBgVO> cwTextBgVOS = vo.getCwTextBgVOS();
@@ -439,7 +506,9 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
                 costArray.add(costArray);
             }
         }
-        easJson.put("bgArray", costArray);
+        if (costArray!=null && costArray.size()>0) {
+            easJson.put("bgArray", costArray);
+        }
 
 //      保存到EAS附件
         JSONArray attach = new JSONArray();
@@ -463,7 +532,9 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
                 }
             }
         }
-        easJson.put("attach", attach);
+        if (attach!=null && attach.size()>0) {
+            easJson.put("attach", attach);
+        }
         String result = null;
         Call call = null;
 //        调用eas 保存方法进行保存

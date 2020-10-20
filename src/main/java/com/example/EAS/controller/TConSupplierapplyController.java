@@ -174,10 +174,9 @@ public class TConSupplierapplyController {
      */
     @RequestMapping(value = "/downLoadAttachment",method = RequestMethod.GET)
     public void download(HttpServletRequest request, HttpServletResponse response,String webUrl,String fileUUID) throws Exception{
-
+        if (Util.isEmpty(fileUUID)||Util.isEmpty(webUrl)){
+            throw  new ServiceException(UtilMessage.UNSUPPORTED_DOWNLOAD_FILE);
+        }
         service.downLoadFile(request,response,webUrl,fileUUID);
-
     }
-
-
 }

@@ -27,6 +27,12 @@
     </properties>
 
     <dependencies>
+        <!--金蝶附件下载依赖，金蝶附件存在linux文档里-->
+        <dependency>
+            <groupId>org.jvnet.hudson</groupId>
+            <artifactId>ganymed-ssh2</artifactId>
+            <version>build210-hudson-1</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
         <dependency>
             <groupId>org.jsoup</groupId>

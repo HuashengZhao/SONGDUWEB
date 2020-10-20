@@ -68,5 +68,15 @@
         </where>
         order by m.fnumber
     </select>
+    <select id="selectNextCostIds" resultType="java.lang.String">
+        select fid as id
+        from T_ORG_BASEUNIT
+        <where>
+            FISADMINORGUNIT=1
+            and FIsCostOrgUnit=1
+            and FParentID=#{id,jdbcType=VARCHAR}
+        </where>
+        order by flongnumber
+    </select>
 
 </mapper>

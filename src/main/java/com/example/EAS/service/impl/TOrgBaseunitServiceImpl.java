@@ -105,9 +105,9 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
         return list;
     }
 
-    //           获取下级组织id集合counts
+    //           获取下级组织是成本中心的id集合counts
     public List<String> getChildIds(String orgId,List<String> counts) {//参数为数据库的（原数据，一级id）
-            List<String> orgIds = baseunitMapper.selectNextIds(orgId);
+            List<String> orgIds = baseunitMapper.selectNextCostIds(orgId);
             if (orgIds != null && orgIds.size() > 0) {
                 counts.addAll(orgIds);
                 if (orgIds!=null && orgIds.size()>0) {
