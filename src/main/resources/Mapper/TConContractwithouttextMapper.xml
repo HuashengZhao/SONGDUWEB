@@ -64,7 +64,7 @@
         bill.FProgrammingContract as programContractId,pc.FNAME_L2 as programContractName, bill.FPAYBILLTYPEID as payBillTypeId,
         bill.FCURRENCYID as currencyId,cur.FNAME_L2 as currencyName,bill.FAMOUNT as amount,bill.FORIGINALAMOUNT as oriAmount,
         sup.FNAME_L2 as realReceiveUnitName,bill.FSIGNDATE as signDate,u.FNAME_L2 as creatorName,bill.FCREATETIME as createTime,
-        bill.FAUDITTIME as auditTime,bill.FAUDITORID as auditorId,u1.FNAME_L2 as auditorName,bill.FPAYCONTENTTYPEID as payContentId,
+        bill.FAUDITTIME as auditTime,bill.FAUDITORID as auditorId,u1.FNAME_L2 as auditorName,bill.FPAYCONTENTTYPEID as payContentId
         bill.FPERSONID as personId,p.FNAME_L2 as personName,unit.FNAME_L2 as orgName,pro.FNAME_L2 as projectName,
         pbt.FNAME_L2 as payBillTypeName,bill.FCONTROLUNITID as orgId,pct.FNAME_L2 as payContentName,bill.FPERIODID as periodId,
         per.FPERIODYEAR as periodYear,per.FPERIODNUMBER as periodNumber,bill.FTAXERQUA as taxerQua,bill.FTAXERNUM as taxerNumber,
@@ -115,5 +115,8 @@
     </select>
     <select id="selectPayContentName" resultType="java.lang.String">
         select FNAME_L2 from T_CON_PayContentType where fid=#{payContentId}
+    </select>
+    <select id="selectPeriodId" resultType="java.lang.String">
+        select FID from T_BD_Period where FNUMBER=#{periodNumber}
     </select>
 </mapper>
