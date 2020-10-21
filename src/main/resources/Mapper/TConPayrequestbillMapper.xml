@@ -4,7 +4,7 @@
 
 
     <select id="selectDatas" resultType="com.example.EAS.vo.PayRequestBillVO">
-        select bill.fid as id,
+        select bill.fid as id,bill.FControlUnitID as orgId,bu.FNAME_L2 as orgName,
         bill.FBOOKEDDATE as bizDate,bill.FNUMBER as num,bill.FSTATE as state,bill.FNAME as title,
         bill.FCREATORID as creatorId,u.FNAME_L2 as creatorName,bill.FCURPROJECTID as projectId,
         cp.FNAME_L2 as projectName,con.FNUMBER as contractNumber,con.FNAME as contractName,
@@ -21,6 +21,7 @@
         left join T_CON_CONTRACTBILL con on con.fid=bill.FCONTRACTID
         left join T_BD_Supplier sup on sup.fid=bill.FSUPPLIERID
         left join T_BD_CURRENCY cur on cur.fid=bill.FCURRENCYID
+        left join T_ORG_BASEUNIT bu on bu.fid=bill.FCONTROLUNITID
         <where>
             bill.FControlUnitID=#{orgId}
             and bill.FCurProjectID=#{projectId}
@@ -56,7 +57,7 @@
         order by bill.FBOOKEDDATE desc,bill.fnumber
     </select>
     <select id="selectDataById" resultType="com.example.EAS.vo.PayRequestBillVO">
-        select bill.fid as id,
+        select bill.fid as id,bill.FCONTROLUNITID as orgId,bu.FNAME_L2 as orgName,
         bill.FBOOKEDDATE as bizDate,bill.FNUMBER as num,bill.FSTATE as state,bill.FNAME as title,
         bill.FCREATORID as creatorId,u.FNAME_L2 as creatorName,bill.FCURPROJECTID as projectId,
         bill.FCONTRACTID as contractId,
@@ -103,6 +104,7 @@
         left join T_ORG_Admin ad on ad.fid=bill.FUseDepartmentID
         left join T_ORG_CostCenter cen on cen.fid=bill.FCostedCompanyId
         left join T_ORG_Company com on com.fid=bill.FCostedCompanyId
+        left join T_ORG_BASEUNIT bu on bu.fid=bill.FCONTROLUNITID
         where bill.fid=#{id}
     </select>
 

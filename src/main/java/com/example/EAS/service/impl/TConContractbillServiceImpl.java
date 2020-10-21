@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.EAS.mapper.*;
 import com.example.EAS.model.TConContractbill;
+import com.example.EAS.model.TConMarketproject;
 import com.example.EAS.model.TConMarketprojectcostentry;
 import com.example.EAS.service.ITConContractbillService;
 import com.example.EAS.util.*;
@@ -264,15 +265,15 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         Integer isjt = vo.getIsjt();
         if (isjt != null && isjt == 1) {
             easJson.put("isJT", "true");
-        } else if (isjt != null && isjt == 0) {
+        } else {
             easJson.put("isJT", "false");
         }
         if (Util.isNotEmpty(marketProjectId)) {
             TConMarketprojectcostentry contractmarketentry =
                     tConMarketprojectcostentryMapper.selectOne(new QueryWrapper<TConMarketprojectcostentry>()
-                    .eq("FHEADID", marketProjectId)
-                    .eq("FTYPE","CONTRACT")
-                    .eq("fcostaccountid",vo.getCostAccountId()==null?null:vo.getCostAccountId()));
+                            .eq("FHEADID", marketProjectId)
+                            .eq("FTYPE", "CONTRACT")
+                            .eq("fcostaccountid", vo.getCostAccountId() == null ? null : vo.getCostAccountId()));
 
 //            Long fisjt = tConMarketproject.getFisjt();
 //            if (fisjt != null && fisjt == 1) {
@@ -282,16 +283,16 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
 //            }
 //            营销立项金额控制合同金额
             if (Util.isNotEmpty(contractmarketentry)) {
-            Double famount = contractmarketentry.getFamount();
-            String voAmount = vo.getAmount();
-            if (Util.isNotEmpty(famount) && Util.isNotEmpty(voAmount)) {
-                BigDecimal famountDe = new BigDecimal(famount);
-                BigDecimal voAmountDe = new BigDecimal(voAmount);
-                if (voAmountDe.compareTo(famountDe) == 1) {
-                    throw new ServiceException(UtilMessage.CONTRACT_AMOUNT_BEYOND);
+                Double famount = contractmarketentry.getFamount();
+                String voAmount = vo.getAmount();
+                if (Util.isNotEmpty(famount) && Util.isNotEmpty(voAmount)) {
+                    BigDecimal famountDe = new BigDecimal(famount);
+                    BigDecimal voAmountDe = new BigDecimal(voAmount);
+                    if (voAmountDe.compareTo(famountDe) == 1) {
+                        throw new ServiceException(UtilMessage.CONTRACT_AMOUNT_BEYOND);
+                    }
                 }
             }
-        }
         }
 //       费用归属 需要验证是否被关联过  关联关系： 合同关联立项 以及组织，获取对应的费用归属信息  选择其中一个
 //       合同费用归属为一对一 且被关联的费用归属科目不可再被关联  费用归属区分 合同 跟无文本合同 两个类型
@@ -314,7 +315,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         String grtRate = vo.getGrtRate();
         easJson.put("grtRate", grtRate);
         String csName = vo.getCsName();
-       String contractSourceId = mapper.selectContractSourceId(csName);
+        String contractSourceId = mapper.selectContractSourceId(csName);
         easJson.put("contractSourceId", contractSourceId);
         LocalDateTime startDate = vo.getStartDate();
         if (Util.isNotEmpty(startDate)) {
@@ -545,6 +546,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         if (Util.isEmpty(contractVO)) {
             return null;
         }
+
         //                保存=1SAVED,已提交=2SUBMITTED,审批中=3AUDITTING,已审批=4AUDITTED,终止=5CANCEL,已下发=7ANNOUNCE,已签证=8VISA,
 //                作废=9INVALID,已上报=10PUBLISH,被打回=11BACK,修订中=12REVISING,已修订=12REVISE,已确认=13CONFIRMED
         String state = contractVO.getState();
@@ -710,13 +712,31 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         if (Util.isNotEmpty(contractAddVOS)) {
             contractVO.setContractAddVOS(contractAddVOS);
         }
+
+        //        是否后评估审核
+        Integer isjt = contractVO.getIsjt();
+        if (Util.isEmpty(isjt)) {
+            contractVO.setIsjt(0);
+        }
+//        根据营销立项中的后评估审核带出
+        String marketProjectId = contractVO.getMarketProjectId();
+        if (Util.isNotEmpty(marketProjectId)) {
+            TConMarketproject mp = marketProjectMapper.selectOne(new QueryWrapper<TConMarketproject>()
+                    .eq("FID", marketProjectId));
+            Long fisjt = mp.getFisjt();
+            if (Util.isEmpty(fisjt)) {
+                contractVO.setIsjt(0);
+            } else {
+                contractVO.setIsjt(Math.toIntExact(mp.getFisjt()));
+            }
+        }
 //        营销合同分摊明细
         List<MarketContDetailVO> marketContDetailVOS = mapper.selectMarketCons(vo.getId());
         TConContractbill tConContractbill = mapper.selectById(vo.getId());
         Long fisjt = tConContractbill.getFisjt();
         if (marketContDetailVOS != null && marketContDetailVOS.size() > 0) {
             for (MarketContDetailVO marketContDetailVO : marketContDetailVOS) {
-                contractVO.setIsjt(0);
+
                 if (Util.isNotEmpty(fisjt) && fisjt == 1) {
                     contractVO.setIsjt(1);
                 }
@@ -852,7 +872,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                 result = (String) call.invoke(new Object[]{obj.toString()});
                 System.out.println(vo.getConName() + "本次提交传给oa的参数" + obj.toString());
                 str = JSONObject.parseObject(result);
-                System.out.println("这次是新增流程："+str);
+                System.out.println("这次是新增流程：" + str);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -863,7 +883,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                 result = (String) call.invoke(new Object[]{obj.toString()});
                 System.out.println(vo.getConName() + "本次提交传给oa的参数" + obj.toString());
                 str = JSONObject.parseObject(result);
-                System.out.println("这次是修改流程："+str+"原流程id"+oaId);
+                System.out.println("这次是修改流程：" + str + "原流程id" + oaId);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
