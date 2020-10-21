@@ -5,10 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.EAS.mapper.*;
-import com.example.EAS.model.TBcExpensetype;
-import com.example.EAS.model.TConContractwithouttext;
-import com.example.EAS.model.TConCwtextbgentry;
-import com.example.EAS.model.TConMarketprojectcostentry;
+import com.example.EAS.model.*;
 import com.example.EAS.service.ITConContractwithouttextService;
 import com.example.EAS.util.*;
 import com.example.EAS.vo.*;
@@ -45,6 +42,8 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
     private TBasAttachmentMapper attachmentMapper;
     @Autowired
     private TConContractbillMapper contractbillMapper;
+    @Autowired
+    private TConMarketprojectMapper marketProjectMapper;
     @Autowired
     private TConSupplierapplyMapper csMapper;
     @Autowired
@@ -290,6 +289,24 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
                 }
                 returnVO.setCwTextBgVOS(cwTextBgVOS);
             }
+
+            //        是否后评估审核
+            Integer isjt = returnVO.getIsjt();
+            if (Util.isEmpty(isjt)) {
+                returnVO.setIsjt(0);
+            }
+//        根据营销立项中的后评估审核带出
+            String marketProjectId = returnVO.getMarketProjectId();
+            if (Util.isNotEmpty(marketProjectId)) {
+                TConMarketproject mp = marketProjectMapper.selectOne(new QueryWrapper<TConMarketproject>()
+                        .eq("FID", marketProjectId));
+                Long fisjt = mp.getFisjt();
+                if (Util.isEmpty(fisjt)) {
+                    returnVO.setIsjt(0);
+                } else {
+                    returnVO.setIsjt(Math.toIntExact(mp.getFisjt()));
+                }
+            }
             //        营销合同分摊明细
             List<MarketContDetailVO> marketContDetailVOS = contractbillMapper.selectMarketCons(vo.getId());
             TConContractwithouttext tConContractwithouttext = mapper.selectById(id);
@@ -451,9 +468,11 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         if (Util.isNotEmpty(costCompanyId)) {
             easJson.put("costedCompanyId", costCompanyId);
         }
-        Integer isJT = vo.getIsjt();
-        if (Util.isNotEmpty(isJT)) {
-            easJson.put("isJT", isJT);
+        Integer isjt = vo.getIsjt();
+        if (isjt != null && isjt == 1) {
+            easJson.put("isJT", "true");
+        } else {
+            easJson.put("isJT", "false");
         }
         BigDecimal invoiceAMT = vo.getInvoiceAMT();
         if (Util.isNotEmpty(invoiceAMT)) {
