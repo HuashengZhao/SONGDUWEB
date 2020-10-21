@@ -499,7 +499,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
                 }
                 String supplierId = vo.getSupplierId();
                 if (Util.isNotEmpty(supplierId)) {
-                    easJson.put("receiveUnitID", supplierId);
+                    easJson.put("receiveUnitId", supplierId);
                 }
             } else if (receiverType.equals("职员")) {
                 String personId = vo.getPersonId();
