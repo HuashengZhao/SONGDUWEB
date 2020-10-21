@@ -63,7 +63,7 @@
         bill.FCONTRACTTYPEID as contractTypeId,ct.FNAME_L2 as contractTypeName,bill.FLXNUMID as unionBankId,
         bill.FProgrammingContract as programContractId,pc.FNAME_L2 as programContractName, bill.FPAYBILLTYPEID as payBillTypeId,
         bill.FCURRENCYID as currencyId,cur.FNAME_L2 as currencyName,bill.FAMOUNT as amount,bill.FORIGINALAMOUNT as oriAmount,
-        sup.FNAME_L2 as realReceiveUnitName,bill.FSIGNDATE as signDate,u.FNAME_L2 as creatorName,bill.FCREATETIME as createTime,
+        sup.FNAME_L2 as receiverName,bill.FSIGNDATE as signDate,u.FNAME_L2 as creatorName,bill.FCREATETIME as createTime,
         bill.FAUDITTIME as auditTime,bill.FAUDITORID as auditorId,u1.FNAME_L2 as auditorName,bill.FPAYCONTENTTYPEID as payContentId,
         bill.FPERSONID as personId,p.FNAME_L2 as personName,unit.FNAME_L2 as orgName,pro.FNAME_L2 as projectName,
         pbt.FNAME_L2 as payBillTypeName,bill.FCONTROLUNITID as orgId,pct.FNAME_L2 as payContentName,bill.FPERIODID as periodId,
@@ -74,7 +74,7 @@
         cc.FNAME_L2 as costDeptName,cp.FNAME_L2 as costCompanyName,bill.FMarketProjectId as marketProjectId,
         mar.FNAME as marketProjectName,cost.FNAME_L2 as costAccountName,bill.FMpCostAccountId as costAccountId,
         bill.FInvoiceAmt as invoiceAMT,bill.FRATEAMOUNT as rateAmount,bill.FDESCRIPTION as description,
-        pb.FREALSUPPLIERID as receiveUnitId,sup2.FNAME_L2 as receiverName
+        pb.FREALSUPPLIERID as receiveUnitId,sup2.FNAME_L2 as realReceiveUnitName
         from T_CON_CONTRACTWITHOUTTEXT bill
         left join T_FDC_ContractType ct on ct.fid=bill.FCONTRACTTYPEID
         left join T_FDC_CostAccount cost on cost.fid=bill.FMPCOSTACCOUNTID

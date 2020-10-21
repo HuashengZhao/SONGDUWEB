@@ -261,7 +261,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             String personId = returnVO.getPersonId();
             if (Util.isNotEmpty(personId)) {
                 returnVO.setReceiverType("职员");
-                returnVO.setReceiverName(returnVO.getPersonName()==null?null:returnVO.getPersonName());
+                returnVO.setRealReceiveUnitName(returnVO.getPersonName() == null ? null : returnVO.getPersonName());
             }
 //          费用清单
             List<CWTextBgVO> cwTextBgVOS = new ArrayList<>();
@@ -342,11 +342,11 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             easJson.put("marketProjectId", marketProjectId);
         }
 //        立项金额控制合同金额
-        if (Util.isNotEmpty(marketProjectId)){
+        if (Util.isNotEmpty(marketProjectId)) {
             TConMarketprojectcostentry contractmarketentry =
                     tConMarketprojectcostentryMapper.selectOne(new QueryWrapper<TConMarketprojectcostentry>()
                             .eq("FHEADID", marketProjectId)
-                            .eq("FTYPE","CONTRACT"));
+                            .eq("FTYPE", "CONTRACT"));
             if (Util.isNotEmpty(contractmarketentry)) {
                 Double famount = contractmarketentry.getFamount();
                 BigDecimal voAmount = vo.getAmount();
@@ -367,7 +367,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             easJson.put("currencyId", currencyId);
         }
         BigDecimal oriAmount = vo.getOriAmount();
-        if (Util.isEmpty(oriAmount)){
+        if (Util.isEmpty(oriAmount)) {
             throw new ServiceException(UtilMessage.CONTRACT_AMOUNT_NOT_FOUND);
         }
         easJson.put("originalAmount", oriAmount.toString());
@@ -375,7 +375,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         BigDecimal amount = vo.getAmount();
         if (Util.isNotEmpty(amount)) {
             easJson.put("amount", amount.toString());
-        }else {
+        } else {
             easJson.put("amount", oriAmount.toString());
         }
         String payBillTypeId = vo.getPayBillTypeId();
@@ -391,7 +391,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             easJson.put("bizDate", bizDate);
         }
 //       转业务期间
-        if (Util.isNotEmpty(bizDate)){
+        if (Util.isNotEmpty(bizDate)) {
             String format = df.format(bizDate);
             String[] split = format.split("-");
             String periodYear = split[0];
@@ -427,10 +427,6 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         String taxerNumber = vo.getTaxerNumber();
         if (Util.isNotEmpty(taxerNumber)) {
             easJson.put("taxerNum", taxerNumber);
-        }
-        String receiveUnitID = vo.getReceiveUnitID();
-        if (Util.isNotEmpty(receiveUnitID)) {
-            easJson.put("receiveUnitId", receiveUnitID);
         }
         String personId = vo.getPersonId();
         if (Util.isNotEmpty(personId)) {
@@ -477,7 +473,13 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             easJson.put("realSupplierId", supplierId);
         }
         String receiverType = vo.getReceiverType();
-        easJson.put("receiverType",vo.getReceiverType());
+        if (Util.isNotEmpty(receiverType)) {
+            easJson.put("receiverType", receiverType);
+        }
+        String receiveUnitID = vo.getReceiveUnitID();
+        if (Util.isNotEmpty(receiveUnitID)) {
+            easJson.put("receiveUnitId", receiveUnitID);
+        }
 //      立项分录
         JSONArray marketConArray = new JSONArray();
         List<MarketContDetailVO> marketContDetailVOS = vo.getMarketContDetailVOS();
@@ -492,7 +494,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
                 marketConArray.add(marketObj);
             }
         }
-        if (marketConArray!=null && marketConArray.size()>0) {
+        if (marketConArray != null && marketConArray.size() > 0) {
             easJson.put("marketConArray", marketConArray);
         }
 //       费用清单
@@ -506,7 +508,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
                 costArray.add(costArray);
             }
         }
-        if (costArray!=null && costArray.size()>0) {
+        if (costArray != null && costArray.size() > 0) {
             easJson.put("bgArray", costArray);
         }
 
@@ -532,7 +534,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
                 }
             }
         }
-        if (attach!=null && attach.size()>0) {
+        if (attach != null && attach.size() > 0) {
             easJson.put("attach", attach);
         }
         String result = null;
@@ -607,9 +609,9 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         obj.put("docSubject", vo.getTitle());
         //        表单参数
         JSONObject data = new JSONObject();
-        if (Util.isNotEmpty(vo.getPayContentId())){
-           String payContentName =  mapper.selectPayContentName(vo.getPayContentId());
-           data.put("fd_38cf18370f3976",payContentName);
+        if (Util.isNotEmpty(vo.getPayContentId())) {
+            String payContentName = mapper.selectPayContentName(vo.getPayContentId());
+            data.put("fd_38cf18370f3976", payContentName);
         }
         if (Util.isNotEmpty(vo.getOriAmount())) {
             Double aDouble = vo.getOriAmount().doubleValue();
@@ -679,7 +681,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             Call call = getCall("OAURL", "addEkpReview");
             try {
                 result = (String) call.invoke(new Object[]{obj.toString()});
-                System.out.println(vo.getTitle()+"oa新增流程参数："+obj.toString());
+                System.out.println(vo.getTitle() + "oa新增流程参数：" + obj.toString());
                 str = JSONObject.parseObject(result);
             } catch (RemoteException e) {
                 e.printStackTrace();
@@ -689,7 +691,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             try {
                 obj.put("id", oaId);
                 result = (String) call.invoke(new Object[]{obj.toString()});
-                System.out.println(vo.getTitle()+"oa新增流程参数："+obj.toString());
+                System.out.println(vo.getTitle() + "oa新增流程参数：" + obj.toString());
                 str = JSONObject.parseObject(result);
             } catch (RemoteException e) {
                 e.printStackTrace();
