@@ -378,6 +378,10 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         } else {
             easJson.put("amount", oriAmount.toString());
         }
+        String capitalAmount = vo.getCapitalAmount();
+        if (Util.isNotEmpty(capitalAmount)){
+            easJson.put("capitalAmount",capitalAmount);
+        }
         String payBillTypeId = vo.getPayBillTypeId();
         if (Util.isNotEmpty(payBillTypeId)) {
             easJson.put("payBillTypeId", payBillTypeId);
@@ -543,7 +547,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         if (Util.isEmpty(flag) || flag.compareTo(false) == 0) {
             call = getCall("EASURL", "saveContractwithouttext");
             try {
-                System.out.println(easJson.toJSONString());
+                System.out.println("无文本保存信息：" + easJson.toString());
                 result = (String) call.invoke(new Object[]{easJson.toString()});
             } catch (RemoteException e) {
                 e.printStackTrace();

@@ -30,7 +30,7 @@ public class NoTextContractVO {
     private String creatorName;
     private String auditorId;
     private String auditorName;
-//    款项说明
+    //    款项说明
     private String description;
     //    附件
     private Integer ifHasAttach;
@@ -38,6 +38,8 @@ public class NoTextContractVO {
     //    本位币金额
     @JsonSerialize(using = CustomBigDecimalSerialize.class, nullsUsing = CustomBigDecimalSerialize.class)
     private BigDecimal amount;
+    //    大写金额
+    private String capitalAmount;
     //    原币金额
     @JsonSerialize(using = CustomBigDecimalSerialize.class, nullsUsing = CustomBigDecimalSerialize.class)
     private BigDecimal oriAmount;
@@ -53,7 +55,7 @@ public class NoTextContractVO {
     //框架合约
     private String programContractId;
     private String programContractName;
-//    费用归属
+    //    费用归属
     private String costAccountId;
     private String costAccountName;
     //  币别
@@ -107,7 +109,7 @@ public class NoTextContractVO {
     private String costDeptName;
     private String costCompanyId;
     private String costCompanyName;
-//是否后评估审核 0 1
+    //是否后评估审核 0 1
     private Integer isjt;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
@@ -134,7 +136,7 @@ public class NoTextContractVO {
     private String marketProjectId;
     private String marketProjectName;
     private List<MarketContDetailVO> marketContDetailVOS;
-//    eas返回
+    //    eas返回
     private String result;
     private String message;
 
