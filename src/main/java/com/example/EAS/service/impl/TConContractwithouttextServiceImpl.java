@@ -257,10 +257,13 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
                 }
             }
 //           收款人類型 收款单位名称
+//            当无文本单据中职员id不为空时 实际收款单位取职员名称，收款单位为空
+//            当职员为空时，实际收款单位取申请单中的实际收款单位，收款单位是无文本单据中的收款单位
             returnVO.setReceiverType("供应商");
             String personId = returnVO.getPersonId();
             if (Util.isNotEmpty(personId)) {
                 returnVO.setReceiverType("职员");
+                returnVO.setReceiverName(null);
                 returnVO.setRealReceiveUnitName(returnVO.getPersonName() == null ? null : returnVO.getPersonName());
             }
 //          费用清单
@@ -268,8 +271,8 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             List<TConCwtextbgentry> entrys = cwtextbgentryMapper.selectList(new QueryWrapper<TConCwtextbgentry>()
                     .eq("FHEADID", id));
             if (entrys != null && entrys.size() > 0) {
-                CWTextBgVO cwTextBgVO = new CWTextBgVO();
                 for (TConCwtextbgentry entry : entrys) {
+                    CWTextBgVO cwTextBgVO = new CWTextBgVO();
                     if (entry != null) {
                         cwTextBgVO.setId(entry.getFid());
                         if (entry.getFexpensetypeid() != null) {
@@ -279,12 +282,13 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
                                 cwTextBgVO.setExpenseTypeId(tBcExpensetype.getFid());
                             }
                         }
-                        if (entry.getFrequestamount() != null) {
+                        if (entry.getFamount() != null) {
                             cwTextBgVO.setAmount(new BigDecimal(entry.getFamount()));
                         }
                     }
-                    returnVO.setCwTextBgVOS(cwTextBgVOS);
+                    cwTextBgVOS.add(cwTextBgVO);
                 }
+                returnVO.setCwTextBgVOS(cwTextBgVOS);
             }
             //        营销合同分摊明细
             List<MarketContDetailVO> marketContDetailVOS = contractbillMapper.selectMarketCons(vo.getId());
@@ -372,15 +376,15 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         }
         easJson.put("originalAmount", oriAmount.toString());
 //        此处疑问 前端合同金额字段 存值到原币与本位币两个字段 加判断 若传本位币则赋值 否则都一样
-        BigDecimal amount = vo.getAmount();
-        if (Util.isNotEmpty(amount)) {
-            easJson.put("amount", amount.toString());
-        } else {
-            easJson.put("amount", oriAmount.toString());
-        }
-        String capitalAmount = vo.getCapitalAmount();
-        if (Util.isNotEmpty(capitalAmount)){
-            easJson.put("capitalAmount",capitalAmount);
+//        BigDecimal amount = vo.getAmount();
+//        if (Util.isNotEmpty(amount)) {
+//            easJson.put("amount", amount.toString());
+//        } else {
+        easJson.put("amount", oriAmount.toString());
+//        }
+        String capitalAmount = vo.getBwbdx();
+        if (Util.isNotEmpty(capitalAmount)) {
+            easJson.put("capitalAmount", capitalAmount);
         }
         String payBillTypeId = vo.getPayBillTypeId();
         if (Util.isNotEmpty(payBillTypeId)) {
@@ -407,6 +411,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             }
         }
         String unionBankId = vo.getUnionBankId();
+//        String unionBankId = mapper.selectUnionBankId(unionBankNum);
         if (Util.isNotEmpty(unionBankId)) {
             easJson.put("unionBankId", unionBankId);
         }
@@ -420,21 +425,11 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         }
         String taxerQua = vo.getTaxerQua();
         if (Util.isNotEmpty(taxerQua)) {
-            if (taxerQua.contains("NOMAL")) {
-                easJson.put("taxerQua", "一般纳税人");
-            } else if (taxerQua.contains("SMALL")) {
-                easJson.put("taxerQua", "小规模纳税人");
-            } else if (taxerQua.contains("UNNOMAL")) {
-                easJson.put("taxerQua", "非增值税纳税人");
-            }
+            easJson.put("taxerQua", taxerQua);
         }
         String taxerNumber = vo.getTaxerNumber();
         if (Util.isNotEmpty(taxerNumber)) {
             easJson.put("taxerNum", taxerNumber);
-        }
-        String personId = vo.getPersonId();
-        if (Util.isNotEmpty(personId)) {
-            easJson.put("personId", personId);
         }
         String settlementTypeId = vo.getSettlementTypeId();
         if (Util.isNotEmpty(settlementTypeId)) {
@@ -472,18 +467,29 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         if (Util.isNotEmpty(description)) {
             easJson.put("description", description);
         }
-        String supplierId = vo.getSupplierId();
-        if (Util.isNotEmpty(supplierId)) {
-            easJson.put("realSupplierId", supplierId);
-        }
+
         String receiverType = vo.getReceiverType();
         if (Util.isNotEmpty(receiverType)) {
             easJson.put("receiverType", receiverType);
+            //        当收款人类型为供应商时，实际收款单位存到付款申请单中，收款单位存无文本中
+//        收款人为职员时，只存personId到无文本合同
+            if (receiverType.equals("供应商")) {
+                String receiveUnitID = vo.getReceiveUnitID();
+                if (Util.isNotEmpty(receiveUnitID)) {
+                    easJson.put("realSupplierId", receiveUnitID);
+                }
+                String supplierId = vo.getSupplierId();
+                if (Util.isNotEmpty(supplierId)) {
+                    easJson.put("receiveUnitID", supplierId);
+                }
+            } else if (receiverType.equals("职员")) {
+                String personId = vo.getPersonId();
+                if (Util.isNotEmpty(personId)) {
+                    easJson.put("personId", personId);
+                }
+            }
         }
-        String receiveUnitID = vo.getReceiveUnitID();
-        if (Util.isNotEmpty(receiveUnitID)) {
-            easJson.put("receiveUnitId", receiveUnitID);
-        }
+
 //      立项分录
         JSONArray marketConArray = new JSONArray();
         List<MarketContDetailVO> marketContDetailVOS = vo.getMarketContDetailVOS();
@@ -508,8 +514,15 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             for (CWTextBgVO cwTextBgVO : cwTextBgVOS) {
                 JSONObject costObj = new JSONObject();
                 costObj.put("amount", cwTextBgVO.getAmount());
-                costObj.put("expenseTypeId", cwTextBgVO.getExpenseTypeId());
-                costArray.add(costArray);
+                String expenseTypeName = cwTextBgVO.getExpenseTypeName();
+                if (Util.isNotEmpty(expenseTypeName)) {
+                    TBcExpensetype expensetype = expensetypeMapper.selectOne(new QueryWrapper<TBcExpensetype>()
+                            .eq("FNAME_L2", expenseTypeName));
+                    if (Util.isNotEmpty(expensetype)) {
+                        costObj.put("expenseTypeId", expensetype.getFid());
+                    }
+                }
+                costArray.add(costObj);
             }
         }
         if (costArray != null && costArray.size() > 0) {
@@ -734,7 +747,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         JSONObject token = getToken();
         String org = token.getString("org");
         StringBuffer sb = new StringBuffer();
-        String newNumber = sb.append("WEB").append(org).append(format).toString();
+        String newNumber = sb.append("WEB.").append(org).append(format).toString();
 
         return newNumber;
     }

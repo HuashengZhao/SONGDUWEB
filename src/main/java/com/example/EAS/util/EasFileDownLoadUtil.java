@@ -87,9 +87,7 @@ public class EasFileDownLoadUtil {
                 //文件的大小
                 Long fileSize = s.attributes.size;
             }
-
             sft.close();
-
         } catch (Exception e1) {
             e1.printStackTrace();
         }

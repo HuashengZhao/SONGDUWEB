@@ -39,7 +39,7 @@ public class NoTextContractVO {
     @JsonSerialize(using = CustomBigDecimalSerialize.class, nullsUsing = CustomBigDecimalSerialize.class)
     private BigDecimal amount;
     //    大写金额
-    private String capitalAmount;
+    private String bwbdx;
     //    原币金额
     @JsonSerialize(using = CustomBigDecimalSerialize.class, nullsUsing = CustomBigDecimalSerialize.class)
     private BigDecimal oriAmount;

@@ -155,6 +155,13 @@ public class TConPayrequestbillServiceImpl extends ServiceImpl<TConPayrequestbil
         }
         PayRequestBillVO payRequestBillVO = mapper.selectDataById(vo);
         if (Util.isNotEmpty(payRequestBillVO)) {
+//            是否后评估审核
+            Integer isJT = payRequestBillVO.getIsJT();
+            if (Util.isEmpty(isJT)||isJT==0){
+                payRequestBillVO.setIsJT(0);
+            }else if(Util.isNotEmpty(isJT)&&isJT==1){
+                payRequestBillVO.setIsJT(1);
+            }
 //           内外部合同
             String orgType = payRequestBillVO.getOrgType();
             if (Util.isNotEmpty(orgType)) {

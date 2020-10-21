@@ -56,7 +56,7 @@
         order by bill.FBOOKEDDATE desc,bill.fnumber
     </select>
     <select id="selectDataById" resultType="com.example.EAS.vo.PayRequestBillVO">
-        select billl.fid as id,
+        select bill.fid as id,
         bill.FBOOKEDDATE as bizDate,bill.FNUMBER as num,bill.FSTATE as state,bill.FNAME as title,
         bill.FCREATORID as creatorId,u.FNAME_L2 as creatorName,bill.FCURPROJECTID as projectId,
         bill.FCONTRACTID as contractId,

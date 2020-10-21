@@ -63,7 +63,7 @@
         bill.FCONTRACTTYPEID as contractTypeId,ct.FNAME_L2 as contractTypeName,bill.FLXNUMID as unionBankId,
         bill.FProgrammingContract as programContractId,pc.FNAME_L2 as programContractName, bill.FPAYBILLTYPEID as payBillTypeId,
         bill.FCURRENCYID as currencyId,cur.FNAME_L2 as currencyName,bill.FAMOUNT as amount,bill.FORIGINALAMOUNT as oriAmount,
-        sup.FNAME_L2 as receiverName,bill.FSIGNDATE as signDate,u.FNAME_L2 as creatorName,bill.FCREATETIME as createTime,
+        sup.FNAME_L2 as receiverName,bill.FRECEIVEUNITID as supplierId,bill.FSIGNDATE as signDate,u.FNAME_L2 as creatorName,bill.FCREATETIME as createTime,
         bill.FAUDITTIME as auditTime,bill.FAUDITORID as auditorId,u1.FNAME_L2 as auditorName,bill.FPAYCONTENTTYPEID as payContentId,
         bill.FPERSONID as personId,p.FNAME_L2 as personName,unit.FNAME_L2 as orgName,pro.FNAME_L2 as projectName,
         pbt.FNAME_L2 as payBillTypeName,bill.FCONTROLUNITID as orgId,pct.FNAME_L2 as payContentName,bill.FPERIODID as periodId,
@@ -118,5 +118,8 @@
     </select>
     <select id="selectPeriodId" resultType="java.lang.String">
         select FID from T_BD_Period where FNUMBER=#{periodNumber}
+    </select>
+    <select id="selectUnionBankId" resultType="java.lang.String">
+        select fid from T_CON_BankNum where FNUMBER=#{unionBankNum}
     </select>
 </mapper>
