@@ -33,4 +33,6 @@ public class OrgVO {
     private String costCenterType;
     //    簡稱
     private String simpleName;
+    private Integer currentPage;
+    private Integer pageSize;
 }
