@@ -82,6 +82,8 @@ public class PayRequestBillVO {
     @JsonFormat(pattern = "yyyy-MM-dd")
     @JsonDeserialize(using = DateJsonDeserializer.class)
     private LocalDateTime endDate;
+//    起止日期拼凑
+    private String startEndDate;
 
     //    银行
     private String recBank;
@@ -142,6 +144,8 @@ public class PayRequestBillVO {
     private String isDifPlace;
     //    是否加急
     private String urtDegree;
+//    是否提交付款
+    private Integer isPay;
 
     //    付款申请金额集合
     private PaymentApplyVO paymentApplyVO;

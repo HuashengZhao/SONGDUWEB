@@ -19,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
@@ -39,6 +41,8 @@ public class TConPayrequestbillServiceImpl extends ServiceImpl<TConPayrequestbil
     private TConDeductofpayreqbillMapper deductofpayreqbillMapper;
     @Autowired
     private TBasAttachmentMapper attachmentMapper;
+
+    DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 
     @Override
@@ -155,12 +159,29 @@ public class TConPayrequestbillServiceImpl extends ServiceImpl<TConPayrequestbil
         }
         PayRequestBillVO payRequestBillVO = mapper.selectDataById(vo);
         if (Util.isNotEmpty(payRequestBillVO)) {
+//            合同起止时间转换
+            String start="";
+            String end="";
+            LocalDateTime startDate = payRequestBillVO.getStartDate();
+            if (Util.isNotEmpty(startDate)){
+                start= df.format(startDate);
+            }
+            LocalDateTime endDate = payRequestBillVO.getEndDate();
+            if (Util.isNotEmpty(endDate)){
+                end= df.format(endDate);
+            }
+            StringBuffer sb = new StringBuffer();
+            String startEndDate = sb.append(start).append("--").append(end).toString();
+            payRequestBillVO.setStartEndDate(startEndDate);
+//            是否提交付款
+            Integer isPay = payRequestBillVO.getIsPay();
+            if (Util.isEmpty(isPay)){
+                payRequestBillVO.setIsPay(0);
+            }
 //            是否后评估审核
             Integer isJT = payRequestBillVO.getIsJT();
-            if (Util.isEmpty(isJT)||isJT==0){
+            if (Util.isEmpty(isJT)){
                 payRequestBillVO.setIsJT(0);
-            }else if(Util.isNotEmpty(isJT)&&isJT==1){
-                payRequestBillVO.setIsJT(1);
             }
 //           内外部合同
             String orgType = payRequestBillVO.getOrgType();

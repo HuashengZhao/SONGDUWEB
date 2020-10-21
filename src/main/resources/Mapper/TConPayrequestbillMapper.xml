@@ -70,6 +70,7 @@
         bill.FPAYCONTENTTYPEID as payContentTypeId,pc.FNAME_L2 as payContentTypeName,
         bill.FPAYDATE as payDate,con.FSTARTDATE as startDate,con.FENDDATE as endDate,
         con.FTAXERQUA as taxerQua,con.FTAXERNUM as taxerNum,bank.FNUMBER as unionBankNum,
+        con.FSTARTDATE as startDate,con.FENDDATE as endDate,
         bill.FEXCHANGERATE as exRate,bill.FGRTAMOUNT as grtAmount,bill.FApplierId as applierId,
         per.FNAME_L2 as applierName,ad.FNAME_L2 as useDepartMentName,
         com.FNAME_L2 as costCompanyName,cen.FNAME_L2 as costDeptName,
@@ -83,7 +84,7 @@
         case when bill.FUrentDegree=1 then '普通'
         when bill.FUrentDegree=2 then '加急'
         end urtDegree,
-        en.FREQUESTAMOUNT as applyAMT,et.FNAME_L2 as costType
+        en.FREQUESTAMOUNT as applyAMT,et.FNAME_L2 as costType,bill.FISPAY as isPay
         from T_CON_PayRequestBill bill
         left join T_CON_PayRequestBillBgEntry en on en.FHEADID=bill.fid
         left join T_BC_EXPENSETYPE et on et.fid=en.FEXPENSETYPEID
