@@ -54,7 +54,7 @@
                 and u.fstate like CONCAT(CONCAT('%',#{state},'%'))
             </if>
         </where>
-        order by bill.FBOOKEDDATE desc,bill.fnumber
+        order by bill.FBOOKEDDATE desc,bill.fnumber desc
     </select>
     <select id="selectDataById" resultType="com.example.EAS.vo.PayRequestBillVO">
         select bill.fid as id,bill.FCONTROLUNITID as orgId,bu.FNAME_L2 as orgName,

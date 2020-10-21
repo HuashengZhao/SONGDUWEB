@@ -31,8 +31,9 @@
 
     <select id="selectDatas" resultType="com.example.EAS.vo.ContractVO">
         select cb.FID id,cb.fbookeddate bizDate,cb.FState state,cb.FHasSettled hasSettled,ct.fname_l2 as conTypeName,
-        cb.fnumber num,cb.FNAME as conName,pc.fname_l2 as hygh,cb.fmaincontractnumber as mainNumber,
-        cur.fname_l2 curName,cb.FSrcAmount srcAmount,cb.FOriginalAmount originalAmount,cb.famount amount,
+        cb.fnumber num,cb.FNAME as conName,pc.fname_l2 as hygh,cb.FProgrammingContract as hyghId,
+        cb.fmaincontractnumber as mainNumber,cb.famount as amount,
+        cur.fname_l2 curName,cb.FSrcAmount srcAmount,cb.FOriginalAmount originalAmount,
         supb.fname_l2 as partBName,supc.fname_l2 as partCName,cb.FCONTRACTSOURCE as csName,
         cb.fsigndate signDate,oa.fname_l2 as deptName,p.fname_l2 as personName,oaa.FNAME_L2 creatDept,
         ldp.fname_l2 as partAName,cb.FCostProperty costProperty,cb.FContractPropert contractNature,
@@ -98,7 +99,7 @@
                 and oaa.FNAME_L2 like CONCAT(CONCAT('%',#{creatDept}),'%')
             </if>
         </where>
-        order by cb.fbookeddate desc ,cb.fnumber
+        order by cb.fbookeddate desc ,cb.fnumber desc
     </select>
     <select id="selectProject" resultType="java.lang.String">
         select FParentID from T_FDC_CurProject where fid=#{projectId}

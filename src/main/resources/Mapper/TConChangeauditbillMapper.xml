@@ -49,7 +49,7 @@
                 and bill.faudittime like CONCAT(CONCAT('%',#{auditTime}),'%')
             </if>
         </where>
-        order by bill.FBOOKEDDATE desc,bill.fnumber
+        order by bill.FBOOKEDDATE desc,bill.fnumber desc
     </select>
 
     <select id="selectDataById" resultType="com.example.EAS.vo.ChangeAuditVO">

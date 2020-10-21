@@ -34,6 +34,7 @@ public class ContractVO {
     private LocalDateTime bizDate;
     private String conTypeName;
     private String conTypeId;
+    //    合约规划
     private String hygh;
     private String hyghId;
     private String mainNumber;
@@ -140,7 +141,7 @@ public class ContractVO {
     private String bankAccount;
     private String taxQua;
     private String taxNum;
-//    保存eas結果信息
+    //    保存eas結果信息
     private String result;
 
     //    合同签订明细
@@ -155,14 +156,14 @@ public class ContractVO {
     private List<String> idList;
 
     private Integer isjt;
-//附件
-    private List<AttachmentsVO> attachmentsVOS ;
+    //附件
+    private List<AttachmentsVO> attachmentsVOS;
 
-//    是否需要营销合同分摊明细
+    //    是否需要营销合同分摊明细
     private Integer isMarket;
-//    是否调用eas提交方法
+    //    是否调用eas提交方法
     private Boolean flag;
-//   附件预览地址
+    //   附件预览地址
     private String attLink;
 
 }
