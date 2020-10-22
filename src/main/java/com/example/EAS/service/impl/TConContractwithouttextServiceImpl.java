@@ -684,9 +684,15 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             System.out.println("oa新增流程新家字段：" + aDouble);
         }
         if (Util.isNotEmpty(vo.getMarketProjectId())) {
-            String marketProjectName = mapper.selectMarketProjectName(vo.getMarketProjectId());
-            data.put("fd_38cf18383073ec", marketProjectName);
-            System.out.println(marketProjectName);
+            TConMarketproject tConMarketproject = marketProjectMapper.selectById(vo.getMarketProjectId());
+            Long fisjt = tConMarketproject.getFisjt();
+            if (Util.isEmpty(fisjt)||fisjt==0) {
+                data.put("fd_38cf18383073ec", "0");
+                System.out.println("是否后评估审核：0");
+            }else{
+                data.put("fd_38cf18383073ec", "1");
+                System.out.println("是否后评估审核：1");
+            }
         }
         if (Util.isNotEmpty(vo.getContractTypeId())) {
             String contractTypeName = mapper.selectContractType(vo.getContractTypeId());

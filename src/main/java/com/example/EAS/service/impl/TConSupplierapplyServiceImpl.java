@@ -172,9 +172,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
                         attachmentsVOS.addAll(easAttFiles);
                     }
                     supplierApplyVO.setAttachmentsVOS(attachmentsVOS);
-
                 }
-
 //                纳税人资质 一般纳税人=NOMAL,小规模纳税人=SMALL,非增值税纳税人=UNNOMAL
                 String taxerQua = supplierApplyVO.getTaxerQua();
                 if (Util.isNotEmpty(taxerQua)) {
