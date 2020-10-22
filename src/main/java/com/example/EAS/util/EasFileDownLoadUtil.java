@@ -93,19 +93,17 @@ public class EasFileDownLoadUtil {
         }
     }
 
-
     public static void main(String[] args) {
         //RemoteInvokeShell("49.232.131.207",22,"root","Apple1995",ShellConstant.REMOVE_USER_CLOUD_FILE+"c1/cc/c1.out "+ShellConstant.REMOVE_USER_CLOUD_FILE+"c1/cc/测试.out");
         EasFileDownLoadUtil ftpUtils=new EasFileDownLoadUtil();
-        ftpUtils.login("172.17.16.31", 22, "admin", "sdjt1234@#");
-        ftpUtils.getFileProperties(ftpUtils.conn,"/mnt/ftp/dvr_data/2020/01/04/");
+        ftpUtils.login("172.17.4.69", 22, "root", "XuNaiRui7788@#");
+//        ftpUtils.getFileProperties(ftpUtils.conn,"/mnt/ftp/dvr_data/2020/01/04/");
         SCPClient sc = new SCPClient(ftpUtils.getConnection());
         try {
-            sc.get("/mnt/ftp/dvr_data/2020/01/04/live000/live/company_1_staff_8.flv.tmp", "D:/publicfile");
+            sc.get("/data/kdfile/A12C522F/20190311/20190315144413933_20190315145134610.xls", "D:/test");
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
-
 }

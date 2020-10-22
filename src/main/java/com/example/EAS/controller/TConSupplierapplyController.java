@@ -4,7 +4,6 @@ package com.example.EAS.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.example.EAS.service.impl.TConSupplierapplyServiceImpl;
 import com.example.EAS.util.*;
-import com.example.EAS.vo.AttachmentsVO;
 import com.example.EAS.vo.SupplierApplyVO;
 import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * <p>
@@ -148,35 +144,7 @@ public class TConSupplierapplyController {
         return R.ok(result);
     }
 
-    /**
-     * 上传附件
-     *
-     * @param
-     * @return
-     */
 
-    @RequestMapping(value = "/uploadAttachment", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public R uploadAttachment(AttachmentsVO vo) throws Exception {
-        HashMap<String, Object> result = new HashMap<>(10);
-//        AttachmentsVO vo = BodyDecodeUtil.decodeBody(body, AttachmentsVO.class);
-        List<AttachmentsVO> attachmentsVOS = service.uploadAttachment(vo);
-        result.put("data", attachmentsVOS);
-        result.put("msg", UtilMessage.UPLOAD_SUCCESS);
-        result.put("code", HttpStatus.SC_OK);
-        return R.ok(result);
-    }
 
-    /**
-     * download附件
-     *
-     * @param
-     * @return
-     */
-    @RequestMapping(value = "/downLoadAttachment",method = RequestMethod.GET)
-    public void download(HttpServletRequest request, HttpServletResponse response,String webUrl,String fileUUID) throws Exception{
-        if (Util.isEmpty(fileUUID)||Util.isEmpty(webUrl)){
-            throw  new ServiceException(UtilMessage.UNSUPPORTED_DOWNLOAD_FILE);
-        }
-        service.downLoadFile(request,response,webUrl,fileUUID);
-    }
+
 }
