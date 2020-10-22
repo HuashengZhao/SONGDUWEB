@@ -32,6 +32,7 @@
         left join T_ORG_BASEUNIT o on o.fid=p.FAdminOrgUnitID
         left join T_HR_BDEmployeeType t on t.FID=c.FEMPLOYEETYPEID
         <where>
+            c.fname_l2 is not null
             <if test="orgidList != null and orgidList.size > 0">
                 and p.FAdminOrgUnitID in
                 <foreach item="item" collection="orgidList" index="index" open="(" separator="," close=")">

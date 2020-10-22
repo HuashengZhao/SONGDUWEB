@@ -49,6 +49,9 @@ public class TBdPersonServiceImpl extends ServiceImpl<TBdPersonMapper, TBdPerson
             }
     }
         vo.setOrgidList(counts);
+        if (counts!=null && counts.size()>=1000){
+            int size = counts.size();
+        }
 //      根据组织ids 获取对应的员工集合
         PageHelper.startPage(vo.getCurrentPage(), vo.getPageSize());
         List<PersonsVO> personsVOList = personMapper.selectDataByOrgIds(vo);

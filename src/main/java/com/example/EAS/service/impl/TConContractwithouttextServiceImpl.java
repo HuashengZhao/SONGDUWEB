@@ -221,6 +221,17 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         }
         if (Util.isNotEmpty(returnVO)) {
             //            附件信息
+            //                    宋都ftp服务器上的附件
+            List<AttachmentsVO> ftpvos = supplierapplyMapper.selectAttachments(id);
+            if (ftpvos != null && ftpvos.size() > 0) {
+                for (AttachmentsVO attachmentsVO : ftpvos) {
+                    attachmentsVO.setEasId(id);
+                    String fileType = attachmentsVO.getFileType();
+                    String title = attachmentsVO.getTitle();
+                    attachmentsVO.setOriginalFilename(new StringBuffer().append(title).append(".").append(fileType).toString());
+                }
+            }
+//            eas
             List<AttachmentsVO> attachmentsVOS = attachmentMapper.selectWEBAttach(id);
             if (attachmentsVOS != null && attachmentsVOS.size() > 0) {
                 for (AttachmentsVO attachmentsVO : attachmentsVOS) {
@@ -234,8 +245,9 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
                         }
                     }
                 }
-                returnVO.setAttachmentsVOS(attachmentsVOS);
+                ftpvos.addAll(attachmentsVOS);
             }
+            returnVO.setAttachmentsVOS(ftpvos);
 
             //                    获取对应的oaid
             String oaid=null;

@@ -281,6 +281,16 @@ public class TConPayrequestbillServiceImpl extends ServiceImpl<TConPayrequestbil
                 }
             }
 //            附件信息
+            //                    宋都ftp服务器上的附件
+            List<AttachmentsVO> ftpvos = supplierapplyMapper.selectAttachments(id);
+            if (ftpvos != null && ftpvos.size() > 0) {
+                for (AttachmentsVO attachmentsVO : ftpvos) {
+                    attachmentsVO.setEasId(id);
+                    String fileType = attachmentsVO.getFileType();
+                    String title = attachmentsVO.getTitle();
+                    attachmentsVO.setOriginalFilename(new StringBuffer().append(title).append(".").append(fileType).toString());
+                }
+            }
             List<AttachmentsVO> attachmentsVOS = attachmentMapper.selectWEBAttach(id);
             if (attachmentsVOS != null && attachmentsVOS.size() > 0) {
                 for (AttachmentsVO attachmentsVO : attachmentsVOS) {
@@ -294,8 +304,9 @@ public class TConPayrequestbillServiceImpl extends ServiceImpl<TConPayrequestbil
                         }
                     }
                 }
-                payRequestBillVO.setAttachmentsVOS(attachmentsVOS);
+                ftpvos.addAll(attachmentsVOS);
             }
+            payRequestBillVO.setAttachmentsVOS(attachmentsVOS);
 //            纳税人
             String taxerQua = payRequestBillVO.getTaxerQua();
             if (Util.isNotEmpty(taxerQua)) {

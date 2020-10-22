@@ -168,7 +168,7 @@
         select url from webUrl where type ='view'
     </select>
     <select id="selectOaid" resultType="java.lang.String">
-         select oaid from oaidrecord where billId=#{id} order by oaid desc
+         select oaid from oaidrecord where billId=#{id,jdbcType=VARCHAR} order by oaid desc
     </select>
 
     <insert id="insertAttachMent" parameterType="com.example.EAS.vo.AttachmentsVO">

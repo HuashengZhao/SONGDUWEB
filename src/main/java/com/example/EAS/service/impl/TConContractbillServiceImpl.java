@@ -693,6 +693,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             contractVO.setDetailVOList(detailVOS);
         }
 //        附件信息
+//        web ftp
         List<AttachmentsVO> attachmentsVOS = supplierapplyMapper.selectAttachments(id);
         if (attachmentsVOS != null && attachmentsVOS.size() > 0) {
             for (AttachmentsVO attachmentsVO : attachmentsVOS) {
@@ -702,6 +703,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                 attachmentsVO.setOriginalFilename(new StringBuffer().append(title).append(".").append(fileType).toString());
             }
         }
+//        eas
         List<AttachmentsVO> easFiles = attachmentMapper.selectWEBAttach(id);
         if (easFiles != null && easFiles.size() > 0) {
             for (AttachmentsVO attachmentsVO : easFiles) {
