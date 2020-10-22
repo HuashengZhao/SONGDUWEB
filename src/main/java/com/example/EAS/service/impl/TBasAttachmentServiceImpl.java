@@ -5,6 +5,7 @@ import com.example.EAS.model.TBasAttachment;
 import com.example.EAS.mapper.TBasAttachmentMapper;
 import com.example.EAS.service.ITBasAttachmentService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.EAS.util.EasFileDownLoadUtil;
 import com.example.EAS.util.FtpUtil;
 import com.example.EAS.vo.AttachmentsVO;
 import com.example.EAS.vo.PersonsVO;
@@ -41,6 +42,8 @@ public class TBasAttachmentServiceImpl extends ServiceImpl<TBasAttachmentMapper,
 
     @Autowired
     private TConSupplierapplyMapper supplierapplyMapper;
+    @Autowired
+    private EasFileDownLoadUtil easFileDownLoadUtil;
 
     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -139,9 +142,11 @@ public class TBasAttachmentServiceImpl extends ServiceImpl<TBasAttachmentMapper,
         return attachmentsVOS;
     }
 
-
     @Override
     public void downLoadFile(HttpServletRequest request, HttpServletResponse response, String webUrl, String fileUUID) {
+
         ftpUtil.exportOutputStream(request, response, webUrl, fileUUID);
+//       对来自eas 与 天联云的 附件进行区分处理
+
     }
 }

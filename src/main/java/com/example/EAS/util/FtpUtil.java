@@ -344,17 +344,4 @@ public class FtpUtil {
         }
     }
 
-    /**
-     * 金蝶eas附件下载
-     *
-     * @param request
-     * @param response
-     * @param remotePath
-     * @param fileName
-     */
-    public void downLoadEASAttachments(HttpServletRequest request
-            , HttpServletResponse response, String remotePath, String fileName) {
-
-    }
-
 }
