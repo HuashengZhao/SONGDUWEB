@@ -162,7 +162,9 @@ public class PayRequestBillVO {
     //    会计科目
     private String costAccountId;
     private String costAccountName;
-
+    //    link查看oa流程
+    private String link;
+    private String oaId;
     //    申請金額
     @JsonSerialize(using = CustomBigDecimalSerialize.class, nullsUsing = CustomBigDecimalSerialize.class)
     private BigDecimal applyAMT;

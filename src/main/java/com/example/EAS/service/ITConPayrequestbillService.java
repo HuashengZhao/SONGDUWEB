@@ -16,5 +16,5 @@ public interface ITConPayrequestbillService extends IService<TConPayrequestbill>
 
     PageBean<PayRequestBillVO> getPayRequestBillVO(PayRequestBillVO vo);
 
-    PayRequestBillVO viewPayRequestBill(PayRequestBillVO vo);
+    PayRequestBillVO viewPayRequestBill(PayRequestBillVO vo) throws Exception;
 }
