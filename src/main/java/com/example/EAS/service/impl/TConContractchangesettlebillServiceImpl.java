@@ -204,7 +204,7 @@ public class TConContractchangesettlebillServiceImpl extends ServiceImpl<TConCon
                 }
                 ftpvos.addAll(attachmentsVOS);
             }
-            settleVO.setAttachmentsVOS(attachmentsVOS);
+            settleVO.setAttachmentsVOS(ftpvos);
         }
         return settleVO;
     }

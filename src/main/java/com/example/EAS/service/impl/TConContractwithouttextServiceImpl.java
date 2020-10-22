@@ -232,20 +232,22 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
                 }
             }
 //            eas
-            List<AttachmentsVO> attachmentsVOS = attachmentMapper.selectWEBAttach(id);
-            if (attachmentsVOS != null && attachmentsVOS.size() > 0) {
-                for (AttachmentsVO attachmentsVO : attachmentsVOS) {
-                    if (Util.isNotEmpty(attachmentsVO.getOriginalFilename())) {
-                        attachmentsVO.setTitle(attachmentsVO.getOriginalFilename());
-                    }
-                    if (Util.isNotEmpty(attachmentsVO.getFileType())) {
-                        String s = FileContentTypeUtils.contentType("." + attachmentsVO.getFileType());
-                        if (Util.isNotEmpty(s)) {
-                            attachmentsVO.setContentType(s);
+            List<AttachmentsVO> easFiles = attachmentMapper.selectAttachMent(id);
+            if (easFiles != null && easFiles.size() > 0) {
+                for (AttachmentsVO attachmentsVO : easFiles) {
+                    String fileUrl = attachmentsVO.getWebUrl();
+                    if (Util.isNotEmpty(fileUrl)) {
+                        String type = fileUrl.split("\\.")[fileUrl.split("\\.").length - 1];
+                        attachmentsVO.setFileType(type);
+                        if (Util.isNotEmpty(type)) {
+                            String s = FileContentTypeUtils.contentType("." + type);
+                            if (Util.isNotEmpty(s)) {
+                                attachmentsVO.setContentType(s);
+                            }
                         }
                     }
                 }
-                ftpvos.addAll(attachmentsVOS);
+                ftpvos.addAll(easFiles);
             }
             returnVO.setAttachmentsVOS(ftpvos);
 

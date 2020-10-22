@@ -291,22 +291,25 @@ public class TConPayrequestbillServiceImpl extends ServiceImpl<TConPayrequestbil
                     attachmentsVO.setOriginalFilename(new StringBuffer().append(title).append(".").append(fileType).toString());
                 }
             }
-            List<AttachmentsVO> attachmentsVOS = attachmentMapper.selectWEBAttach(id);
+//            eas
+            List<AttachmentsVO> attachmentsVOS = attachmentMapper.selectAttachMent(id);
             if (attachmentsVOS != null && attachmentsVOS.size() > 0) {
                 for (AttachmentsVO attachmentsVO : attachmentsVOS) {
-                    if (Util.isNotEmpty(attachmentsVO.getOriginalFilename())) {
-                        attachmentsVO.setTitle(attachmentsVO.getOriginalFilename());
-                    }
-                    if (Util.isNotEmpty(attachmentsVO.getFileType())) {
-                        String s = FileContentTypeUtils.contentType("." + attachmentsVO.getFileType());
-                        if (Util.isNotEmpty(s)) {
-                            attachmentsVO.setContentType(s);
+                    String fileUrl = attachmentsVO.getFileUrl();
+                    if (Util.isNotEmpty(fileUrl)) {
+                        String type = fileUrl.split("\\.")[fileUrl.split("\\.").length - 1];
+                        attachmentsVO.setFileType(type);
+                        if (Util.isNotEmpty(type)) {
+                            String s = FileContentTypeUtils.contentType("." + type);
+                            if (Util.isNotEmpty(s)) {
+                                attachmentsVO.setContentType(s);
+                            }
                         }
                     }
                 }
                 ftpvos.addAll(attachmentsVOS);
             }
-            payRequestBillVO.setAttachmentsVOS(attachmentsVOS);
+            payRequestBillVO.setAttachmentsVOS(ftpvos);
 //            纳税人
             String taxerQua = payRequestBillVO.getTaxerQua();
             if (Util.isNotEmpty(taxerQua)) {
