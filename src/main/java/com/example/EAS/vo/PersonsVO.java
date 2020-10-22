@@ -3,7 +3,6 @@ package com.example.EAS.vo;
 import lombok.Data;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * @PackageName:com.example.EAS.vo
@@ -42,5 +41,6 @@ public class PersonsVO {
     private Integer pageSize;
     private List<OrgVO> orgVOList;
     private List<String> orgidList;
+    private List<String> morePartIdList;
 
 }

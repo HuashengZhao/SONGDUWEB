@@ -39,6 +39,12 @@
                     #{item}
                 </foreach>
             </if>
+            <if test="morePartIdList != null and morePartIdList.size > 0">
+                or p.FAdminOrgUnitID in
+                <foreach item="item" collection="morePartIdList" index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
             <if test="deleteStatus!=null and deleteStatus!=''">
                 and c.FDELETEDSTATUS = #{deleteStatus}
             </if>
