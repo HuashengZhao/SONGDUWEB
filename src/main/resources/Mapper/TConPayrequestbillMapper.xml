@@ -98,11 +98,11 @@
         left join T_BD_Supplier sup1 on sup1.fid=bill.FSUPPLIERID
         left join T_BD_CURRENCY cur on cur.fid=bill.FCURRENCYID
         left join T_CON_PayContentType pc on pc.fid=bill.FPAYCONTENTTYPEID
-        left join T_CON_BankNum bank on bank.fid=con.FLXNUMID
+        left join T_CON_BankNum bank on bank.fid=bill.FLXNUMID
         left join T_BD_SettlementType st on st.fid=bill.FSETTLEMENTTYPEID
         left join T_BD_Person per on per.fid=bill.FApplierId
         left join T_ORG_Admin ad on ad.fid=bill.FUseDepartmentID
-        left join T_ORG_CostCenter cen on cen.fid=bill.FCostedCompanyId
+        left join T_ORG_CostCenter cen on cen.fid=bill.FCOSTEDDEPTID
         left join T_ORG_Company com on com.fid=bill.FCostedCompanyId
         left join T_ORG_BASEUNIT bu on bu.fid=bill.FCONTROLUNITID
         where bill.fid=#{id}

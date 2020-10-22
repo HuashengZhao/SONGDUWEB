@@ -10,6 +10,7 @@ import com.example.EAS.model.TConPayrequestbill;
 import com.example.EAS.service.ITConPayrequestbillService;
 import com.example.EAS.util.FileContentTypeUtils;
 import com.example.EAS.util.PageBean;
+import com.example.EAS.util.TransToBigAmount;
 import com.example.EAS.util.Util;
 import com.example.EAS.vo.AttachmentsVO;
 import com.example.EAS.vo.PayRequestBillVO;
@@ -159,6 +160,12 @@ public class TConPayrequestbillServiceImpl extends ServiceImpl<TConPayrequestbil
         }
         PayRequestBillVO payRequestBillVO = mapper.selectDataById(vo);
         if (Util.isNotEmpty(payRequestBillVO)) {
+//            本位币金转大写
+            BigDecimal amount = payRequestBillVO.getAmount();
+            if (Util.isNotEmpty(amount)){
+                String s = TransToBigAmount.toChinese(String.valueOf(amount));
+                payRequestBillVO.setCapitalAmount(s);
+            }
 //            合同起止时间转换
             String start="";
             String end="";

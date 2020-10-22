@@ -41,6 +41,10 @@ public class PayRequestBillVO {
     private String supplierName;
     private String realSupplierId;
     private String realSupplierName;
+//    预算承担公司、
+//    部门
+    private String costCompanyName;
+    private String costDeptName;
     //  币别
     private String currencyId;
     private String currencyName;
@@ -50,6 +54,7 @@ public class PayRequestBillVO {
     //    本位币
     @JsonSerialize(using = CustomBigDecimalSerialize.class, nullsUsing = CustomBigDecimalSerialize.class)
     private BigDecimal amount;
+    private String capitalAmount;
     //    原币
     @JsonSerialize(using = CustomBigDecimalSerialize.class, nullsUsing = CustomBigDecimalSerialize.class)
     private BigDecimal oriAmount;
