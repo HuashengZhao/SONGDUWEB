@@ -238,7 +238,11 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             }
 
             //                    获取对应的oaid
-            String oaid = supplierapplyMapper.selectOaid(id);
+            String oaid=null;
+            List<String> oaids = supplierapplyMapper.selectOaid(id);
+            if (oaids!=null && oaids.size()>0){
+                oaid=oaids.get(0);
+            }
             if (Util.isNotEmpty(oaid)) {
 //            获取当前登录信息 取用户账号用作oa流程查看登录
                 String token = RequestHolder.getCurrentUser().getToken();
@@ -666,7 +670,10 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         //      判断是否提交过被驳回  需要携带oaid
         JSONObject obj = new JSONObject();
         String oaId = null;
-        oaId = supplierapplyMapper.selectOaid(id);
+        List<String> oaIds = supplierapplyMapper.selectOaid(id);
+        if (oaIds!=null && oaIds.size()>0) {
+            oaId = oaIds.get(0);
+        }
         //      基本参数
         obj.put("id", id);
         obj.put("tmplateId", "17400f0f65621b8cae9869445db9c6f6");
@@ -676,7 +683,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         JSONObject data = new JSONObject();
         if (Util.isNotEmpty(vo.getPayContentId())) {
             String payContentName = mapper.selectPayContentName(vo.getPayContentId());
-            data.put("fd_38cf18370f3976", payContentName);
+            data.put("fd_38cf18383073ec", payContentName);
         }
         if (Util.isNotEmpty(vo.getOriAmount())) {
             Double aDouble = vo.getOriAmount().doubleValue();
@@ -684,9 +691,15 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             System.out.println("oa新增流程新家字段：" + aDouble);
         }
         if (Util.isNotEmpty(vo.getMarketProjectId())) {
-            String marketProjectName = mapper.selectMarketProjectName(vo.getMarketProjectId());
-            data.put("fd_38cf18383073ec", marketProjectName);
-            System.out.println(marketProjectName);
+            TConMarketproject tConMarketproject = marketProjectMapper.selectById(vo.getMarketProjectId());
+            Long fisjt = tConMarketproject.getFisjt();
+            if (Util.isEmpty(fisjt)||fisjt==0) {
+                data.put("fd_38f672e9da3dda", "否");
+                System.out.println("是否后评估审核：否");
+            }else{
+                data.put("fd_38f672e9da3dda", "是");
+                System.out.println("是否后评估审核：是");
+            }
         }
         if (Util.isNotEmpty(vo.getContractTypeId())) {
             String contractTypeName = mapper.selectContractType(vo.getContractTypeId());
@@ -746,7 +759,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             Call call = getCall("OAURL", "addEkpReview");
             try {
                 result = (String) call.invoke(new Object[]{obj.toString()});
-                System.out.println(vo.getTitle() + "oa新增流程：" + obj.toString());
+                System.out.println(vo.getTitle() + "oa流程传参：" + obj.toString());
                 str = JSONObject.parseObject(result);
             } catch (RemoteException e) {
                 e.printStackTrace();
@@ -756,7 +769,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             try {
                 obj.put("id", oaId);
                 result = (String) call.invoke(new Object[]{obj.toString()});
-                System.out.println(vo.getTitle() + "oa修改流程：" + obj.toString());
+                System.out.println(vo.getTitle() + "oa流程传参：" + obj.toString());
                 str = JSONObject.parseObject(result);
             } catch (RemoteException e) {
                 e.printStackTrace();

@@ -1,5 +1,6 @@
 package com.example.EAS.service.impl;
 
+import ch.ethz.ssh2.Connection;
 import com.example.EAS.mapper.TConSupplierapplyMapper;
 import com.example.EAS.model.TBasAttachment;
 import com.example.EAS.mapper.TBasAttachmentMapper;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -145,17 +147,27 @@ public class TBasAttachmentServiceImpl extends ServiceImpl<TBasAttachmentMapper,
 
 
     @Override
-    public void downLoadFile(HttpServletRequest request, HttpServletResponse response,AttachmentsVO vo) {
+    public void downLoadFile(HttpServletRequest request, HttpServletResponse response,AttachmentsVO vo) throws IOException {
 //        区分方法 根据 num  只有web的有num   eas 跟天联云 根据 fftpid 判断  eas没有fftpid  定位目标 用 weburl
-//        下载来自web上传的附件  目标服务器 宋都ftp
         String webUrl = vo.getWebUrl();
         String fileUUID = vo.getFileUUID();
-        if (Util.isNotEmpty(webUrl)&&Util.isNotEmpty(fileUUID)) {
-            ftpUtil.exportOutputStream(request, response, webUrl, fileUUID);
+        String num = vo.getNum();
+        if (Util.isNotEmpty(num)){
+            //        下载来自web上传的附件  目标服务器 宋都ftp
+            if (Util.isNotEmpty(webUrl)&&Util.isNotEmpty(fileUUID)) {
+                ftpUtil.exportOutputStream(request, response, webUrl, fileUUID);
+            }
+        }else{
+            String ftpId = vo.getFtpId();
+            if (Util.isNotEmpty(ftpId)){
+//                天联云
+                ftpUtil.exportTLYOS(request, response, webUrl, fileUUID);
+            }else {
+//                eas Linux文件
+                easFileDownLoadUtil.login();
+                Connection connection = easFileDownLoadUtil.getConnection();
+                easFileDownLoadUtil.copyFile(connection,webUrl,response);
+            }
         }
-//      下载金蝶自上传的附件  目标服务器 linux  根据weburl
-//        下载来自天联云的伏击 目标服务器 天联云ftp
-
-
     }
 }
