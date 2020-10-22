@@ -693,9 +693,18 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             contractVO.setDetailVOList(detailVOS);
         }
 //        附件信息
-        List<AttachmentsVO> attachmentsVOS = attachmentMapper.selectWEBAttach(id);
+        List<AttachmentsVO> attachmentsVOS = supplierapplyMapper.selectAttachments(id);
         if (attachmentsVOS != null && attachmentsVOS.size() > 0) {
             for (AttachmentsVO attachmentsVO : attachmentsVOS) {
+                attachmentsVO.setEasId(id);
+                String fileType = attachmentsVO.getFileType();
+                String title = attachmentsVO.getTitle();
+                attachmentsVO.setOriginalFilename(new StringBuffer().append(title).append(".").append(fileType).toString());
+            }
+        }
+        List<AttachmentsVO> easFiles = attachmentMapper.selectWEBAttach(id);
+        if (easFiles != null && easFiles.size() > 0) {
+            for (AttachmentsVO attachmentsVO : easFiles) {
                 if (Util.isNotEmpty(attachmentsVO.getOriginalFilename())) {
                     attachmentsVO.setTitle(attachmentsVO.getOriginalFilename());
                 }
@@ -706,8 +715,9 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                     }
                 }
             }
-            contractVO.setAttachmentsVOS(attachmentsVOS);
+            attachmentsVOS.addAll(easFiles);
         }
+        contractVO.setAttachmentsVOS(attachmentsVOS);
 
 //        补充合同信息
         TConContractbill tConContractbill1 = mapper.selectById(vo.getId());

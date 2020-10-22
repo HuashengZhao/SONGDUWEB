@@ -41,11 +41,11 @@ public class FtpUtil {
         String basePath = "/";
         String filePath = "/ftp/2020/9/17";
 
-
+//
 //        File file = new File("C:\\Users\\LENOVO\\Desktop\\work\\eas\\timg (2).jpg");
 //        FileInputStream isinput = new FileInputStream(file);
 //        boolean b = uploadFile(filePath, "timg (2).jpg", isinput);
-
+//
 //        FTPClient ftp = new FTPClient();
 //        try {
 //            int reply;
