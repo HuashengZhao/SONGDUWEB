@@ -121,7 +121,11 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
                 if (Util.isNotEmpty(vo.getId())) {
                     String easId = vo.getId();
                     //                    获取对应的oaid
-                    String oaid = mapper.selectOaid(easId);
+                    String oaid=null;
+                    List<String> oaids = mapper.selectOaid(easId);
+                    if (oaids!=null && oaids.size()>0){
+                        oaid=oaids.get(0);
+                    }
                     if (Util.isNotEmpty(oaid)) {
 //            获取当前登录信息 取用户账号用作oa流程查看登录
                         String token = RequestHolder.getCurrentUser().getToken();
@@ -543,9 +547,12 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         }
 //        判断是否提交过被驳回  需要携带oaid
         JSONObject obj = new JSONObject();
-        String oaId = null;
         SupplierApplyVO supplierApplyVO = mapper.selectDataById(id);
-        oaId = mapper.selectOaid(id);
+        String oaId = null;
+        List<String> oaIds = mapper.selectOaid(id);
+        if (oaIds!=null && oaIds.size()>0) {
+            oaId = oaIds.get(0);
+        }
 //        基本参数
 //        obj.put("oaid", oaId);
         obj.put("id", id);

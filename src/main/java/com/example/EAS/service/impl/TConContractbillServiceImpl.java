@@ -578,7 +578,11 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             contractVO.setState("已确认");
         }
         //                    获取对应的oaid
-        String oaid = supplierapplyMapper.selectOaid(id);
+         String oaid=null;
+        List<String> oaids = supplierapplyMapper.selectOaid(id);
+        if (oaids!=null && oaids.size()>0){
+            oaid=oaids.get(0);
+        }
         if (Util.isNotEmpty(oaid)) {
 //            获取当前登录信息 取用户账号用作oa流程查看登录
             String token = RequestHolder.getCurrentUser().getToken();
@@ -781,7 +785,10 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
 //      判断是否提交过被驳回  需要携带oaid
         JSONObject obj = new JSONObject();
         String oaId = null;
-        oaId = supplierapplyMapper.selectOaid(id);
+        List<String> oaIds = supplierapplyMapper.selectOaid(id);
+        if (oaIds!=null && oaIds.size()>0) {
+            oaId = oaIds.get(0);
+        }
 //      基本参数
         obj.put("id", id);
         obj.put("tmplateId", "174046df325987eb1d487be4026b1b64");
