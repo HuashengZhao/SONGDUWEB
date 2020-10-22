@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Vector;
 
@@ -18,28 +19,29 @@ public class EasFileDownLoadUtil {
 
     private Connection conn = null;
 
-    public Connection getConnection(){
+    public Connection getConnection() {
         return conn;
     }
-    public  boolean login(String ip, int port, String name, String pwd){
+
+    public boolean login() {
         //创建远程连接，默认连接端口为22，如果不使用默认，可以使用方法
         //new Connection(ip, port)创建对象
-        conn = new Connection(ip,port);
+        conn = new Connection("172.17.4.69", 22);
         try {
             //连接远程服务器
             conn.connect();
             //使用用户名和密码登录
-            return conn.authenticateWithPassword(name, pwd);
+            return conn.authenticateWithPassword("root", "XuNaiRui7788@#");
         } catch (IOException e) {
-            System.err.printf("用户%s密码%s登录服务器%s失败！", name, pwd, ip);
+            System.err.printf("用户%s密码%s登录服务器%s失败！", "root", "XuNaiRui7788@#", "172.17.4.69");
             e.printStackTrace();
         }
         return false;
     }
 
-    public  boolean logout(){
+    public boolean logout() {
 
-        if(conn != null){
+        if (conn != null) {
             conn.close();
         }
 
@@ -49,18 +51,21 @@ public class EasFileDownLoadUtil {
 
     /**
      * 流式输出，用于浏览器下载
+     *
      * @param conn
      * @param fileName
-     * @param outputStream
+     * @param
      */
-    public void copyFile(Connection conn, String fileName, ServletOutputStream outputStream){
+    public void copyFile(Connection conn, String fileName, HttpServletResponse response) {
         SCPClient sc = new SCPClient(conn);
+        ServletOutputStream outputStream = null;
         try {
+            outputStream = response.getOutputStream();
             sc.get(fileName, outputStream);
         } catch (IOException e) {
             e.printStackTrace();
-        }finally {
-            if(conn != null ){
+        } finally {
+            if (conn != null) {
                 conn.close();
             }
         }
@@ -69,16 +74,17 @@ public class EasFileDownLoadUtil {
 
     /**
      * 在远程LINUX服务器上，在指定目录下，获取文件各个属性
+     *
      * @param[in] conn Conncetion对象
      * @param[in] remotePath 远程主机的指定目录
      */
-    public void getFileProperties(Connection conn, String remotePath){
+    public void getFileProperties(Connection conn, String remotePath) {
         try {
             SFTPv3Client sft = new SFTPv3Client(conn);
 
             Vector<?> v = sft.ls(remotePath);
 
-            for(int i=0;i<v.size();i++){
+            for (int i = 0; i < v.size(); i++) {
                 SFTPv3DirectoryEntry s = new SFTPv3DirectoryEntry();
                 s = (SFTPv3DirectoryEntry) v.get(i);
                 //文件名
@@ -93,10 +99,11 @@ public class EasFileDownLoadUtil {
         }
     }
 
+
     public static void main(String[] args) {
         //RemoteInvokeShell("49.232.131.207",22,"root","Apple1995",ShellConstant.REMOVE_USER_CLOUD_FILE+"c1/cc/c1.out "+ShellConstant.REMOVE_USER_CLOUD_FILE+"c1/cc/测试.out");
-        EasFileDownLoadUtil ftpUtils=new EasFileDownLoadUtil();
-        ftpUtils.login("172.17.4.69", 22, "root", "XuNaiRui7788@#");
+        EasFileDownLoadUtil ftpUtils = new EasFileDownLoadUtil();
+        ftpUtils.login();
 //        ftpUtils.getFileProperties(ftpUtils.conn,"/mnt/ftp/dvr_data/2020/01/04/");
         SCPClient sc = new SCPClient(ftpUtils.getConnection());
         try {
