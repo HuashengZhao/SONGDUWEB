@@ -23,5 +23,5 @@ public interface ITBasAttachmentService extends IService<TBasAttachment> {
 
     List<AttachmentsVO> uploadAttachment(AttachmentsVO vo) throws IOException;
 
-    void downLoadFile(HttpServletRequest request, HttpServletResponse response,AttachmentsVO vo);
+    void downLoadFile(HttpServletRequest request, HttpServletResponse response,AttachmentsVO vo) throws IOException;
 }

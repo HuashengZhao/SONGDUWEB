@@ -149,7 +149,7 @@ public class FtpUtil {
 
             String personName = attachmentsVO.getPersonName();
             String webUrl = attachmentsVO.getWebUrl();
-            if (attachmentsVO.getCreateTime()!=null) {
+            if (attachmentsVO.getCreateTime() != null) {
                 attachmentsVO.setCreateTime(attachmentsVO.getCreateTime());
             }
             attachmentsVO.setEasId(billId);
@@ -354,7 +354,6 @@ public class FtpUtil {
      */
     public void exportTLYOS(HttpServletRequest request
             , HttpServletResponse response, String remotePath, String fileName) {
-
         FTPClient ftp = new FTPClient();
         try {
             int reply;
@@ -370,10 +369,8 @@ public class FtpUtil {
             ftp.changeWorkingDirectory(remotePath);// 转移到FTP服务器目录
             FTPFile[] fs = ftp.listFiles();
             for (FTPFile ff : fs) {
-
 //                        new String(ff.getName().getBytes(""));
                 if (ff.getName().equals(fileName)) {
-
                     String filenameEncoder = "";
                     response.reset();
                     try {
@@ -405,5 +402,4 @@ public class FtpUtil {
             }
         }
     }
-
 }

@@ -31,6 +31,8 @@ public class AttachmentsVO {
     //    员工名称
     private String personName;
     private String createTime;
+//    ftpId
+    private String ftpId;
     /**
      * 上传获取url接口 ，传文件集合
      */
