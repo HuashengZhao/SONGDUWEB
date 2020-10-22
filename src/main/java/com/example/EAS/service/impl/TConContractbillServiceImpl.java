@@ -860,7 +860,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         JSONObject attFile = new JSONObject();
 //        obj.put("attFile", attFile);
         data.put("fd_link", sendUrl);
-        data.put("fd_person", "谢凯伦");
+        
 //        data.put("createTime", vo.getCreateTime());
         obj.put("data", data.toString());
         //        当当前流程未提交时 oaidrecord没有对应oaid 调用oa新增提交方法

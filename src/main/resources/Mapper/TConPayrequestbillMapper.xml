@@ -60,7 +60,7 @@
         select bill.fid as id,bill.FCONTROLUNITID as orgId,bu.FNAME_L2 as orgName,
         bill.FBOOKEDDATE as bizDate,bill.FNUMBER as num,bill.FSTATE as state,bill.FNAME as title,
         bill.FCREATORID as creatorId,u.FNAME_L2 as creatorName,bill.FCURPROJECTID as projectId,
-        bill.FCONTRACTID as contractId,
+        bill.FCONTRACTID as contractId,bill.FSOURCEFUNCTION as sourceFunction,
         cp.FNAME_L2 as projectName,con.FNUMBER as contractNumber,con.FNAME as contractName,
         bill.FSUPPLIERID as supplierId,sup.FNAME_L2 as supplierName,bill.FCURRENCYID as currencyId,
         cur.FNAME_L2 as currencyName,bill.FAMOUNT as amount,bill.FORIGINALAMOUNT as oriAmount,

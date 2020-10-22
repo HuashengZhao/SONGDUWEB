@@ -5,13 +5,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.EAS.mapper.TBasAttachmentMapper;
 import com.example.EAS.mapper.TConDeductofpayreqbillMapper;
 import com.example.EAS.mapper.TConPayrequestbillMapper;
+import com.example.EAS.mapper.TConSupplierapplyMapper;
 import com.example.EAS.model.TConDeductofpayreqbill;
 import com.example.EAS.model.TConPayrequestbill;
 import com.example.EAS.service.ITConPayrequestbillService;
-import com.example.EAS.util.FileContentTypeUtils;
-import com.example.EAS.util.PageBean;
-import com.example.EAS.util.TransToBigAmount;
-import com.example.EAS.util.Util;
+import com.example.EAS.util.*;
 import com.example.EAS.vo.AttachmentsVO;
 import com.example.EAS.vo.PayRequestBillVO;
 import com.github.pagehelper.Page;
@@ -20,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -42,6 +41,8 @@ public class TConPayrequestbillServiceImpl extends ServiceImpl<TConPayrequestbil
     private TConDeductofpayreqbillMapper deductofpayreqbillMapper;
     @Autowired
     private TBasAttachmentMapper attachmentMapper;
+    @Autowired
+    private TConSupplierapplyMapper supplierapplyMapper;
 
     DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
@@ -153,13 +154,42 @@ public class TConPayrequestbillServiceImpl extends ServiceImpl<TConPayrequestbil
     }
 
     @Override
-    public PayRequestBillVO viewPayRequestBill(PayRequestBillVO vo) {
+    public PayRequestBillVO viewPayRequestBill(PayRequestBillVO vo) throws Exception {
         String id = vo.getId();
         if (Util.isEmpty(id)) {
             return null;
         }
         PayRequestBillVO payRequestBillVO = mapper.selectDataById(vo);
         if (Util.isNotEmpty(payRequestBillVO)) {
+
+            //                    获取对应的oaid
+            String oaid = payRequestBillVO.getSourceFunction();
+            if (Util.isNotEmpty(oaid)) {
+//            获取当前登录信息 取用户账号用作oa流程查看登录
+                String token = RequestHolder.getCurrentUser().getToken();
+                String dencrypt = RSAUtil.dencrypt(token, "pri.key");
+                String[] split = dencrypt.split("&&");
+                String org = split[0];
+                String person = split[1];
+                if (Util.isEmpty(person)) {
+                    throw new ServiceException(UtilMessage.PERSON_MISSING);
+                }
+                String mtLoginNum = OaUtil.encrypt(person);
+
+//          返回oa流程link
+//          http://122.224.88.138:58080/km/review/km_review_main/
+//          kmReviewMain.do?method=view&fdId=173c6b9e6dd55fccb9a0be942b2b074d&MtFdLoinName
+//          =gdjjXmldhhTqgDyrFOTunA==
+                String s1 = "http://122.224.88.138:58080/km/review/km_review_main/kmReviewMain.do?method=view&fdId=";
+                String s2 = "&MtFdLoinName=";
+                StringBuffer stringBuffer = new StringBuffer();
+                oaid = URLEncoder.encode(oaid);
+                String link = String.valueOf(stringBuffer.append(s1).append(oaid).append(s2).append(mtLoginNum));
+                System.out.println("OA流程路径：" + link);
+                payRequestBillVO.setLink(link);
+                payRequestBillVO.setOaId(oaid);
+            }
+
 //            本位币金转大写
             BigDecimal amount = payRequestBillVO.getAmount();
             if (Util.isNotEmpty(amount)){

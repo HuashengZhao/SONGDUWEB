@@ -141,4 +141,8 @@ public class NoTextContractVO {
     private String message;
 
     private List<String> idList;
+
+    //    link查看oa流程
+    private String link;
+    private String oaId;
 }

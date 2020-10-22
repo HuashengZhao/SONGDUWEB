@@ -283,7 +283,7 @@ public class FtpUtil {
     }
 
     /**
-     * oa 附件下载
+     * 宋都web 附件下载
      *
      * @param request
      * @param response
@@ -345,16 +345,65 @@ public class FtpUtil {
     }
 
     /**
-     * 金蝶eas附件下载
+     * 天联云ftp 附件下载
      *
      * @param request
      * @param response
      * @param remotePath
      * @param fileName
      */
-    public void downLoadEASAttachments(HttpServletRequest request
+    public void exportTLYOS(HttpServletRequest request
             , HttpServletResponse response, String remotePath, String fileName) {
 
+        FTPClient ftp = new FTPClient();
+        try {
+            int reply;
+            ftp.connect("172.17.16.31 ", 21);// 连接FTP服务器
+            // 如果采用默认端口，可以使用ftp.connect(host)的方式直接连接FTP服务器
+            ftp.login("admin", "sdjt1234@#");// 登录
+            reply = ftp.getReplyCode();
+            if (!FTPReply.isPositiveCompletion(reply)) {
+                ftp.disconnect();
+                return;
+            }
+            ftp.enterLocalPassiveMode();
+            ftp.changeWorkingDirectory(remotePath);// 转移到FTP服务器目录
+            FTPFile[] fs = ftp.listFiles();
+            for (FTPFile ff : fs) {
+
+//                        new String(ff.getName().getBytes(""));
+                if (ff.getName().equals(fileName)) {
+
+                    String filenameEncoder = "";
+                    response.reset();
+                    try {
+                        filenameEncoder = java.net.URLEncoder.encode(fileName, "utf-8");
+                        filenameEncoder = filenameEncoder.replace("+", " ");
+                        response.addHeader("Content-Disposition", "attachment;filename=" + filenameEncoder);
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                    }
+                    response.addHeader("Access-Control-Allow-Origin", "*");
+                    response.addHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
+                    response.addHeader("Access-Control-Max-Age", "3600");
+                    response.addHeader("Access-Control-Allow-Headers", "x-requested-with");
+                    response.addHeader("Content-Length", "" + ff.getSize());
+                    response.setCharacterEncoding("utf-8");
+                    response.setContentType("application/octet-stream");
+                    ftp.retrieveFile(ff.getName(), response.getOutputStream());
+                }
+            }
+            ftp.logout();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (ftp.isConnected()) {
+                try {
+                    ftp.disconnect();
+                } catch (IOException ioe) {
+                }
+            }
+        }
     }
 
 }
