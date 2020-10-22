@@ -163,7 +163,7 @@ public class TConPayrequestbillServiceImpl extends ServiceImpl<TConPayrequestbil
         if (Util.isNotEmpty(payRequestBillVO)) {
 
             //                    获取对应的oaid
-            String oaid = supplierapplyMapper.selectOaid(id);
+            String oaid = payRequestBillVO.getSourceFunction();
             if (Util.isNotEmpty(oaid)) {
 //            获取当前登录信息 取用户账号用作oa流程查看登录
                 String token = RequestHolder.getCurrentUser().getToken();

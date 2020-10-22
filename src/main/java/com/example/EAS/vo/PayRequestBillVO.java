@@ -168,4 +168,6 @@ public class PayRequestBillVO {
     //    申請金額
     @JsonSerialize(using = CustomBigDecimalSerialize.class, nullsUsing = CustomBigDecimalSerialize.class)
     private BigDecimal applyAMT;
+
+    private String sourceFunction;
 }
