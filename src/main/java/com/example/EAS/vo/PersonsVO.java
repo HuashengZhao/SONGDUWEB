@@ -17,6 +17,7 @@ public class PersonsVO {
 
     private String id;
     private String personName;
+    private String personNumber;
 //   编号
     private String person;
     private String zwName;
@@ -40,5 +41,6 @@ public class PersonsVO {
 
     private Integer pageSize;
     private List<OrgVO> orgVOList;
+    private List<String> orgidList;
 
 }

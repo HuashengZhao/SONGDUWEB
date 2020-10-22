@@ -32,11 +32,20 @@
         left join T_ORG_BASEUNIT o on o.fid=p.FAdminOrgUnitID
         left join T_HR_BDEmployeeType t on t.FID=c.FEMPLOYEETYPEID
         <where>
-            <if test="list != null and list.size > 0">
+            <if test="orgidList != null and orgidList.size > 0">
                 and p.FAdminOrgUnitID in
-                <foreach item="item" collection="list" index="index" open="(" separator="," close=")">
+                <foreach item="item" collection="orgidList" index="index" open="(" separator="," close=")">
                     #{item}
                 </foreach>
+            </if>
+            <if test="deleteStatus!=null and deleteStatus!=''">
+                and c.FDELETEDSTATUS = #{deleteStatus}
+            </if>
+            <if test="personName!=null and personName!=''">
+                and c.fname_l2 like '%${personName}%'
+            </if>
+            <if test="personNumber!=null and personNumber!=''">
+                and c.fnumber like '%${personNumber}%'
             </if>
         </where>
     </select>
