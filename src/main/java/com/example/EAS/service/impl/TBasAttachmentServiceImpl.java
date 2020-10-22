@@ -7,6 +7,7 @@ import com.example.EAS.service.ITBasAttachmentService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.EAS.util.EasFileDownLoadUtil;
 import com.example.EAS.util.FtpUtil;
+import com.example.EAS.util.Util;
 import com.example.EAS.vo.AttachmentsVO;
 import com.example.EAS.vo.PersonsVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -142,11 +143,19 @@ public class TBasAttachmentServiceImpl extends ServiceImpl<TBasAttachmentMapper,
         return attachmentsVOS;
     }
 
-    @Override
-    public void downLoadFile(HttpServletRequest request, HttpServletResponse response, String webUrl, String fileUUID) {
 
-        ftpUtil.exportOutputStream(request, response, webUrl, fileUUID);
-//       对来自eas 与 天联云的 附件进行区分处理
+    @Override
+    public void downLoadFile(HttpServletRequest request, HttpServletResponse response,AttachmentsVO vo) {
+//        区分方法 根据 num  只有web的有num   eas 跟天联云 根据 fftpid 判断  eas没有fftpid  定位目标 用 weburl
+//        下载来自web上传的附件  目标服务器 宋都ftp
+        String webUrl = vo.getWebUrl();
+        String fileUUID = vo.getFileUUID();
+        if (Util.isNotEmpty(webUrl)&&Util.isNotEmpty(fileUUID)) {
+            ftpUtil.exportOutputStream(request, response, webUrl, fileUUID);
+        }
+//      下载金蝶自上传的附件  目标服务器 linux  根据weburl
+//        下载来自天联云的伏击 目标服务器 天联云ftp
+
 
     }
 }

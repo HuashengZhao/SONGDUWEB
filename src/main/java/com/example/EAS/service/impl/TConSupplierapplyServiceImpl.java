@@ -120,29 +120,35 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
             for (SupplierApplyVO supplierApplyVO : supplierApplyVOS) {
                 if (Util.isNotEmpty(vo.getId())) {
                     String easId = vo.getId();
-//                    获取对应的oaid
+                    //                    获取对应的oaid
                     String oaid = mapper.selectOaid(easId);
                     if (Util.isNotEmpty(oaid)) {
-                        String person = vo.getPerson();
+//            获取当前登录信息 取用户账号用作oa流程查看登录
+                        String token = RequestHolder.getCurrentUser().getToken();
+                        String dencrypt = RSAUtil.dencrypt(token, "pri.key");
+                        String[] split = dencrypt.split("&&");
+                        String org = split[0];
+                        String person = split[1];
                         if (Util.isEmpty(person)) {
                             throw new ServiceException(UtilMessage.PERSON_MISSING);
                         }
                         String mtLoginNum = OaUtil.encrypt(person);
 
-//                    返回oa流程link
-//                    http://122.224.88.138:58080/km/review/km_review_main/
-//                    kmReviewMain.do?method=view&fdId=173c6b9e6dd55fccb9a0be942b2b074d&MtFdLoinName
-//                    =gdjjXmldhhTqgDyrFOTunA==
+//          返回oa流程link
+//          http://122.224.88.138:58080/km/review/km_review_main/
+//          kmReviewMain.do?method=view&fdId=173c6b9e6dd55fccb9a0be942b2b074d&MtFdLoinName
+//          =gdjjXmldhhTqgDyrFOTunA==
                         String s1 = "http://122.224.88.138:58080/km/review/km_review_main/kmReviewMain.do?method=view&fdId=";
                         String s2 = "&MtFdLoinName=";
                         StringBuffer stringBuffer = new StringBuffer();
                         oaid = URLEncoder.encode(oaid);
                         String link = String.valueOf(stringBuffer.append(s1).append(oaid).append(s2).append(mtLoginNum));
-//                        System.out.println("OA路径：" + link);
+                        System.out.println("OA流程路径：" + link);
                         supplierApplyVO.setLink(link);
                         supplierApplyVO.setOaId(oaid);
                     }
-//                        如果是查看 根据单据id去查看对应的附件信息
+//                       附件信息
+//                    宋都ftp服务器上的附件
                     List<AttachmentsVO> attachmentsVOS = mapper.selectAttachments(easId);
                     if (attachmentsVOS != null && attachmentsVOS.size() > 0) {
                         for (AttachmentsVO attachmentsVO : attachmentsVOS) {
@@ -151,8 +157,22 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
                             String title = attachmentsVO.getTitle();
                             attachmentsVO.setOriginalFilename(new StringBuffer().append(title).append(".").append(fileType).toString());
                         }
-                        supplierApplyVO.setAttachmentsVOS(attachmentsVOS);
                     }
+//                    eas上的历史附件
+                    List<AttachmentsVO> easAttFiles = attachmentMapper.selectAttachMent(easId);
+                    if (easAttFiles!=null && easAttFiles.size()>0){
+                        for (AttachmentsVO easAttFile : easAttFiles) {
+                            if (Util.isNotEmpty(easAttFile.getType())) {
+                                String s = FileContentTypeUtils.contentType("." + easAttFile.getFileType());
+                                if (Util.isNotEmpty(s)) {
+                                    easAttFile.setContentType(s);
+                                }
+                            }
+                        }
+                        attachmentsVOS.addAll(easAttFiles);
+                    }
+                    supplierApplyVO.setAttachmentsVOS(attachmentsVOS);
+
                 }
 
 //                纳税人资质 一般纳税人=NOMAL,小规模纳税人=SMALL,非增值税纳税人=UNNOMAL
@@ -587,7 +607,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
 //        表单参数
         JSONObject data = new JSONObject();
         data.put("fd_link", sendUrl);
-        data.put("fd_person", "谢凯伦");
+
 //        data.put("createTime", vo.getCreateTime());
         obj.put("data", data.toString());
 
