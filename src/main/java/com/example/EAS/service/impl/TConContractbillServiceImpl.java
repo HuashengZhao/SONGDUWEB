@@ -578,10 +578,17 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             contractVO.setState("已确认");
         }
         //                    获取对应的oaid
-         String oaid=null;
+        String oaid = null;
         List<String> oaids = supplierapplyMapper.selectOaid(id);
-        if (oaids!=null && oaids.size()>0){
-            oaid=oaids.get(0);
+//        判断是否在eas里提交的
+        TConContractbill conContractbill = mapper.selectById(id);
+        if (Util.isNotEmpty(conContractbill)) {
+            String fsourcefunction = conContractbill.getFsourcefunction();
+            if (Util.isNotEmpty(fsourcefunction)) {
+                oaid = fsourcefunction;
+            } else if (oaids != null && oaids.size() > 0) {
+                oaid = oaids.get(0);
+            }
         }
         if (Util.isNotEmpty(oaid)) {
 //            获取当前登录信息 取用户账号用作oa流程查看登录
@@ -800,7 +807,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         JSONObject obj = new JSONObject();
         String oaId = null;
         List<String> oaIds = supplierapplyMapper.selectOaid(id);
-        if (oaIds!=null && oaIds.size()>0) {
+        if (oaIds != null && oaIds.size() > 0) {
             oaId = oaIds.get(0);
         }
 //      基本参数
@@ -820,10 +827,10 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         if (Util.isNotEmpty(vo.getMarketProjectId())) {
             TConMarketproject tConMarketproject = marketProjectMapper.selectById(vo.getMarketProjectId());
             Long fisjt = tConMarketproject.getFisjt();
-            if (Util.isEmpty(fisjt)||fisjt==0) {
+            if (Util.isEmpty(fisjt) || fisjt == 0) {
                 data.put("fd_38f672bcb4a998", "否");
                 System.out.println("是否后评估审核：否");
-            }else{
+            } else {
                 data.put("fd_38f672bcb4a998", "是");
                 System.out.println("是否后评估审核：是");
             }
@@ -893,7 +900,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         JSONObject attFile = new JSONObject();
 //        obj.put("attFile", attFile);
         data.put("fd_link", sendUrl);
-        
+
 //        data.put("createTime", vo.getCreateTime());
         obj.put("data", data.toString());
         //        当当前流程未提交时 oaidrecord没有对应oaid 调用oa新增提交方法
