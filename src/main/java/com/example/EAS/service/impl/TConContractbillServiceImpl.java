@@ -802,6 +802,18 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             data.put("fd_38cf1780c1c14a", contractWFTypeName);
             System.out.println("合同提交分支新增字段：" + contractWFTypeName);
         }
+//        后评估审核
+        if (Util.isNotEmpty(vo.getMarketProjectId())) {
+            TConMarketproject tConMarketproject = marketProjectMapper.selectById(vo.getMarketProjectId());
+            Long fisjt = tConMarketproject.getFisjt();
+            if (Util.isEmpty(fisjt)||fisjt==0) {
+                data.put("fd_38f672bcb4a998", "否");
+                System.out.println("是否后评估审核：否");
+            }else{
+                data.put("fd_38f672bcb4a998", "是");
+                System.out.println("是否后评估审核：是");
+            }
+        }
 //        原币金额
         if (Util.isNotEmpty(vo.getOriginalAmount())) {
             Double aDouble = new Double(vo.getOriginalAmount());

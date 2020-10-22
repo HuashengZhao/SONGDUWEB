@@ -694,10 +694,10 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             TConMarketproject tConMarketproject = marketProjectMapper.selectById(vo.getMarketProjectId());
             Long fisjt = tConMarketproject.getFisjt();
             if (Util.isEmpty(fisjt)||fisjt==0) {
-                data.put("fd_38cf18370f3976", "否");
+                data.put("fd_38f672e9da3dda", "否");
                 System.out.println("是否后评估审核：否");
             }else{
-                data.put("fd_38cf18370f3976", "是");
+                data.put("fd_38f672e9da3dda", "是");
                 System.out.println("是否后评估审核：是");
             }
         }
