@@ -65,10 +65,10 @@ public class TBasAttachmentController {
      * @return
      */
     @RequestMapping(value = "/downLoadAttachment", method = RequestMethod.GET)
-    public void download(HttpServletRequest request, HttpServletResponse response, String webUrl, String fileUUID) throws Exception {
-        if (Util.isEmpty(fileUUID) || Util.isEmpty(webUrl)) {
+    public void download(HttpServletRequest request, HttpServletResponse response, AttachmentsVO vo) throws Exception {
+        if (Util.isEmpty(vo)) {
             throw new ServiceException(UtilMessage.UNSUPPORTED_DOWNLOAD_FILE);
         }
-        service.downLoadFile(request, response, webUrl, fileUUID);
+        service.downLoadFile(request, response, vo);
     }
 }

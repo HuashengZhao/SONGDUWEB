@@ -25,6 +25,7 @@ public class UtilMessage {
     public static final String REQUEST_PARAM_EMPTY = "请求参数不能为空！";
     public static final String REQUEST_NUMBER_EMPTY = "编码不能为空！";
     public static final String REQUEST_PROJECTID_EMPTY = "项目Id不能为空！";
+    public static final String REQUEST_PROJECT_INFO = "缺失项目信息！";
     public static final String REQUEST_PARAM_EMPTY_LL = "参数缺失！";
     public static final String MODIFY_DATA_SUCCESS = "修改成功！";
     public static final String MODIFY_DATA_ERROR = "修改失败！";

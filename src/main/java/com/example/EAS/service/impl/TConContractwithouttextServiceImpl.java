@@ -183,7 +183,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
     }
 
     @Override
-    public NoTextContractVO viewNoTextBill(NoTextContractVO vo) {
+    public NoTextContractVO viewNoTextBill(NoTextContractVO vo) throws Exception {
         String id = vo.getId();
         if (Util.isEmpty(vo.getId())) {
             return null;
@@ -235,6 +235,34 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
                     }
                 }
                 returnVO.setAttachmentsVOS(attachmentsVOS);
+            }
+
+            //                    获取对应的oaid
+            String oaid = supplierapplyMapper.selectOaid(id);
+            if (Util.isNotEmpty(oaid)) {
+//            获取当前登录信息 取用户账号用作oa流程查看登录
+                String token = RequestHolder.getCurrentUser().getToken();
+                String dencrypt = RSAUtil.dencrypt(token, "pri.key");
+                String[] split = dencrypt.split("&&");
+                String org = split[0];
+                String person = split[1];
+                if (Util.isEmpty(person)) {
+                    throw new ServiceException(UtilMessage.PERSON_MISSING);
+                }
+                String mtLoginNum = OaUtil.encrypt(person);
+
+//          返回oa流程link
+//          http://122.224.88.138:58080/km/review/km_review_main/
+//          kmReviewMain.do?method=view&fdId=173c6b9e6dd55fccb9a0be942b2b074d&MtFdLoinName
+//          =gdjjXmldhhTqgDyrFOTunA==
+                String s1 = "http://122.224.88.138:58080/km/review/km_review_main/kmReviewMain.do?method=view&fdId=";
+                String s2 = "&MtFdLoinName=";
+                StringBuffer stringBuffer = new StringBuffer();
+                oaid = URLEncoder.encode(oaid);
+                String link = String.valueOf(stringBuffer.append(s1).append(oaid).append(s2).append(mtLoginNum));
+                System.out.println("OA流程路径：" + link);
+                returnVO.setLink(link);
+                returnVO.setOaId(oaid);
             }
 //
 //            期間
@@ -347,9 +375,10 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             easJson.put("orgId", orgId);
         }
         String projectId = vo.getProjectId();
-        if (Util.isNotEmpty(projectId)) {
-            easJson.put("projectId", projectId);
+        if (Util.isEmpty(projectId)) {
+            throw new ServiceException(UtilMessage.REQUEST_PROJECT_INFO);
         }
+        easJson.put("projectId", projectId);
         String contractTypeId = vo.getContractTypeId();
         if (Util.isNotEmpty(contractTypeId)) {
             easJson.put("conTypeId", contractTypeId);
@@ -589,7 +618,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             //            如果是驳回后重新提交 调用eas合同提交方法
             call = getCall("EASURL", "submitContractwithouttext");
             try {
-                System.out.println(easJson.toJSONString());
+                System.out.println("无文本提交信息" + easJson.toJSONString());
                 result = (String) call.invoke(new Object[]{easJson.toString()});
             } catch (RemoteException e) {
                 e.printStackTrace();
@@ -707,7 +736,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
 //        obj.put("attFile", attFile);
 
         data.put("fd_link", sendUrl);
-        data.put("fd_person", "谢凯伦");
+
 //        data.put("createTime", vo.getCreateTime());
         obj.put("data", data.toString());
         //        当当前流程未提交时 oaidrecord没有对应oaid 调用oa新增提交方法
@@ -717,7 +746,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             Call call = getCall("OAURL", "addEkpReview");
             try {
                 result = (String) call.invoke(new Object[]{obj.toString()});
-                System.out.println(vo.getTitle() + "oa新增流程参数：" + obj.toString());
+                System.out.println(vo.getTitle() + "oa新增流程：" + obj.toString());
                 str = JSONObject.parseObject(result);
             } catch (RemoteException e) {
                 e.printStackTrace();
@@ -727,7 +756,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             try {
                 obj.put("id", oaId);
                 result = (String) call.invoke(new Object[]{obj.toString()});
-                System.out.println(vo.getTitle() + "oa新增流程参数：" + obj.toString());
+                System.out.println(vo.getTitle() + "oa修改流程：" + obj.toString());
                 str = JSONObject.parseObject(result);
             } catch (RemoteException e) {
                 e.printStackTrace();
@@ -746,7 +775,11 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             tConContractbill.setFstate("3AUDITTING");
             mapper.updateById(tConContractbill);
         } else {
-            throw new ServiceException(UtilMessage.SUBMIT_FAULT);
+            if (str.getString("massage")!=null){
+                throw new ServiceException(str.getString("massage"));
+            }else {
+                throw new ServiceException(UtilMessage.SUBMIT_FAULT);
+            }
         }
         return noTextContractVO;
     }
