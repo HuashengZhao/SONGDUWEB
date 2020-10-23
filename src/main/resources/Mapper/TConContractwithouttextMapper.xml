@@ -53,7 +53,7 @@
                 and bill.FORIGINALAMOUNT like CONCAT(CONCAT('%',#{oriAmount}),'%')
             </if>
             <if test="state!=null and state!=''">
-                and bill.fstate like CONCAT(CONCAT('%',#{state},'%'))
+                and bill.fstate like CONCAT(CONCAT('%',#{state}),'%')
             </if>
         </where>
         order by bill.FBOOKEDDATE desc,bill.fnumber desc

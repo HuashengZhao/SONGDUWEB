@@ -8,7 +8,6 @@ import ch.ethz.ssh2.SFTPv3DirectoryEntry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Vector;
@@ -58,10 +57,24 @@ public class EasFileDownLoadUtil {
      */
     public void copyFile(Connection conn, String fileName, HttpServletResponse response) {
         SCPClient sc = new SCPClient(conn);
-        ServletOutputStream outputStream = null;
         try {
-            outputStream = response.getOutputStream();
-            sc.get(fileName, outputStream);
+            String filenameEncoder = "";
+            response.reset();
+            try {
+                filenameEncoder = java.net.URLEncoder.encode(fileName, "utf-8");
+                filenameEncoder = filenameEncoder.replace("+", " ");
+                response.addHeader("Content-Disposition", "attachment;filename=" + filenameEncoder);
+            } catch (Exception e1) {
+                e1.printStackTrace();
+            }
+            response.addHeader("Access-Control-Allow-Origin", "*");
+            response.addHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
+            response.addHeader("Access-Control-Max-Age", "3600");
+            response.addHeader("Access-Control-Allow-Headers", "x-requested-with");
+            response.setCharacterEncoding("utf-8");
+            response.setContentType("application/octet-stream");
+            sc.get(fileName, response.getOutputStream());
+
         } catch (IOException e) {
             e.printStackTrace();
         } finally {

@@ -44,7 +44,7 @@ public interface TConSupplierapplyMapper extends BaseMapper<TConSupplierapply> {
 
     void updateOaid(String billId, String oaId);
 
-    String selectOaid(String id);
+    List<String> selectOaid(String id);
 
     PersonsVO selectCreator(String creatorNum);
 

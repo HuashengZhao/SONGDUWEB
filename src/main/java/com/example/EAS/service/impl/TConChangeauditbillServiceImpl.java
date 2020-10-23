@@ -3,6 +3,7 @@ package com.example.EAS.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.EAS.mapper.TBasAttachmentMapper;
 import com.example.EAS.mapper.TConChangeauditbillMapper;
+import com.example.EAS.mapper.TConSupplierapplyMapper;
 import com.example.EAS.model.TConChangeauditbill;
 import com.example.EAS.service.ITConChangeauditbillService;
 import com.example.EAS.util.*;
@@ -32,6 +33,8 @@ public class TConChangeauditbillServiceImpl extends ServiceImpl<TConChangeauditb
     private TConChangeauditbillMapper mapper;
     @Autowired
     private TBasAttachmentMapper attachmentMapper;
+    @Autowired
+    private TConSupplierapplyMapper supplierapplyMapper;
 
 
     @Override
@@ -179,6 +182,17 @@ public class TConChangeauditbillServiceImpl extends ServiceImpl<TConChangeauditb
                 }
             }
 //            附件信息
+            //                    宋都ftp服务器上的附件
+            List<AttachmentsVO> ftpvos = supplierapplyMapper.selectAttachments(id);
+            if (ftpvos != null && ftpvos.size() > 0) {
+                for (AttachmentsVO attachmentsVO : ftpvos) {
+                    attachmentsVO.setEasId(id);
+                    String fileType = attachmentsVO.getFileType();
+                    String title = attachmentsVO.getTitle();
+                    attachmentsVO.setOriginalFilename(new StringBuffer().append(title).append(".").append(fileType).toString());
+                }
+            }
+//           asstachmentFiles from eas
             List<AttachmentsVO> attachmentsVOS = attachmentMapper.selectAttachMent(id);
             if (attachmentsVOS != null && attachmentsVOS.size() > 0) {
                 for (AttachmentsVO attachmentsVO : attachmentsVOS) {
@@ -194,8 +208,9 @@ public class TConChangeauditbillServiceImpl extends ServiceImpl<TConChangeauditb
                         }
                     }
                 }
-                auditVO.setAttachmentsVOS(attachmentsVOS);
+                ftpvos.addAll(attachmentsVOS);
             }
+            auditVO.setAttachmentsVOS(ftpvos);
         }
         return auditVO;
     }

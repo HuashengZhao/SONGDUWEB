@@ -221,24 +221,49 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         }
         if (Util.isNotEmpty(returnVO)) {
             //            附件信息
-            List<AttachmentsVO> attachmentsVOS = attachmentMapper.selectWEBAttach(id);
-            if (attachmentsVOS != null && attachmentsVOS.size() > 0) {
-                for (AttachmentsVO attachmentsVO : attachmentsVOS) {
-                    if (Util.isNotEmpty(attachmentsVO.getOriginalFilename())) {
-                        attachmentsVO.setTitle(attachmentsVO.getOriginalFilename());
-                    }
-                    if (Util.isNotEmpty(attachmentsVO.getFileType())) {
-                        String s = FileContentTypeUtils.contentType("." + attachmentsVO.getFileType());
-                        if (Util.isNotEmpty(s)) {
-                            attachmentsVO.setContentType(s);
+            //                    宋都ftp服务器上的附件
+            List<AttachmentsVO> ftpvos = supplierapplyMapper.selectAttachments(id);
+            if (ftpvos != null && ftpvos.size() > 0) {
+                for (AttachmentsVO attachmentsVO : ftpvos) {
+                    attachmentsVO.setEasId(id);
+                    String fileType = attachmentsVO.getFileType();
+                    String title = attachmentsVO.getTitle();
+                    attachmentsVO.setOriginalFilename(new StringBuffer().append(title).append(".").append(fileType).toString());
+                }
+            }
+//            eas
+            List<AttachmentsVO> easFiles = attachmentMapper.selectAttachMent(id);
+            if (easFiles != null && easFiles.size() > 0) {
+                for (AttachmentsVO attachmentsVO : easFiles) {
+                    String fileUrl = attachmentsVO.getWebUrl();
+                    if (Util.isNotEmpty(fileUrl)) {
+                        String type = fileUrl.split("\\.")[fileUrl.split("\\.").length - 1];
+                        attachmentsVO.setFileType(type);
+                        if (Util.isNotEmpty(type)) {
+                            String s = FileContentTypeUtils.contentType("." + type);
+                            if (Util.isNotEmpty(s)) {
+                                attachmentsVO.setContentType(s);
+                            }
                         }
                     }
                 }
-                returnVO.setAttachmentsVOS(attachmentsVOS);
+                ftpvos.addAll(easFiles);
             }
+            returnVO.setAttachmentsVOS(ftpvos);
 
             //                    获取对应的oaid
-            String oaid = supplierapplyMapper.selectOaid(id);
+            String oaid=null;
+            List<String> oaids = supplierapplyMapper.selectOaid(id);
+//            判断是否在eas进行过流程提交
+            TConContractwithouttext contractwithouttext = mapper.selectById(id);
+            if (Util.isNotEmpty(contractwithouttext)){
+                String fsourcefunction = contractwithouttext.getFsourcefunction();
+                if (Util.isNotEmpty(fsourcefunction)) {
+                    oaid = fsourcefunction;
+                } else if (oaids != null && oaids.size() > 0) {
+                    oaid = oaids.get(0);
+                }
+            }
             if (Util.isNotEmpty(oaid)) {
 //            获取当前登录信息 取用户账号用作oa流程查看登录
                 String token = RequestHolder.getCurrentUser().getToken();
@@ -555,13 +580,19 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         if (marketConArray != null && marketConArray.size() > 0) {
             easJson.put("marketConArray", marketConArray);
         }
-//       费用清单
+//       费用清单  --添加申请金额控制
+        BigDecimal totalApplyAmount=BigDecimal.ZERO;
         JSONArray costArray = new JSONArray();
         List<CWTextBgVO> cwTextBgVOS = vo.getCwTextBgVOS();
+//        金额
         if (cwTextBgVOS != null && cwTextBgVOS.size() > 0) {
             for (CWTextBgVO cwTextBgVO : cwTextBgVOS) {
                 JSONObject costObj = new JSONObject();
-                costObj.put("amount", cwTextBgVO.getAmount());
+                BigDecimal amount = cwTextBgVO.getAmount();
+                if (Util.isNotEmpty(amount)) {
+                    costObj.put("amount", cwTextBgVO.getAmount());
+                    totalApplyAmount=totalApplyAmount.add(amount);
+                }
                 String expenseTypeName = cwTextBgVO.getExpenseTypeName();
                 if (Util.isNotEmpty(expenseTypeName)) {
                     TBcExpensetype expensetype = expensetypeMapper.selectOne(new QueryWrapper<TBcExpensetype>()
@@ -602,6 +633,14 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         if (attach != null && attach.size() > 0) {
             easJson.put("attach", attach);
         }
+        //        保存附件到web表
+        if (Util.isNotEmpty(id) && vo.getAttachmentsVOS() != null && vo.getAttachmentsVOS().size() > 0) {
+            supplierapplyMapper.deletAttach(id);
+            ftpUtil.saveAttachMent(attachmentsVOS, id);
+        } else {
+            supplierapplyMapper.deletAttach(id);
+        }
+
         String result = null;
         Call call = null;
 //        调用eas 保存方法进行保存
@@ -642,13 +681,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             tConContractwithouttext.setFcreatorid(creatorId);
             mapper.updateById(tConContractwithouttext);
         }
-        //        保存附件到web表
-        if (Util.isNotEmpty(id) && vo.getAttachmentsVOS() != null && vo.getAttachmentsVOS().size() > 0) {
-            supplierapplyMapper.deletAttach(id);
-            ftpUtil.saveAttachMent(attachmentsVOS, id);
-        } else {
-            supplierapplyMapper.deletAttach(id);
-        }
+
         return noTextContractVO;
     }
 
@@ -666,7 +699,10 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         //      判断是否提交过被驳回  需要携带oaid
         JSONObject obj = new JSONObject();
         String oaId = null;
-        oaId = supplierapplyMapper.selectOaid(id);
+        List<String> oaIds = supplierapplyMapper.selectOaid(id);
+        if (oaIds!=null && oaIds.size()>0) {
+            oaId = oaIds.get(0);
+        }
         //      基本参数
         obj.put("id", id);
         obj.put("tmplateId", "17400f0f65621b8cae9869445db9c6f6");
@@ -676,7 +712,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         JSONObject data = new JSONObject();
         if (Util.isNotEmpty(vo.getPayContentId())) {
             String payContentName = mapper.selectPayContentName(vo.getPayContentId());
-            data.put("fd_38cf18370f3976", payContentName);
+            data.put("fd_38cf18383073ec", payContentName);
         }
         if (Util.isNotEmpty(vo.getOriAmount())) {
             Double aDouble = vo.getOriAmount().doubleValue();
@@ -687,11 +723,11 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             TConMarketproject tConMarketproject = marketProjectMapper.selectById(vo.getMarketProjectId());
             Long fisjt = tConMarketproject.getFisjt();
             if (Util.isEmpty(fisjt)||fisjt==0) {
-                data.put("fd_38cf18383073ec", "0");
-                System.out.println("是否后评估审核：0");
+                data.put("fd_38f672e9da3dda", "否");
+                System.out.println("是否后评估审核：否");
             }else{
-                data.put("fd_38cf18383073ec", "1");
-                System.out.println("是否后评估审核：1");
+                data.put("fd_38f672e9da3dda", "是");
+                System.out.println("是否后评估审核：是");
             }
         }
         if (Util.isNotEmpty(vo.getContractTypeId())) {
@@ -752,7 +788,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             Call call = getCall("OAURL", "addEkpReview");
             try {
                 result = (String) call.invoke(new Object[]{obj.toString()});
-                System.out.println(vo.getTitle() + "oa新增流程：" + obj.toString());
+                System.out.println(vo.getTitle() + "oa流程传参：" + obj.toString());
                 str = JSONObject.parseObject(result);
             } catch (RemoteException e) {
                 e.printStackTrace();
@@ -762,7 +798,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             try {
                 obj.put("id", oaId);
                 result = (String) call.invoke(new Object[]{obj.toString()});
-                System.out.println(vo.getTitle() + "oa修改流程：" + obj.toString());
+                System.out.println(vo.getTitle() + "oa流程传参：" + obj.toString());
                 str = JSONObject.parseObject(result);
             } catch (RemoteException e) {
                 e.printStackTrace();

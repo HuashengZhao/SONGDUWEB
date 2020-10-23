@@ -18,5 +18,5 @@ public interface TBdPersonMapper extends BaseMapper<TBdPerson> {
 
     List<PersonsVO> selectDatas(PersonsVO vo);
 
-    List<PersonsVO> selectDataByOrgIds(List<String> list);
+    List<PersonsVO> selectDataByOrgIds(PersonsVO vo);
 }

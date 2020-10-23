@@ -27,31 +27,31 @@
             and bill.FCurProjectID=#{projectId}
             and bill.FSource='0D6DD1F4'
             <if test="title!=null and title!=''">
-                and bill.FNAME like '%#{title}%'
+                and bill.FNAME like CONCAT(CONCAT('%',#{title}),'%')
             </if>
             <if test="num!=null and num!=''">
-                and bill.fnumber like '%#{num}%'
+                and bill.fnumber like CONCAT(CONCAT('%',#{num}),'%')
             </if>
             <if test="contractNumber!=null and contractNumber!=''">
-                and con.FNUMBER like '%#{contractNumber}%'
+                and con.FNUMBER like CONCAT(CONCAT('%',#{contractNumber}),'%')
             </if>
             <if test="contractName!=null and contractName!=''">
-                and con.FNAME like '%#{contractName}%'
+                and con.FNAME like CONCAT(CONCAT('%',#{contractName}),'%')
             </if>
             <if test="supplierName!=null and supplierName!=''">
-                and sup.FNAME_L2 like '%#{supplierName}%'
+                and sup.FNAME_L2 like CONCAT(CONCAT('%',#{supplierName}),'%')
             </if>
             <if test="projectName!=null and projectName!=''">
-                and cp.FNAME_L2 like '%#{projectName}%'
+                and cp.FNAME_L2 like CONCAT(CONCAT('%',#{projectName}),'%')
             </if>
             <if test="bizDate!=null and bizDate!=''">
-                and bill.FBOOKEDDATE like '%#{bizDate}%'
+                and bill.FBOOKEDDATE like  CONCAT(CONCAT('%',#{bizDate}),'%')
             </if>
             <if test="creatorName!=null and creatorName!=''">
-                and u.FNAME_L2 like '%#{creatorName}%'
+                and u.FNAME_L2 like CONCAT(CONCAT('%',#{creatorName}),'%')
             </if>
             <if test="state!=null and state!=''">
-                and u.fstate like CONCAT(CONCAT('%',#{state},'%'))
+                and bill.fstate like CONCAT(CONCAT('%',#{state}),'%')
             </if>
         </where>
         order by bill.FBOOKEDDATE desc,bill.fnumber desc

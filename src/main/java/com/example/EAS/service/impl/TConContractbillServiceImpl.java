@@ -578,7 +578,18 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             contractVO.setState("已确认");
         }
         //                    获取对应的oaid
-        String oaid = supplierapplyMapper.selectOaid(id);
+        String oaid = null;
+        List<String> oaids = supplierapplyMapper.selectOaid(id);
+//        判断是否在eas里提交的
+        TConContractbill conContractbill = mapper.selectById(id);
+        if (Util.isNotEmpty(conContractbill)) {
+            String fsourcefunction = conContractbill.getFsourcefunction();
+            if (Util.isNotEmpty(fsourcefunction)) {
+                oaid = fsourcefunction;
+            } else if (oaids != null && oaids.size() > 0) {
+                oaid = oaids.get(0);
+            }
+        }
         if (Util.isNotEmpty(oaid)) {
 //            获取当前登录信息 取用户账号用作oa流程查看登录
             String token = RequestHolder.getCurrentUser().getToken();
@@ -689,21 +700,35 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             contractVO.setDetailVOList(detailVOS);
         }
 //        附件信息
-        List<AttachmentsVO> attachmentsVOS = attachmentMapper.selectWEBAttach(id);
+//        web ftp
+        List<AttachmentsVO> attachmentsVOS = supplierapplyMapper.selectAttachments(id);
         if (attachmentsVOS != null && attachmentsVOS.size() > 0) {
             for (AttachmentsVO attachmentsVO : attachmentsVOS) {
-                if (Util.isNotEmpty(attachmentsVO.getOriginalFilename())) {
-                    attachmentsVO.setTitle(attachmentsVO.getOriginalFilename());
-                }
-                if (Util.isNotEmpty(attachmentsVO.getFileType())) {
-                    String s = FileContentTypeUtils.contentType("." + attachmentsVO.getFileType());
-                    if (Util.isNotEmpty(s)) {
-                        attachmentsVO.setContentType(s);
+                attachmentsVO.setEasId(id);
+                String fileType = attachmentsVO.getFileType();
+                String title = attachmentsVO.getTitle();
+                attachmentsVO.setOriginalFilename(new StringBuffer().append(title).append(".").append(fileType).toString());
+            }
+        }
+//      attachmentFiles from eas
+        List<AttachmentsVO> easFiles = attachmentMapper.selectAttachMent(id);
+        if (easFiles != null && easFiles.size() > 0) {
+            for (AttachmentsVO attachmentsVO : easFiles) {
+                String fileUrl = attachmentsVO.getWebUrl();
+                if (Util.isNotEmpty(fileUrl)) {
+                    String type = fileUrl.split("\\.")[fileUrl.split("\\.").length - 1];
+                    attachmentsVO.setFileType(type);
+                    if (Util.isNotEmpty(type)) {
+                        String s = FileContentTypeUtils.contentType("." + type);
+                        if (Util.isNotEmpty(s)) {
+                            attachmentsVO.setContentType(s);
+                        }
                     }
                 }
             }
-            contractVO.setAttachmentsVOS(attachmentsVOS);
+            attachmentsVOS.addAll(easFiles);
         }
+        contractVO.setAttachmentsVOS(attachmentsVOS);
 
 //        补充合同信息
         TConContractbill tConContractbill1 = mapper.selectById(vo.getId());
@@ -781,7 +806,10 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
 //      判断是否提交过被驳回  需要携带oaid
         JSONObject obj = new JSONObject();
         String oaId = null;
-        oaId = supplierapplyMapper.selectOaid(id);
+        List<String> oaIds = supplierapplyMapper.selectOaid(id);
+        if (oaIds != null && oaIds.size() > 0) {
+            oaId = oaIds.get(0);
+        }
 //      基本参数
         obj.put("id", id);
         obj.put("tmplateId", "174046df325987eb1d487be4026b1b64");
@@ -794,6 +822,18 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             String contractWFTypeName = mapper.selectContractType(vo.getContractWFTypeId());
             data.put("fd_38cf1780c1c14a", contractWFTypeName);
             System.out.println("合同提交分支新增字段：" + contractWFTypeName);
+        }
+//        后评估审核
+        if (Util.isNotEmpty(vo.getMarketProjectId())) {
+            TConMarketproject tConMarketproject = marketProjectMapper.selectById(vo.getMarketProjectId());
+            Long fisjt = tConMarketproject.getFisjt();
+            if (Util.isEmpty(fisjt) || fisjt == 0) {
+                data.put("fd_38f672bcb4a998", "否");
+                System.out.println("是否后评估审核：否");
+            } else {
+                data.put("fd_38f672bcb4a998", "是");
+                System.out.println("是否后评估审核：是");
+            }
         }
 //        原币金额
         if (Util.isNotEmpty(vo.getOriginalAmount())) {
@@ -860,7 +900,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         JSONObject attFile = new JSONObject();
 //        obj.put("attFile", attFile);
         data.put("fd_link", sendUrl);
-        
+
 //        data.put("createTime", vo.getCreateTime());
         obj.put("data", data.toString());
         //        当当前流程未提交时 oaidrecord没有对应oaid 调用oa新增提交方法

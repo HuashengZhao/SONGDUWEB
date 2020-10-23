@@ -107,9 +107,7 @@
     <select id="selectOAURL" resultType="java.lang.String">
         select url from weburl where type ='OAURL'
     </select>
-    <select id="selectOaid" resultType="java.lang.String">
-        select oaid from oaidrecord where billId=#{id}
-    </select>
+
     <select id="selectCreator" resultType="com.example.EAS.vo.PersonsVO">
         select fid as id,FNAME_L2 as personName,fnumber as person  from T_PM_USER where FNUMBER = #{creatorNum}
     </select>
@@ -168,6 +166,9 @@
     </select>
     <select id="selectViewUrl" resultType="java.lang.String">
         select url from webUrl where type ='view'
+    </select>
+    <select id="selectOaid" resultType="java.lang.String">
+         select oaid from oaidrecord where billId=#{id,jdbcType=VARCHAR} order by oaid desc
     </select>
 
     <insert id="insertAttachMent" parameterType="com.example.EAS.vo.AttachmentsVO">

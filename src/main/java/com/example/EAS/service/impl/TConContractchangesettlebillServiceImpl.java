@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.EAS.mapper.TBasAttachmentMapper;
 import com.example.EAS.mapper.TConChangeauditbillMapper;
 import com.example.EAS.mapper.TConContractchangesettlebillMapper;
+import com.example.EAS.mapper.TConSupplierapplyMapper;
 import com.example.EAS.model.TConContractchangesettlebill;
 import com.example.EAS.service.ITConContractchangesettlebillService;
 import com.example.EAS.util.*;
@@ -35,6 +36,8 @@ public class TConContractchangesettlebillServiceImpl extends ServiceImpl<TConCon
     private TConChangeauditbillMapper auditMapper;
     @Autowired
     private TBasAttachmentMapper attachmentMapper;
+    @Autowired
+    private TConSupplierapplyMapper supplierapplyMapper;
 
     @Override
     public PageBean<ChangeSettleVO> getChangeSettleList(ChangeSettleVO vo) {
@@ -147,7 +150,7 @@ public class TConContractchangesettlebillServiceImpl extends ServiceImpl<TConCon
                 }
 //                查看oa流程link
                 String oaId = settleVO.getSourceFunction();
-                if (Util.isNotEmpty(oaId)){
+                if (Util.isNotEmpty(oaId)) {
 //                                获取当前登录信息 取用户账号用作oa流程查看登录
                     String token = RequestHolder.getCurrentUser().getToken();
                     String dencrypt = RSAUtil.dencrypt(token, "pri.key");
@@ -174,6 +177,17 @@ public class TConContractchangesettlebillServiceImpl extends ServiceImpl<TConCon
                 }
             }
             //            附件信息
+            //                    宋都ftp服务器上的附件
+            List<AttachmentsVO> ftpvos = supplierapplyMapper.selectAttachments(id);
+            if (ftpvos != null && ftpvos.size() > 0) {
+                for (AttachmentsVO attachmentsVO : ftpvos) {
+                    attachmentsVO.setEasId(id);
+                    String fileType = attachmentsVO.getFileType();
+                    String title = attachmentsVO.getTitle();
+                    attachmentsVO.setOriginalFilename(new StringBuffer().append(title).append(".").append(fileType).toString());
+                }
+            }
+//            from eas
             List<AttachmentsVO> attachmentsVOS = attachmentMapper.selectAttachMent(id);
             if (attachmentsVOS != null && attachmentsVOS.size() > 0) {
                 for (AttachmentsVO attachmentsVO : attachmentsVOS) {
@@ -182,7 +196,6 @@ public class TConContractchangesettlebillServiceImpl extends ServiceImpl<TConCon
                         String type = fileUrl.split("\\.")[fileUrl.split("\\.").length - 1];
                         attachmentsVO.setFileType(type);
                         if (Util.isNotEmpty(type)) {
-                            
                             String s = FileContentTypeUtils.contentType("." + type);
                             if (Util.isNotEmpty(s)) {
                                 attachmentsVO.setContentType(s);
@@ -190,8 +203,9 @@ public class TConContractchangesettlebillServiceImpl extends ServiceImpl<TConCon
                         }
                     }
                 }
-                settleVO.setAttachmentsVOS(attachmentsVOS);
+                ftpvos.addAll(attachmentsVOS);
             }
+            settleVO.setAttachmentsVOS(ftpvos);
         }
         return settleVO;
     }
