@@ -89,8 +89,12 @@ public class TConPayrequestbillServiceImpl extends ServiceImpl<TConPayrequestbil
             }
         }
         LocalDateTime bizDate = vo.getBizDate();
-        bizDate = bizDate.plusDays(1).minusSeconds(1);
-        vo.setBizDate(bizDate);
+        if (Util.isNotEmpty(bizDate)) {
+            LocalDateTime bornDate = bizDate.plusDays(1).minusSeconds(1);
+            LocalDateTime bookDate = bizDate.plusSeconds(1);
+            vo.setBizDate(bornDate);
+            vo.setBookDate(bookDate);
+        }
         PageHelper.startPage(vo.getCurrentPage(), vo.getPageSize());
         List<PayRequestBillVO> payRequestBillVOS = mapper.selectDatas(vo);
         if (payRequestBillVOS != null && payRequestBillVOS.size() > 0) {

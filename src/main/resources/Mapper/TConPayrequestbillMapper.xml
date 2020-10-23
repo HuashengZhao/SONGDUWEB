@@ -45,7 +45,7 @@
                 and cp.FNAME_L2 like CONCAT(CONCAT('%',#{projectName}),'%')
             </if>
             <if test="bizDate!=null">
-                and bill.FBOOKEDDATE  <![CDATA[   <= #{bizDate}]]>
+                and  <![CDATA[  #{bookDate} <= ]]> bill.FBOOKEDDATE and bill.FBOOKEDDATE <![CDATA[   <= #{bizDate}]]>
             </if>
             <if test="creatorName!=null and creatorName!=''">
                 and u.FNAME_L2 like CONCAT(CONCAT('%',#{creatorName}),'%')

@@ -75,7 +75,7 @@ public class PayRequestBillVO {
     @JsonFormat(pattern = "yyyy-MM-dd")
     @JsonDeserialize(using = DateJsonDeserializer.class)
     private LocalDateTime bizDate;
-    private String bookDate;
+    private LocalDateTime bookDate;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     @JsonDeserialize(using = DateJsonDeserializer.class)
