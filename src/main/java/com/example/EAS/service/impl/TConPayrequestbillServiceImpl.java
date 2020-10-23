@@ -14,6 +14,7 @@ import com.example.EAS.vo.AttachmentsVO;
 import com.example.EAS.vo.PayRequestBillVO;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,7 @@ import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -45,7 +47,6 @@ public class TConPayrequestbillServiceImpl extends ServiceImpl<TConPayrequestbil
     private TConSupplierapplyMapper supplierapplyMapper;
 
     DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
 
     @Override
     public PageBean<PayRequestBillVO> getPayRequestBillVO(PayRequestBillVO vo) {
@@ -87,6 +88,9 @@ public class TConPayrequestbillServiceImpl extends ServiceImpl<TConPayrequestbil
                 vo.setState("13");
             }
         }
+        LocalDateTime bizDate = vo.getBizDate();
+        bizDate = bizDate.plusDays(1).minusSeconds(1);
+        vo.setBizDate(bizDate);
         PageHelper.startPage(vo.getCurrentPage(), vo.getPageSize());
         List<PayRequestBillVO> payRequestBillVOS = mapper.selectDatas(vo);
         if (payRequestBillVOS != null && payRequestBillVOS.size() > 0) {
