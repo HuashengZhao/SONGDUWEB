@@ -633,6 +633,14 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         if (attach != null && attach.size() > 0) {
             easJson.put("attach", attach);
         }
+        //        保存附件到web表
+        if (Util.isNotEmpty(id) && vo.getAttachmentsVOS() != null && vo.getAttachmentsVOS().size() > 0) {
+            supplierapplyMapper.deletAttach(id);
+            ftpUtil.saveAttachMent(attachmentsVOS, id);
+        } else {
+            supplierapplyMapper.deletAttach(id);
+        }
+
         String result = null;
         Call call = null;
 //        调用eas 保存方法进行保存
@@ -673,13 +681,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             tConContractwithouttext.setFcreatorid(creatorId);
             mapper.updateById(tConContractwithouttext);
         }
-        //        保存附件到web表
-        if (Util.isNotEmpty(id) && vo.getAttachmentsVOS() != null && vo.getAttachmentsVOS().size() > 0) {
-            supplierapplyMapper.deletAttach(id);
-            ftpUtil.saveAttachMent(attachmentsVOS, id);
-        } else {
-            supplierapplyMapper.deletAttach(id);
-        }
+
         return noTextContractVO;
     }
 
