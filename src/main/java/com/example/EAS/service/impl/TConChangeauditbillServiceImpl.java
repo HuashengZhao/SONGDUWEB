@@ -192,6 +192,7 @@ public class TConChangeauditbillServiceImpl extends ServiceImpl<TConChangeauditb
                     attachmentsVO.setOriginalFilename(new StringBuffer().append(title).append(".").append(fileType).toString());
                 }
             }
+//           asstachmentFiles from eas
             List<AttachmentsVO> attachmentsVOS = attachmentMapper.selectAttachMent(id);
             if (attachmentsVOS != null && attachmentsVOS.size() > 0) {
                 for (AttachmentsVO attachmentsVO : attachmentsVOS) {
