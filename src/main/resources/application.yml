@@ -3,7 +3,7 @@ server:
   max-threads: 10
   min-spare-threads: 10
 
- port: 8080
+ port: 8888
 
 spring:
   application:
