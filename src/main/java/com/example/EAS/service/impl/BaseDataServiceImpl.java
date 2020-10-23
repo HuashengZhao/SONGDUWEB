@@ -111,6 +111,7 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
         AsyncExecutor.executeTask(t -> {
             //       如果审核成功 调用eas审核方法
             if (result.contains("01")) {
+                System.out.println("type为"+type+"流程调用回调审批啦！");
                 if (oaid != null && easid != null) {
                     oaIdUtil.getString(easid, oaid);
                 }
