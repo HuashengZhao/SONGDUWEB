@@ -580,14 +580,19 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         if (marketConArray != null && marketConArray.size() > 0) {
             easJson.put("marketConArray", marketConArray);
         }
-//       费用清单
+//       费用清单  --添加申请金额控制
+        BigDecimal totalApplyAmount=BigDecimal.ZERO;
         JSONArray costArray = new JSONArray();
         List<CWTextBgVO> cwTextBgVOS = vo.getCwTextBgVOS();
 //        金额
         if (cwTextBgVOS != null && cwTextBgVOS.size() > 0) {
             for (CWTextBgVO cwTextBgVO : cwTextBgVOS) {
                 JSONObject costObj = new JSONObject();
-                costObj.put("amount", cwTextBgVO.getAmount());
+                BigDecimal amount = cwTextBgVO.getAmount();
+                if (Util.isNotEmpty(amount)) {
+                    costObj.put("amount", cwTextBgVO.getAmount());
+                    totalApplyAmount=totalApplyAmount.add(amount);
+                }
                 String expenseTypeName = cwTextBgVO.getExpenseTypeName();
                 if (Util.isNotEmpty(expenseTypeName)) {
                     TBcExpensetype expensetype = expensetypeMapper.selectOne(new QueryWrapper<TBcExpensetype>()
