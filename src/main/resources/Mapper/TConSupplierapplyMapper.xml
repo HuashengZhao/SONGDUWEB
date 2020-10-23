@@ -167,6 +167,9 @@
     <select id="selectViewUrl" resultType="java.lang.String">
         select url from webUrl where type ='view'
     </select>
+    <select id="selectAppUrl" resultType="java.lang.String">
+        select url from webUrl where type ='app'
+    </select>
     <select id="selectOaid" resultType="java.lang.String">
          select oaid from oaidrecord where billId=#{id,jdbcType=VARCHAR} order by oaid desc
     </select>

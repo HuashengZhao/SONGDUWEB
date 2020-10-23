@@ -14,10 +14,10 @@
             </if>
 
             <if test="title!=null and title!=''">
-                and e.ftypename_l2 like '%${title}%'
+                and e.ftypename_l2 like CONCAT(CONCAT('%',#{title}),'%')
             </if>
             <if test="num!=null and num!=''">
-                and e.fnumber like '%${num}%'
+                and e.fnumber like CONCAT(CONCAT('%',#{num}),'%')
             </if>
             order by e.fnumber
         </where>

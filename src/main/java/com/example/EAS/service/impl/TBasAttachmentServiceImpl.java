@@ -147,26 +147,26 @@ public class TBasAttachmentServiceImpl extends ServiceImpl<TBasAttachmentMapper,
 
 
     @Override
-    public void downLoadFile(HttpServletRequest request, HttpServletResponse response,AttachmentsVO vo) throws IOException {
+    public void downLoadFile(HttpServletRequest request, HttpServletResponse response, AttachmentsVO vo) throws IOException {
 //        区分方法 根据 num  只有web的有num   eas 跟天联云 根据 fftpid 判断  eas没有fftpid  定位目标 用 weburl
         String webUrl = vo.getWebUrl();
         String fileUUID = vo.getFileUUID();
         String num = vo.getNum();
-        if (Util.isNotEmpty(num)){
+        if (Util.isNotEmpty(num)) {
             //        下载来自web上传的附件  目标服务器 宋都ftp
-            if (Util.isNotEmpty(webUrl)&&Util.isNotEmpty(fileUUID)) {
+            if (Util.isNotEmpty(webUrl) && Util.isNotEmpty(fileUUID)) {
                 ftpUtil.exportOutputStream(request, response, webUrl, fileUUID);
             }
-        }else{
+        } else {
             String ftpId = vo.getFtpId();
-            if (Util.isNotEmpty(ftpId)){
+            if (Util.isNotEmpty(ftpId)) {
 //                天联云
                 ftpUtil.exportTLYOS(request, response, webUrl, fileUUID);
-            }else {
+            } else {
 //                eas Linux文件
                 easFileDownLoadUtil.login();
                 Connection connection = easFileDownLoadUtil.getConnection();
-                easFileDownLoadUtil.copyFile(connection,webUrl,response);
+                easFileDownLoadUtil.copyFile(connection, webUrl, response);
             }
         }
     }

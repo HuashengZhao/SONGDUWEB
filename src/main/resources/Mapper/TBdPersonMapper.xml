@@ -15,10 +15,10 @@
                 and c.FDELETEDSTATUS = #{deleteStatus}
             </if>
             <if test="personName!=null and personName!=''">
-                and c.fname_l2 like '%${personName}%'
+                and c.fname_l2 like CONCAT(CONCAT('%',#{personName}),'%')
             </if>
             <if test="personNumber!=null and personNumber!=''">
-                and c.fnumber like '%${personNumber}%'
+                and c.fnumber like CONCAT(CONCAT('%',#{personNumber}),'%')
             </if>
         </where>
         order by c.fnumber
@@ -49,10 +49,10 @@
                 and c.FDELETEDSTATUS = #{deleteStatus}
             </if>
             <if test="personName!=null and personName!=''">
-                and c.fname_l2 like '%${personName}%'
+                and c.fname_l2 like CONCAT(CONCAT('%',#{personName}),'%')
             </if>
             <if test="personNumber!=null and personNumber!=''">
-                and c.fnumber like '%${personNumber}%'
+                and c.fnumber like CONCAT(CONCAT('%',#{personNumber}),'%')
             </if>
         </where>
     </select>

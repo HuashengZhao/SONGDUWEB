@@ -11,10 +11,10 @@
             m.FDeletedStatus=1 and
             m.FCSSPGroupStandardID =#{standardId}
             <if test="title!=null and title!=''">
-                and m.fname_l2 like '%${title}%'
+                and m.fname_l2 like CONCAT(CONCAT('%',#{title}),'%')
             </if>
             <if test="num!=null and num!=''">
-                and m.fnumber like '%${num}%'
+                and m.fnumber like CONCAT(CONCAT('%',#{num}),'%')
             </if>
         </where>
         order by m.fnumber

@@ -10,13 +10,13 @@
             fcontrolunitid=#{orgId}
             and FIsEnabled=1
             <if test="num!=null and num!=''">
-                and fnumber like '%${num}%'
+                and fnumber like CONCAT(CONCAT('%',#{num}),'%')
             </if>
             <if test="title!=null and title!=''">
-                and fname_l2 like '%${title}%'
+                and fname_l2 like CONCAT(CONCAT('%',#{title}),'%')
             </if>
             <if test="description!=null and description!=''">
-                and fdescription_l2 like '%${description}%'
+                and fdescription_l2 like CONCAT(CONCAT('%',#{description}),'%')
             </if>
 
         </where>
