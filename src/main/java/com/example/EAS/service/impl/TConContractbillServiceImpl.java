@@ -710,7 +710,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                 attachmentsVO.setOriginalFilename(new StringBuffer().append(title).append(".").append(fileType).toString());
             }
         }
-//        eas
+//      attachmentFiles from eas
         List<AttachmentsVO> easFiles = attachmentMapper.selectAttachMent(id);
         if (easFiles != null && easFiles.size() > 0) {
             for (AttachmentsVO attachmentsVO : easFiles) {

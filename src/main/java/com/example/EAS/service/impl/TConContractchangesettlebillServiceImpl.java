@@ -187,6 +187,7 @@ public class TConContractchangesettlebillServiceImpl extends ServiceImpl<TConCon
                     attachmentsVO.setOriginalFilename(new StringBuffer().append(title).append(".").append(fileType).toString());
                 }
             }
+//            from eas
             List<AttachmentsVO> attachmentsVOS = attachmentMapper.selectAttachMent(id);
             if (attachmentsVOS != null && attachmentsVOS.size() > 0) {
                 for (AttachmentsVO attachmentsVO : attachmentsVOS) {

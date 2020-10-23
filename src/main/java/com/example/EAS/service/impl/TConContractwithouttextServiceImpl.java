@@ -254,8 +254,15 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             //                    获取对应的oaid
             String oaid=null;
             List<String> oaids = supplierapplyMapper.selectOaid(id);
-            if (oaids!=null && oaids.size()>0){
-                oaid=oaids.get(0);
+//            判断是否在eas进行过流程提交
+            TConContractwithouttext contractwithouttext = mapper.selectById(id);
+            if (Util.isNotEmpty(contractwithouttext)){
+                String fsourcefunction = contractwithouttext.getFsourcefunction();
+                if (Util.isNotEmpty(fsourcefunction)) {
+                    oaid = fsourcefunction;
+                } else if (oaids != null && oaids.size() > 0) {
+                    oaid = oaids.get(0);
+                }
             }
             if (Util.isNotEmpty(oaid)) {
 //            获取当前登录信息 取用户账号用作oa流程查看登录
@@ -576,6 +583,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
 //       费用清单
         JSONArray costArray = new JSONArray();
         List<CWTextBgVO> cwTextBgVOS = vo.getCwTextBgVOS();
+//        金额
         if (cwTextBgVOS != null && cwTextBgVOS.size() > 0) {
             for (CWTextBgVO cwTextBgVO : cwTextBgVOS) {
                 JSONObject costObj = new JSONObject();
