@@ -305,8 +305,9 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
                         if (Util.isNotEmpty(webUrl) && Util.isNotEmpty(fileUUID) && Util.isNotEmpty(originalFilename)) {
                             StringBuffer stringBuffer = new StringBuffer();
                             String s = stringBuffer.append(webUrl).append("/").append(fileUUID).toString();
-                            object.put("FName", originalFilename == null ? "none" : originalFilename);
-                            object.put("FRemotePath", s == null ? "none" : s);
+                            object.put("FName", originalFilename == null ? null: originalFilename);
+                            object.put("FRemotePath", s == null ? null : s);
+                            object.put("FNumber", attachNum == null ? null : attachNum);
                             attach.add(object);
                         }
                     }
@@ -404,13 +405,15 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         if (attachmentsVOS != null && attachmentsVOS.size() > 0) {
             for (AttachmentsVO attachmentsVO : attachmentsVOS) {
                 JSONObject object = new JSONObject();
+                String attachNum = attachmentsVO.getNum();
                 String webUrl = attachmentsVO.getWebUrl();
                 String fileUUID = attachmentsVO.getFileUUID();
                 String originalFilename = attachmentsVO.getOriginalFilename();
                 StringBuffer stringBuffer = new StringBuffer();
                 String s = stringBuffer.append(webUrl).append("/").append(fileUUID).toString();
-                object.put("FName", originalFilename == null ? "none" : originalFilename);
-                object.put("FRemotePath", s == null ? "none" : s);
+                object.put("FName", originalFilename == null ? null: originalFilename);
+                object.put("FRemotePath", s == null ? null : s);
+                object.put("FNumber", attachNum == null ? null : attachNum);
                 attach.add(object);
             }
         }
@@ -584,14 +587,18 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
             e.printStackTrace();
         }
 
-//        http://172.17.4.125:8082/easWeb/#/
+        //        http://172.17.4.125:8082/easWeb/#/
+        //        http://172.17.4.125:8082/easApp/#/
         String sendUrl = null;
+        String sendAppUrl = null;
         StringBuffer sbv = new StringBuffer();
         String appendUrl = mapper.selectViewUrl();
+        String appUrl = mapper.selectAppUrl();
 //					审批单 approval
-        if (Util.isNotEmpty(appendUrl)) {
+        if (Util.isEmpty(appendUrl) || Util.isEmpty(appUrl)) {
+            throw new ServiceException(UtilMessage.VIEW_URL_NOT_FOUND);
+        }
             String appendType = "supplier/view?from=oa&id=";
-
             String appendId = null;
             try {
                 appendId = URLEncoder.encode(id, "utf-8");
@@ -599,19 +606,23 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
                 e.printStackTrace();
             }
 //					token
-            String appendToken = "&token=";
+        String appendToken = "&token=";
+        //        web端详情查看地址
             sendUrl = String.valueOf(sbv.append(appendUrl).append(appendType).append(appendId)
                     .append(appendToken).append(token));
-        }
+        //        app端详情查看地址
+        sendAppUrl = String.valueOf(sbv.append(appUrl).append(appendType).append(appendId)
+                .append(appendToken).append(token));
 //        sb.append("http://172.17.4.125:8082/easWeb/#/supplier").append("?token=").append(token);
-        System.out.println("easweb详情link：" + sendUrl);
+        System.out.println("合同单据web端详情查看地址：" + sendUrl);
+        System.out.println(" 合同单据app端详情查看地址：" + sendAppUrl);
         obj.put("loginName", "00561");
 //        附件参数 todo
         JSONObject attFile = new JSONObject();
 //        obj.put("attFile", attFile);
-//        表单参数
         JSONObject data = new JSONObject();
         data.put("fd_link", sendUrl);
+        data.put("fd_mobile_link", sendAppUrl);
 
 //        data.put("createTime", vo.getCreateTime());
         obj.put("data", data.toString());

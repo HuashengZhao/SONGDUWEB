@@ -12,31 +12,31 @@
         <where>
             m.FOrgUnitID=#{orgId}
             <if test="num!=null and num!=''">
-                and m.fnumber like '%num%'
+                and m.fnumber like CONCAT(CONCAT('%',#{num}),'%')
             </if>
             <if test="title!=null and title!=''">
-                and m.fname like '%title%'
+                and m.fname like CONCAT(CONCAT('%',#{title}),'%')
             </if>
             <if test="seq!=null and seq!=''">
-                and e.FTotalSeq like '%seq%'
+                and e.FTotalSeq like CONCAT(CONCAT('%',#{seq}),'%')
             </if>
             <if test="votes!=null and votes!=''">
-                and e.FVotes like '%votes%'
+                and e.FVotes like CONCAT(CONCAT('%',#{votes}),'%')
             </if>
             <if test="supplierName!=null and supplierName!=''">
-                and s.fname_l2 like '%supplierName%'
+                and s.fname_l2 like CONCAT(CONCAT('%',#{supplierName}),'%')
             </if>
             <if test="lastAmount!=null and lastAmount!=''">
-                and e.FLastAmount like '%lastAmount%'
+                and e.FLastAmount like CONCAT(CONCAT('%',#{lastAmount}),'%')
             </if>
             <if test="afterFixAmount!=null and afterFixAmount!=''">
-                and e.FAfterFixAmount like '%afterFixAmount%'
+                and e.FAfterFixAmount like CONCAT(CONCAT('%',#{afterFixAmount}),'%')
             </if>
             <if test="bidAmount!=null and bidAmount!=''">
-                and e.FBidAmount like '%bidAmount%'
+                and e.FBidAmount like CONCAT(CONCAT('%',#{bidAmount}),'%')
             </if>
             <if test="consCost!=null and consCost!=''">
-                and e.FCostOfContruction like '%consCost%'
+                and e.FCostOfContruction like CONCAT(CONCAT('%',#{consCost}),'%')
             </if>
         </where>
         order by m.fnumber
