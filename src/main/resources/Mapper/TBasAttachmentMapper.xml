@@ -12,7 +12,7 @@
         from  T_BAS_BoAttchAsso ass
         left join T_BAS_Attachment att on ass.FATTACHMENTID=att.FID
         left join T_PM_User u on u.fid=att.FCREATORID
-        where ass.FBOID=#{id} and att.FNAME_L2 is not null
+        where ass.FBOID=#{id} and att.FNAME_L2 is not null and att.FNUMBER is null
         order by att.FREMOTEPATH
     </select>
     <select id="selectByNumber"  resultType="com.example.EAS.vo.AttachmentsVO">
