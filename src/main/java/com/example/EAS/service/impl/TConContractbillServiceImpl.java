@@ -139,6 +139,13 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                 vo.setState("13");
             }
         }
+        LocalDateTime bizDate = vo.getBizDate();
+        if (Util.isNotEmpty(bizDate)) {
+            LocalDateTime bornDate = bizDate.plusDays(1).minusSeconds(1);
+            LocalDateTime bookDate = bizDate.plusSeconds(1);
+            vo.setBizDate(bornDate);
+            vo.setBookDate(bookDate);
+        }
         PageHelper.startPage(vo.getCurrentPage(), vo.getPageSize());
         List<ContractVO> contractVOList = mapper.selectDatas(vo);
         if (Util.isNotEmpty(contractVOList)) {

@@ -58,6 +58,9 @@
             <if test="state!=null and state!=''">
                 and bill.fstate like CONCAT(CONCAT('%',#{state}),'%')
             </if>
+            <if test="creatorName!=null and creatorName!=''">
+                and u.FNAME_L2 like CONCAT(CONCAT('%',#{creatorName}),'%')
+            </if>
         </where>
         order by bill.FBOOKEDDATE desc,bill.fnumber desc
     </select>
