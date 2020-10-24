@@ -60,6 +60,11 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
     private FtpUtil ftpUtil;
     @Autowired
     private OaIdUtil oaIdUtil;
+    @Autowired
+    private LoginInfoUtil loginInfoUtil;
+
+    //获取登录信息
+    JSONObject token = loginInfoUtil.getToken();
 
     DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     org.apache.axis.client.Service service = new org.apache.axis.client.Service();
@@ -91,21 +96,18 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
     public PageBean<NoTextContractVO> getNoTextBills(NoTextContractVO vo) {
         String orgId = vo.getOrgId();
 //        当前创建人 ，过权限
-        JSONObject token = getToken();
-        String person = token.getString("person");
-        vo.setLoginPerson(person);
+
         //        項目id集合      有父節點則是分期 沒有是項目 id防入集合
         List<String> projectIdList = new ArrayList<>();
         if (Util.isNotEmpty(vo.getProjectId())) {
+            projectIdList.add(vo.getProjectId());
             String parentId = contractbillMapper.selectProject(vo.getProjectId());
             if (Util.isNotEmpty(parentId)) {
-                projectIdList.add(vo.getProjectId());
             } else {
                 List<String> ids = contractbillMapper.selectProjectIds(vo.getProjectId());
                 projectIdList.addAll(ids);
             }
         }
-
         String state1 = vo.getState();
         if (Util.isNotEmpty(state1)) {
             if (state1.contains("已提交")) {
@@ -277,14 +279,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             }
             if (Util.isNotEmpty(oaid)) {
 //            获取当前登录信息 取用户账号用作oa流程查看登录
-                String token = RequestHolder.getCurrentUser().getToken();
-                String dencrypt = RSAUtil.dencrypt(token, "pri.key");
-                String[] split = dencrypt.split("&&");
-                String org = split[0];
-                String person = split[1];
-                if (Util.isEmpty(person)) {
-                    throw new ServiceException(UtilMessage.PERSON_MISSING);
-                }
+                String person = token.getString("person");
                 String mtLoginNum = OaUtil.encrypt(person);
 
 //          返回oa流程link
@@ -687,7 +682,6 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             noTextContractVO.setId(id);
             noTextContractVO.setResult("success");
             TConContractwithouttext tConContractwithouttext = mapper.selectById(id);
-            JSONObject token = getToken();
             String person = token.getString("person");
             String creatorId = mapper.selectPersonId(person);
             tConContractwithouttext.setFcreatorid(creatorId);
@@ -748,22 +742,8 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             System.out.println(contractTypeName);
         }
         StringBuffer sb = new StringBuffer();
-        String token = RequestHolder.getCurrentUser().getToken();
-        String dencrypt = null;
-        try {
-            dencrypt = RSAUtil.dencrypt(token, "pri.key");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        String[] split = dencrypt.split("&&");
-        String personNum = split[1];
+        String personNum = token.getString("person");
         PersonsVO person = supplierapplyMapper.selectCreator(personNum);
-
-        try {
-            token = URLEncoder.encode(token, "utf-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
         //        http://172.17.4.125:8082/easWeb/#/
         //        http://172.17.4.125:8082/easApp/#/
         String sendUrl = null;
@@ -860,7 +840,6 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             mapper.updateNumRecord(value);
             format = decimalFormat.format(value);
         }
-        JSONObject token = getToken();
         String org = token.getString("org");
         StringBuffer sb = new StringBuffer();
         String newNumber = sb.append("WEB.").append(org).append(format).toString();
@@ -889,26 +868,6 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-    }
-
-    //    获取系统登录信息
-    private JSONObject getToken() {
-        JSONObject object = new JSONObject();
-
-        //       获取当前用户组织
-        String token = RequestHolder.getCurrentUser().getToken();
-        String dencrypt = null;
-        try {
-            dencrypt = RSAUtil.dencrypt(token, "pri.key");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        String[] split = dencrypt.split("&&");
-        String org = split[0];
-        String person = split[1];
-        object.put("org", org);
-        object.put("person", person);
-        return object;
     }
 
 }

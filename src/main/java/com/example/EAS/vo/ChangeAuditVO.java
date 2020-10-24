@@ -20,6 +20,8 @@ import java.util.List;
  */
 @Data
 public class ChangeAuditVO {
+//    权限名称
+    private String authorNum;
 
     private String id;
     private String num;
@@ -93,6 +95,7 @@ public class ChangeAuditVO {
     //    备注
     private String description;
     //    审批人
+    private String creatorId;
     private String auditorId;
     private String auditor;
     //    审批日期

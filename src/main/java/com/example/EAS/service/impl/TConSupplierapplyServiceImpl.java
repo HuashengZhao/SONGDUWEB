@@ -55,6 +55,10 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
     private FtpUtil ftpUtil;
     @Autowired
     private TBasAttachmentMapper attachmentMapper;
+    @Autowired
+    private LoginInfoUtil loginInfoUtil;
+    //获取登录信息
+    JSONObject token = loginInfoUtil.getToken();
 
     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -128,14 +132,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
                     }
                     if (Util.isNotEmpty(oaid)) {
 //            获取当前登录信息 取用户账号用作oa流程查看登录
-                        String token = RequestHolder.getCurrentUser().getToken();
-                        String dencrypt = RSAUtil.dencrypt(token, "pri.key");
-                        String[] split = dencrypt.split("&&");
-                        String org = split[0];
-                        String person = split[1];
-                        if (Util.isEmpty(person)) {
-                            throw new ServiceException(UtilMessage.PERSON_MISSING);
-                        }
+                        String person = token.getString("person");
                         String mtLoginNum = OaUtil.encrypt(person);
 
 //          返回oa流程link
@@ -563,15 +560,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         obj.put("fdType", "1");
         obj.put("docSubject", vo.getTitle());
         StringBuffer sb = new StringBuffer();
-        String token = RequestHolder.getCurrentUser().getToken();
-        String dencrypt = null;
-        try {
-            dencrypt = RSAUtil.dencrypt(token, "pri.key");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        String[] split = dencrypt.split("&&");
-        String personNum = split[1];
+        String personNum = token.getString("person");
         PersonsVO person = mapper.selectCreator(personNum);
 //        提交之前保存附件与单据关联
         if (vo.getAttachmentsVOS() != null && vo.getAttachmentsVOS().size() > 0) {
@@ -580,11 +569,6 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
             ftpUtil.saveAttachMent(attachmentsVOS, id);
         } else {
             mapper.deletAttach(id);
-        }
-        try {
-            token = URLEncoder.encode(token, "utf-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
         }
 
         //        http://172.17.4.125:8082/easWeb/#/

@@ -55,6 +55,10 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
     private FtpUtil ftpUtil;
     @Autowired
     private OaIdUtil oaIdUtil;
+    @Autowired
+    private LoginInfoUtil loginInfoUtil;
+    //获取登录信息
+    JSONObject token = loginInfoUtil.getToken();
     DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     org.apache.axis.client.Service service = new org.apache.axis.client.Service();
 
@@ -403,7 +407,6 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             easJson.put("contractWFStartType", contractWFStartType);
         }
 //        获取当前登录人
-        JSONObject token = getToken();
         String creator = token.getString("person");
         String creatorId = null;
         if (creator != null) {
@@ -655,14 +658,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         }
         if (Util.isNotEmpty(oaid)) {
 //            获取当前登录信息 取用户账号用作oa流程查看登录
-            String token = RequestHolder.getCurrentUser().getToken();
-            String dencrypt = RSAUtil.dencrypt(token, "pri.key");
-            String[] split = dencrypt.split("&&");
-            String org = split[0];
-            String person = split[1];
-            if (Util.isEmpty(person)) {
-                throw new ServiceException(UtilMessage.PERSON_MISSING);
-            }
+            String person = token.getString("person");
             String mtLoginNum = OaUtil.encrypt(person);
 
 //          返回oa流程link
@@ -921,23 +917,9 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                 }
             }
         }
-        StringBuffer sb = new StringBuffer();
-        String token = RequestHolder.getCurrentUser().getToken();
-        String dencrypt = null;
-        try {
-            dencrypt = RSAUtil.dencrypt(token, "pri.key");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        String[] split = dencrypt.split("&&");
-        String personNum = split[1];
+        String personNum = token.getString("person");
         PersonsVO person = supplierapplyMapper.selectCreator(personNum);
 
-        try {
-            token = URLEncoder.encode(token, "utf-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
         //        http://172.17.4.125:8082/easWeb/#/
         //        http://172.17.4.125:8082/easApp/#/
         String sendUrl = null;
@@ -1075,26 +1057,6 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         }
         List<ContractVO> contracts = mapper.selectMainNums(vo);
         return contracts;
-    }
-
-    //    获取系统登录信息
-    private JSONObject getToken() {
-        JSONObject object = new JSONObject();
-
-        //       获取当前用户组织
-        String token = RequestHolder.getCurrentUser().getToken();
-        String dencrypt = null;
-        try {
-            dencrypt = RSAUtil.dencrypt(token, "pri.key");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        String[] split = dencrypt.split("&&");
-        String org = split[0];
-        String person = split[1];
-        object.put("org", org);
-        object.put("person", person);
-        return object;
     }
 
 }

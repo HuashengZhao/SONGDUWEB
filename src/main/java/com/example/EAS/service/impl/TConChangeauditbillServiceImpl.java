@@ -1,5 +1,6 @@
 package com.example.EAS.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.EAS.mapper.TBasAttachmentMapper;
 import com.example.EAS.mapper.TConChangeauditbillMapper;
@@ -35,13 +36,21 @@ public class TConChangeauditbillServiceImpl extends ServiceImpl<TConChangeauditb
     private TBasAttachmentMapper attachmentMapper;
     @Autowired
     private TConSupplierapplyMapper supplierapplyMapper;
-
+    @Autowired
+    private LoginInfoUtil loginInfoUtil;
+    //获取登录信息
+    JSONObject token = loginInfoUtil.getToken();
 
     @Override
     public PageBean<ChangeAuditVO> getChangeAuditList(ChangeAuditVO vo) {
         String orgId = vo.getOrgId();
         if (Util.isEmpty(orgId)) {
             return null;
+        }
+//        过权限
+        Boolean aBoolean = loginInfoUtil.ifInItDept();
+        if (aBoolean==false){
+            vo.setAuthorNum(token.getString("person"));
         }
 //        单据状态转换
         String webState = vo.getWebState();
@@ -109,14 +118,7 @@ public class TConChangeauditbillServiceImpl extends ServiceImpl<TConChangeauditb
                 String oaId = auditVO.getSourceFunction();
                 if (Util.isNotEmpty(oaId)){
 //                                获取当前登录信息 取用户账号用作oa流程查看登录
-                    String token = RequestHolder.getCurrentUser().getToken();
-                    String dencrypt = RSAUtil.dencrypt(token, "pri.key");
-                    String[] split = dencrypt.split("&&");
-                    String org = split[0];
-                    String person = split[1];
-                    if (Util.isEmpty(person)) {
-                        throw new ServiceException(UtilMessage.PERSON_MISSING);
-                    }
+                    String person = token.getString("person");
                     String mtLoginNum = OaUtil.encrypt(person);
 
 //          返回oa流程link 例如

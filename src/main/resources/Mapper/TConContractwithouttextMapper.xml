@@ -61,6 +61,9 @@
             <if test="creatorName!=null and creatorName!=''">
                 and u.FNAME_L2 like CONCAT(CONCAT('%',#{creatorName}),'%')
             </if>
+            <if test="loginPerson!=null and loginPerson!=''">
+                and u.FNAME_L2 like CONCAT(CONCAT('%',#{loginPerson}),'%')
+            </if>
         </where>
         order by bill.FBOOKEDDATE desc,bill.fnumber desc
     </select>

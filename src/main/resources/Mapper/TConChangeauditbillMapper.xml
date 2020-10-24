@@ -10,12 +10,15 @@
         bill.FCHANGEREASONID as changeReasonId,cra.FNAME_L2 as changeReason,
         bill.FSTATE as auditState,bill.FBOOKEDDATE as bizDate,bill.FCURPROJECTID as projectId,pro.FNAME_L2 as projectName,
         bill.FAUDITTYPEID as auditTypeId,ct.FNAME_L2 as auditType,bill.FTOTALCOST as totalCost,bill.FREADESC as reaDesc,
-        bill.FAUDITORID as auditorId,pu.FNAME_L2 as auditor,bill.FAUDITTIME as auditTime
+        bill.FAUDITORID as auditorId,pu.FNAME_L2 as auditor,bill.FAUDITTIME as auditTime,
+        bill.FCREATORID as creatorId
         from T_CON_ChangeAuditBill bill
         left join T_FDC_CurProject pro on pro.fid=bill.FCURPROJECTID
         left join T_FDC_ChangeType ct on ct.fid=bill.FAUDITTYPEID
         left join T_FDC_ChangeReason cra on cra.FID=bill.FCHANGEREASONID
         left join T_PM_User pu on pu.fid=bill.FAUDITORID
+        left join T_pm_user u on u.fid=bill.FCREATORID
+        left join t_bd_person p on p.fid=
         <where>
             and bill.FCONTROLUNITID=#{orgId}
             <if test="projectIds != null and projectIds.size > 0">
@@ -47,6 +50,10 @@
             </if>
             <if test="auditTime!=null and auditTime!=''">
                 and bill.faudittime like CONCAT(CONCAT('%',#{auditTime}),'%')
+            </if>
+            <if test="authorNum!=null and authorNum!=''">
+                and u.fnumber =#{authorNum}
+                or
             </if>
         </where>
         order by bill.FBOOKEDDATE desc,bill.fnumber desc

@@ -56,6 +56,14 @@
             </if>
         </where>
     </select>
-
+    <select id="selectNameByNum" resultType="java.lang.String">
+        select  distinct FNAME_L2 from t_bd_person where fnumber =#{person}
+    </select>
+    <select id="selectITPersonNumbers" resultType="java.lang.String">
+    select c.fnumber from T_ORG_PositionMember m
+    left join T_ORG_Position p on p.fid=m.FPositionID
+    left join T_BD_Person c on c.fid=m.FPersonID
+    where p.FAdminOrgUnitID in('d90AAAFIJknM567U','d90AAAAANNPM567U','d90AAAAANNTM567U')
+    </select>
 
 </mapper>
