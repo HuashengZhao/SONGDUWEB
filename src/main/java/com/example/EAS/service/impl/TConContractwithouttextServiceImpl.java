@@ -90,7 +90,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
     @Override
     public PageBean<NoTextContractVO> getNoTextBills(NoTextContractVO vo) {
         String orgId = vo.getOrgId();
-//        当前创建人
+//        当前创建人 ，过权限
         JSONObject token = getToken();
         String person = token.getString("person");
         vo.setLoginPerson(person);
