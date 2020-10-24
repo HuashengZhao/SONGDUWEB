@@ -85,10 +85,9 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
 //        項目id集合      有父節點則是分期 沒有是項目 id防入集合
         List<String> projectIdList = new ArrayList<>();
         if (Util.isNotEmpty(vo.getProjectId())) {
+            projectIdList.add(vo.getProjectId());
             String parentId = mapper.selectProject(vo.getProjectId());
-            if (Util.isNotEmpty(parentId)) {
-                projectIdList.add(vo.getProjectId());
-            } else {
+            if (Util.isEmpty(parentId)) {
                 List<String> ids = mapper.selectProjectIds(vo.getProjectId());
                 projectIdList.addAll(ids);
             }
@@ -597,10 +596,8 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         } else {
             supplierapplyMapper.deletAttach(contractBillId);
         }
-
         return contractVO;
     }
-
 
     @Override
     public ContractVO viewContractBill(ContractVO vo) throws Exception {
