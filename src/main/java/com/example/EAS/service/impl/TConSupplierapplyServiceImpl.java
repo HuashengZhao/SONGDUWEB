@@ -622,6 +622,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
 //        obj.put("attFile", attFile);
         JSONObject data = new JSONObject();
         data.put("fd_link", sendUrl);
+        sendAppUrl="http://test.pmredstar.com:18089//easApp/index.html#/";  //当前测试使用地址 测试结束删除此行代码即可
         data.put("fd_mobile_link", sendAppUrl);
 
 //        data.put("createTime", vo.getCreateTime());
