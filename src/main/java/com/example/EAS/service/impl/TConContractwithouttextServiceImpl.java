@@ -90,6 +90,10 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
     @Override
     public PageBean<NoTextContractVO> getNoTextBills(NoTextContractVO vo) {
         String orgId = vo.getOrgId();
+//        当前创建人
+        JSONObject token = getToken();
+        String person = token.getString("person");
+        vo.setLoginPerson(person);
         //        項目id集合      有父節點則是分期 沒有是項目 id防入集合
         List<String> projectIdList = new ArrayList<>();
         if (Util.isNotEmpty(vo.getProjectId())) {
@@ -296,7 +300,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
                 returnVO.setLink(link);
                 returnVO.setOaId(oaid);
             }
-//
+
 //            期間
             String periodYear = returnVO.getPeriodYear();
             String periodNumber = returnVO.getPeriodNumber();
@@ -794,7 +798,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         JSONObject attFile = new JSONObject();
 //        obj.put("attFile", attFile);
         data.put("fd_link", sendUrl);
-        sendAppUrl="http://test.pmredstar.com:18089//easApp/index.html#/";  //当前测试使用地址 测试结束删除此行代码即可
+        sendAppUrl = "http://test.pmredstar.com:18089//easApp/index.html#/";  //当前测试使用地址 测试结束删除此行代码即可
         data.put("fd_mobile_link", sendAppUrl);
 
 //        data.put("createTime", vo.getCreateTime());

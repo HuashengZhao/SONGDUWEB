@@ -13,7 +13,8 @@ import java.util.List;
 
 @Data
 public class NoTextContractVO {
-
+    //当前登录用户信息
+    private String loginPerson;
     //    基参
     private Boolean flag;
     private String id;
