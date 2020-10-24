@@ -25,7 +25,7 @@
         delete from OAIDRECORD where billid=#{billId}
     </delete>
     <delete id="deletAttach">
-        delete from webattachment where easId=#{id}
+        delete from webattachment where easId=#{id,jdbcType=VARCHAR}
     </delete>
     <delete id="deletNumList">
         delete from webattachment
@@ -129,7 +129,8 @@
         select * from OAIDRECORD where OAID=#{oaId} and billId=#{billId}
     </select>
     <select id="selectAttachments" resultType="com.example.EAS.vo.AttachmentsVO">
-        select a.fileUUID,a.contentType,a.url as fileUrl,a.fileType,a.fileSize as fileSize,a.filenum as num,a.weburl as webUrl,a.createTime as createTime,a.personName,a.filename as title from webattachment a where easid=#{easId}
+        select a.fileUUID,a.contentType,a.url as fileUrl,a.fileType,a.fileSize as fileSize,a.filenum as num,a.weburl as webUrl,a.createTime as createTime,a.personName,a.filename as title
+        from webattachment a where a.easid=#{easId,jdbcType=VARCHAR} and a.filenum is not null
     </select>
     <select id="selectFileNumberRecord" resultType="java.lang.Integer">
         select value from fileNumRecord
