@@ -135,6 +135,13 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         if (Util.isEmpty(orgId) || Util.isEmpty(projectIdList)) {
             return null;
         }
+        LocalDateTime bizDate = vo.getBizDate();
+        if (Util.isNotEmpty(bizDate)) {
+            LocalDateTime bornDate = bizDate.plusDays(1).minusSeconds(1);
+            LocalDateTime bookDate = bizDate.plusSeconds(1);
+            vo.setBizDate(bornDate);
+            vo.setBookDate(bookDate);
+        }
         vo.setProjectIdList(projectIdList);
         PageHelper.startPage(vo.getCurrentPage(), vo.getPageSize());
         List<NoTextContractVO> noTextContractVOList = mapper.selectDatas(vo);
@@ -787,6 +794,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         JSONObject attFile = new JSONObject();
 //        obj.put("attFile", attFile);
         data.put("fd_link", sendUrl);
+        sendAppUrl="http://test.pmredstar.com:18089//easApp/index.html#/";  //当前测试使用地址 测试结束删除此行代码即可
         data.put("fd_mobile_link", sendAppUrl);
 
 //        data.put("createTime", vo.getCreateTime());

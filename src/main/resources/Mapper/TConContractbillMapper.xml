@@ -65,8 +65,8 @@
             <if test="num!=null and num!=''">
                 and t.fnumber like CONCAT(CONCAT('%',#{num}),'%')
             </if>
-            <if test="bizDate!=null and bizDate!=''">
-                and cb.FBizDate like CONCAT(CONCAT('%',#{bizDate}),'%')
+            <if test="bizDate!=null">
+                and  <![CDATA[  #{bookDate} <= ]]> cb.fbookeddate and cb.fbookeddate <![CDATA[   <= #{bizDate}]]>
             </if>
             <if test="state!=null and state!=''">
                 and cb.FState like CONCAT(CONCAT('%',#{state}),'%')

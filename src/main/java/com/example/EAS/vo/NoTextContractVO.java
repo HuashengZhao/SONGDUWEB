@@ -115,6 +115,7 @@ public class NoTextContractVO {
     @JsonFormat(pattern = "yyyy-MM-dd")
     @JsonDeserialize(using = DateJsonDeserializer.class)
     private LocalDateTime bizDate;
+    private LocalDateTime bookDate;
     @JsonFormat(pattern = "yyyy-MM-dd")
     @JsonDeserialize(using = DateJsonDeserializer.class)
     private LocalDateTime createTime;

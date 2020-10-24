@@ -32,6 +32,7 @@ public class ContractVO {
     @JsonFormat(pattern = "yyyy-MM-dd")
     @JsonDeserialize(using = DateJsonDeserializer.class)
     private LocalDateTime bizDate;
+    private LocalDateTime bookDate;
     private String conTypeName;
     private String conTypeId;
     //    合约规划
