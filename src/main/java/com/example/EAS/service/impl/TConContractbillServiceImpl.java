@@ -450,7 +450,6 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         if (attach != null && attach.size() > 0) {
             easJson.put("attach", attach);
         }
-
 //       税务信息+收款信息
         String bank = vo.getBank();
         if (Util.isNotEmpty(bank)) {
