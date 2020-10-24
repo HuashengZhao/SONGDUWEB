@@ -41,14 +41,20 @@ public class TConContractchangesettlebillServiceImpl extends ServiceImpl<TConCon
     private TConSupplierapplyMapper supplierapplyMapper;
     @Autowired
     private LoginInfoUtil loginInfoUtil;
-    //获取登录信息
-    JSONObject token = loginInfoUtil.getToken();
+
 
     @Override
     public PageBean<ChangeSettleVO> getChangeSettleList(ChangeSettleVO vo) {
+        //获取登录信息
+        JSONObject token = loginInfoUtil.getToken();
         String orgId = vo.getOrgId();
         if (Util.isEmpty(orgId)) {
             return null;
+        }
+        //        过权限
+        Boolean aBoolean = loginInfoUtil.ifInItDept();
+        if (aBoolean==false){
+            vo.setAuthorNum(token.getString("person"));
         }
         String state1 = vo.getState();
         if (Util.isNotEmpty(state1)) {
@@ -132,6 +138,8 @@ public class TConContractchangesettlebillServiceImpl extends ServiceImpl<TConCon
 
     @Override
     public ChangeSettleVO viewChangeSettle(ChangeSettleVO vo) throws Exception {
+        //获取登录信息
+        JSONObject token = loginInfoUtil.getToken();
         ChangeSettleVO settleVO = new ChangeSettleVO();
         String id = vo.getId();
         if (Util.isNotEmpty(id)) {

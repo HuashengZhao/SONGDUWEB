@@ -63,8 +63,6 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
     @Autowired
     private LoginInfoUtil loginInfoUtil;
 
-    //获取登录信息
-    JSONObject token = loginInfoUtil.getToken();
 
     DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     org.apache.axis.client.Service service = new org.apache.axis.client.Service();
@@ -95,7 +93,14 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
     @Override
     public PageBean<NoTextContractVO> getNoTextBills(NoTextContractVO vo) {
         String orgId = vo.getOrgId();
-//        当前创建人 ，过权限
+
+        //获取登录信息
+        JSONObject token = loginInfoUtil.getToken();
+//        过权限
+        Boolean aBoolean = loginInfoUtil.ifInItDept();
+        if (aBoolean==false){
+            vo.setAuthorNum(token.getString("person"));
+        }
 
         //        項目id集合      有父節點則是分期 沒有是項目 id防入集合
         List<String> projectIdList = new ArrayList<>();
@@ -197,6 +202,9 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
 
     @Override
     public NoTextContractVO viewNoTextBill(NoTextContractVO vo) throws Exception {
+
+        //获取登录信息
+        JSONObject token = loginInfoUtil.getToken();
         String id = vo.getId();
         if (Util.isEmpty(vo.getId())) {
             return null;
@@ -385,6 +393,9 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
 
     @Override
     public NoTextContractVO saveNoTextBill(NoTextContractVO vo) {
+
+        //获取登录信息
+        JSONObject token = loginInfoUtil.getToken();
         JSONObject easJson = new JSONObject();
         NoTextContractVO noTextContractVO = new NoTextContractVO();
 //        是否调用eas提交方法
@@ -692,6 +703,9 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
 
     @Override
     public NoTextContractVO submitNoTextBill(NoTextContractVO vo) {
+
+        //获取登录信息
+        JSONObject token = loginInfoUtil.getToken();
         NoTextContractVO noTextContractVO = new NoTextContractVO();
         String id = vo.getId();
         vo.setFlag(true);
@@ -829,6 +843,9 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
 
     @Override
     public String getNoTextNum(NoTextContractVO vo) {
+
+        //获取登录信息
+        JSONObject token = loginInfoUtil.getToken();
         //        生成合同编码规则额："web"+组织编码+8位数流水号
         DecimalFormat decimalFormat = new DecimalFormat("00000000");
         Integer numRecord = mapper.selectNewNum();

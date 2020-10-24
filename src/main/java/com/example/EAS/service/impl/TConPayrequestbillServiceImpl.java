@@ -1,5 +1,6 @@
 package com.example.EAS.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.EAS.mapper.TBasAttachmentMapper;
@@ -14,7 +15,6 @@ import com.example.EAS.vo.AttachmentsVO;
 import com.example.EAS.vo.PayRequestBillVO;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +22,6 @@ import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -45,11 +44,17 @@ public class TConPayrequestbillServiceImpl extends ServiceImpl<TConPayrequestbil
     private TBasAttachmentMapper attachmentMapper;
     @Autowired
     private TConSupplierapplyMapper supplierapplyMapper;
+    @Autowired
+    private LoginInfoUtil loginInfoUtil;
+
 
     DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     @Override
     public PageBean<PayRequestBillVO> getPayRequestBillVO(PayRequestBillVO vo) {
+        //获取登录信息
+        JSONObject token = loginInfoUtil.getToken();
+
         String orgId = vo.getOrgId();
         if (Util.isEmpty(orgId)) {
             return null;
@@ -57,6 +62,11 @@ public class TConPayrequestbillServiceImpl extends ServiceImpl<TConPayrequestbil
         String projectId = vo.getProjectId();
         if (Util.isEmpty(projectId)) {
             return null;
+        }
+        //        过权限
+        Boolean aBoolean = loginInfoUtil.ifInItDept();
+        if (aBoolean==false){
+            vo.setAuthorNum(token.getString("person"));
         }
         String state1 = vo.getState();
         if (Util.isNotEmpty(state1)) {
@@ -163,6 +173,9 @@ public class TConPayrequestbillServiceImpl extends ServiceImpl<TConPayrequestbil
 
     @Override
     public PayRequestBillVO viewPayRequestBill(PayRequestBillVO vo) throws Exception {
+        //获取登录信息
+        JSONObject token = loginInfoUtil.getToken();
+
         String id = vo.getId();
         if (Util.isEmpty(id)) {
             return null;
@@ -174,14 +187,7 @@ public class TConPayrequestbillServiceImpl extends ServiceImpl<TConPayrequestbil
             String oaid = payRequestBillVO.getSourceFunction();
             if (Util.isNotEmpty(oaid)) {
 //            获取当前登录信息 取用户账号用作oa流程查看登录
-                String token = RequestHolder.getCurrentUser().getToken();
-                String dencrypt = RSAUtil.dencrypt(token, "pri.key");
-                String[] split = dencrypt.split("&&");
-                String org = split[0];
-                String person = split[1];
-                if (Util.isEmpty(person)) {
-                    throw new ServiceException(UtilMessage.PERSON_MISSING);
-                }
+                String person = token.getString("person");
                 String mtLoginNum = OaUtil.encrypt(person);
 
 //          返回oa流程link

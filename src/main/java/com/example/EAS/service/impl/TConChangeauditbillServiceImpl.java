@@ -38,11 +38,12 @@ public class TConChangeauditbillServiceImpl extends ServiceImpl<TConChangeauditb
     private TConSupplierapplyMapper supplierapplyMapper;
     @Autowired
     private LoginInfoUtil loginInfoUtil;
-    //获取登录信息
-    JSONObject token = loginInfoUtil.getToken();
+
 
     @Override
     public PageBean<ChangeAuditVO> getChangeAuditList(ChangeAuditVO vo) {
+        //获取登录信息
+        JSONObject token = loginInfoUtil.getToken();
         String orgId = vo.getOrgId();
         if (Util.isEmpty(orgId)) {
             return null;
@@ -108,6 +109,8 @@ public class TConChangeauditbillServiceImpl extends ServiceImpl<TConChangeauditb
 
     @Override
     public ChangeAuditVO viewChangeAudit(ChangeAuditVO vo) throws Exception {
+        //获取登录信息
+        JSONObject token = loginInfoUtil.getToken();
         ChangeAuditVO auditVO = new ChangeAuditVO();
         String id = vo.getId();
         if (Util.isNotEmpty(id)) {

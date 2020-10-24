@@ -18,7 +18,6 @@
         left join T_FDC_ChangeReason cra on cra.FID=bill.FCHANGEREASONID
         left join T_PM_User pu on pu.fid=bill.FAUDITORID
         left join T_pm_user u on u.fid=bill.FCREATORID
-        left join t_bd_person p on p.fid=
         <where>
             and bill.FCONTROLUNITID=#{orgId}
             <if test="projectIds != null and projectIds.size > 0">
@@ -53,7 +52,6 @@
             </if>
             <if test="authorNum!=null and authorNum!=''">
                 and u.fnumber =#{authorNum}
-                or
             </if>
         </where>
         order by bill.FBOOKEDDATE desc,bill.fnumber desc

@@ -22,6 +22,7 @@
         left join T_BD_Supplier sup on sup.fid=bill.FSUPPLIERID
         left join T_BD_CURRENCY cur on cur.fid=bill.FCURRENCYID
         left join T_ORG_BASEUNIT bu on bu.fid=bill.FCONTROLUNITID
+        left join t_bd_person p on p.fid=bill.FApplierId
         <where>
             bill.FControlUnitID=#{orgId}
             and bill.FCurProjectID=#{projectId}
@@ -52,6 +53,10 @@
             </if>
             <if test="state!=null and state!=''">
                 and bill.fstate like CONCAT(CONCAT('%',#{state}),'%')
+            </if>
+            <if test="authorNum!=null and authorNum!=''">
+                and u.fnumber =#{authorNum}
+                or p.fnumber  =#{authorNum}
             </if>
         </where>
         order by bill.FBOOKEDDATE desc,bill.fnumber desc

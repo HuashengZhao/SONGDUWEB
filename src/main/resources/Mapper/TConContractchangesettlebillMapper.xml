@@ -17,6 +17,7 @@
         left join T_CON_CONTRACTBILL con on con.fid=bill.FCONTRACTBILLID
         left join T_FDC_CURPROJECT pro on pro.fid=bill.FCURPROJECTID
         left join T_PM_User u on u.fid=bill.FAUDITORID
+        left join T_PM_User uc on uc.fid=bill.FCREATORID
         <where>
             and bill.FCONTROLUNITID=#{orgId}
             <if test="projectIds != null and projectIds.size > 0">
@@ -42,6 +43,9 @@
             </if>
             <if test="contractName!=null and contractName!=''">
                 and con.FNAME like CONCAT(CONCAT('%',#{contractName}),'%')
+            </if>
+            <if test="authorNum!=null and authorNum!=''">
+                and uc.fnumber =#{authorNum}
             </if>
         </where>
         order by bill.FBOOKEDDATE desc,bill.fnumber desc

@@ -23,6 +23,7 @@
         left join t_bd_supplier sup on sup.fid=bill.FRECEIVEUNITID
         left join T_PM_USER u on u.fid=bill.FCREATORID
         left join T_BD_Person p on p.fid=bill.FPERSONID
+        left join T_BD_Person p1 on p1.fid=bill.FApplierId
         left join T_CON_PayRequestBill pb on pb.FCONTRACTID = bill.fid
         left join t_bd_supplier sup2 on sup2.fid=pb.FREALSUPPLIERID
         <where>
@@ -61,8 +62,9 @@
             <if test="creatorName!=null and creatorName!=''">
                 and u.FNAME_L2 like CONCAT(CONCAT('%',#{creatorName}),'%')
             </if>
-            <if test="loginPerson!=null and loginPerson!=''">
-                and u.FNAME_L2 like CONCAT(CONCAT('%',#{loginPerson}),'%')
+            <if test="authorNum!=null and authorNum!=''">
+                and u.fnumber =#{authorNum}
+                or p1.fnumber =#{authorNum}
             </if>
         </where>
         order by bill.FBOOKEDDATE desc,bill.fnumber desc

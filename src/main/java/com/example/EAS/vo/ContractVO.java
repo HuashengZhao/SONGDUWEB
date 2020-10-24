@@ -21,6 +21,8 @@ import java.util.List;
 @Data
 public class ContractVO {
 
+    private String authorNum;
+
     private String id;
     private String num;
     private String conName;

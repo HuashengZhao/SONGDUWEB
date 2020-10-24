@@ -98,6 +98,10 @@
             <if test="creatDept!=null and creatDept!=''">
                 and oaa.FNAME_L2 like CONCAT(CONCAT('%',#{creatDept}),'%')
             </if>
+            <if test="authorNum!=null and authorNum!=''">
+                and p.fnumber =#{authorNum}
+                or uc.fnumber=#{authorNum}
+            </if>
         </where>
         order by cb.fbookeddate desc ,cb.fnumber desc
     </select>

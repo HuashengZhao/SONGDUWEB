@@ -13,6 +13,7 @@ import java.util.List;
 
 @Data
 public class PayRequestBillVO {
+    private String authorNum;
     //     基参
     private String id;
     private String title;

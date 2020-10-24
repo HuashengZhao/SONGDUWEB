@@ -60,10 +60,11 @@
         select  distinct FNAME_L2 from t_bd_person where fnumber =#{person}
     </select>
     <select id="selectITPersonNumbers" resultType="java.lang.String">
-    select c.fnumber from T_ORG_PositionMember m
-    left join T_ORG_Position p on p.fid=m.FPositionID
-    left join T_BD_Person c on c.fid=m.FPersonID
-    where p.FAdminOrgUnitID in('d90AAAFIJknM567U','d90AAAAANNPM567U','d90AAAAANNTM567U')
+    select DISTINCT p.FNUMBER from t_bd_person p
+  left join T_ORG_PositionMember m on p.fid=m.fpersonid
+  left join t_org_position  a on a.fid=m.fpositionid
+  left join T_ORG_BaseUnit b on a.fadminorgunitid=b.fid
+where b.fid in ('d90AAAAASfLM567U','d90AAAAANNPM567U','d90AAAAANNTM567U')
     </select>
 
 </mapper>

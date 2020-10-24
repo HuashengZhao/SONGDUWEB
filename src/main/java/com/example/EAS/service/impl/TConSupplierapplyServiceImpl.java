@@ -57,8 +57,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
     private TBasAttachmentMapper attachmentMapper;
     @Autowired
     private LoginInfoUtil loginInfoUtil;
-    //获取登录信息
-    JSONObject token = loginInfoUtil.getToken();
+
 
     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -89,6 +88,13 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
     @Override
     public PageBean<SupplierApplyVO> getSupplierApply(SupplierApplyVO vo) throws Exception {
         String state1 = vo.getState();
+        //获取登录信息
+        JSONObject token = loginInfoUtil.getToken();
+        //        过权限
+        Boolean aBoolean = loginInfoUtil.ifInItDept();
+        if (aBoolean==false){
+            vo.setAuthorNum(token.getString("person"));
+        }
         if (Util.isNotEmpty(state1)) {
             if (state1.contains("已提交")) {
                 vo.setState("2SUB");
@@ -530,6 +536,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
     @Transactional(rollbackFor = RuntimeException.class)
     @Override
     public SupplierApplyVO supplierSubmit(SupplierApplyVO vo) {
+        JSONObject token = loginInfoUtil.getToken();
         SupplierApplyVO supplierApplyVO1 = new SupplierApplyVO();
         String message = null;
         String id = vo.getId();
@@ -560,6 +567,8 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         obj.put("fdType", "1");
         obj.put("docSubject", vo.getTitle());
         StringBuffer sb = new StringBuffer();
+        //获取登录信息
+
         String personNum = token.getString("person");
         PersonsVO person = mapper.selectCreator(personNum);
 //        提交之前保存附件与单据关联

@@ -57,8 +57,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
     private OaIdUtil oaIdUtil;
     @Autowired
     private LoginInfoUtil loginInfoUtil;
-    //获取登录信息
-    JSONObject token = loginInfoUtil.getToken();
+
     DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     org.apache.axis.client.Service service = new org.apache.axis.client.Service();
 
@@ -86,6 +85,8 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
 
     @Override
     public PageBean<ContractVO> getContractList(ContractVO vo) throws Exception {
+        //获取登录信息
+        JSONObject token = loginInfoUtil.getToken();
 //        項目id集合      有父節點則是分期 沒有是項目 id防入集合
         List<String> projectIdList = new ArrayList<>();
         if (Util.isNotEmpty(vo.getProjectId())) {
@@ -148,6 +149,11 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             LocalDateTime bookDate = bizDate.plusSeconds(1);
             vo.setBizDate(bornDate);
             vo.setBookDate(bookDate);
+        }
+//        过权限
+        Boolean aBoolean = loginInfoUtil.ifInItDept();
+        if (aBoolean==false){
+            vo.setAuthorNum(token.getString("person"));
         }
         PageHelper.startPage(vo.getCurrentPage(), vo.getPageSize());
         List<ContractVO> contractVOList = mapper.selectDatas(vo);
@@ -235,6 +241,8 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
 
     @Override
     public ContractVO saveContractBill(ContractVO vo) {
+        //获取登录信息
+        JSONObject token = loginInfoUtil.getToken();
 //        总JSONOBJECT
         ContractVO contractVO = new ContractVO();
         JSONObject easJson = new JSONObject();
@@ -611,7 +619,8 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         if (Util.isEmpty(contractVO)) {
             return null;
         }
-
+        //获取登录信息
+        JSONObject token = loginInfoUtil.getToken();
         //                保存=1SAVED,已提交=2SUBMITTED,审批中=3AUDITTING,已审批=4AUDITTED,终止=5CANCEL,已下发=7ANNOUNCE,已签证=8VISA,
 //                作废=9INVALID,已上报=10PUBLISH,被打回=11BACK,修订中=12REVISING,已修订=12REVISE,已确认=13CONFIRMED
         String state = contractVO.getState();
@@ -849,6 +858,8 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
      */
     @Override
     public ContractVO submitToOa(ContractVO vo) {
+        //获取登录信息
+        JSONObject token = loginInfoUtil.getToken();
         ContractVO contractVO = new ContractVO();
         String id = vo.getId();
         vo.setFlag(true);

@@ -17,6 +17,7 @@ import java.util.List;
  */
 @Data
 public class SupplierApplyVO {
+    private String authorNum;
 
     private String id;
     private String orgId;

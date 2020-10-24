@@ -21,6 +21,7 @@ import java.util.List;
 @Data
 public class ChangeSettleVO {
 
+    private String authorNum;
     private String id;
     private String orgId;
     private String orgName;
