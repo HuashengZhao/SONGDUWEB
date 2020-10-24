@@ -436,22 +436,23 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                 String attachNum = attachmentsVO.getNum();
                 String webUrl = attachmentsVO.getWebUrl();
                 String fileUUID = attachmentsVO.getFileUUID();
-                String originalFilename = attachmentsVO.getOriginalFilename();
-//                    List<AttachmentsVO> attachmentsVOSList = attachmentMapper.selectByNumber(attachNum);
-//                    if (attachmentsVOSList != null && attachmentsVOSList.size() > 0) {
-                if (Util.isNotEmpty(webUrl) && Util.isNotEmpty(fileUUID) && Util.isNotEmpty(originalFilename)) {
+                String originalFilename = attachmentsVO.getOriginalFilename()==null?attachmentsVO.getTitle():attachmentsVO.getOriginalFilename();
                     StringBuffer stringBuffer = new StringBuffer();
-                    String s = stringBuffer.append(webUrl).append("/").append(fileUUID).toString();
+                String s=null;
+                    if (Util.isNotEmpty(fileUUID)) {
+                        s = stringBuffer.append(webUrl).append("/").append(fileUUID).toString();
+                    }else{
+                        s=webUrl;
+                    }
                     object.put("FName", originalFilename == null ? null : originalFilename);
                     object.put("FRemotePath", s == null ? null : s);
                     object.put("FNumber", attachNum == null ? null : attachNum);
                     attach.add(object);
-//                        }
                 }
-            }
         }
-        easJson.put("attach", attach);
-
+        if (attach != null && attach.size() > 0) {
+            easJson.put("attach", attach);
+        }
 //       税务信息+收款信息
         String bank = vo.getBank();
         if (Util.isNotEmpty(bank)) {
@@ -596,8 +597,6 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         if (Util.isNotEmpty(contractBillId) && vo.getAttachmentsVOS() != null && vo.getAttachmentsVOS().size() > 0) {
             supplierapplyMapper.deletAttach(contractBillId);
             ftpUtil.saveAttachMent(attachmentsVOS, contractBillId);
-        } else {
-            supplierapplyMapper.deletAttach(contractBillId);
         }
         return contractVO;
     }

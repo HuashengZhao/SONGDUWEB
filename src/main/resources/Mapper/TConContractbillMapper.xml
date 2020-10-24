@@ -177,7 +177,7 @@
     cb.fcreatetime createTime,cb.FIsRespite isRespite,cb.FCONTRACTTYPEID as conTypeId,cb.FEXRATE as exRate,
     cb.FMARKETPROJECTID as marketProjectId,cb.FMPCOSTACCOUNTID as costAccountId,
     cb.FCURRENCYID as currencyId,p.FNUMBER as person,cb.FCURPROJECTID as projectId,cp.FNAME_L2 as projectName,
-    cb.FORGUNITID as orgId,un.FNAME_L2 as orgName,mar.FNAME as marketProjectName,cost.FNAME_L2 as costAccountName,
+    cb.FCONTROLUNITID as orgId,un.FNAME_L2 as orgName,mar.FNAME as marketProjectName,cost.FNAME_L2 as costAccountName,
     cb.FGRTRATE as grtRate,cb.FGRTAMOUNT as grtAmount,cb.FSTARTDATE as startDate,cb.FENDDATE as endDate,
     cb.FCONTRACTWFTYPEID as contractWFTypeId,wf.FNAME_L2 as contractWFTypeName,cb.FOrgType as contractWFStartType,
     cb.FREMARK as description,bank.FNUMBER as unionBankNum,cb.FBANK as bank,cb.FBANKACCOUNT as bankAccount,
