@@ -433,7 +433,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                 String attachNum = attachmentsVO.getNum();
                 String webUrl = attachmentsVO.getWebUrl();
                 String fileUUID = attachmentsVO.getFileUUID();
-                String originalFilename = attachmentsVO.getOriginalFilename();
+                String originalFilename = attachmentsVO.getOriginalFilename()==null?attachmentsVO.getTitle():attachmentsVO.getOriginalFilename();
                     StringBuffer stringBuffer = new StringBuffer();
                 String s=null;
                     if (Util.isNotEmpty(fileUUID)) {
