@@ -442,14 +442,14 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             for (AttachmentsVO attachmentsVO : attachmentsVOS) {
                 JSONObject object = new JSONObject();
                 String attachNum = attachmentsVO.getNum();
-                String fileUrl = attachmentsVO.getFileUrl();
+                String webUrl = attachmentsVO.getWebUrl();
                 String fileSize = attachmentsVO.getFileSize();
                 String descp = attachmentsVO.getDescription();
                 String originalFilename = attachmentsVO.getOriginalFilename() == null ? attachmentsVO.getTitle() : attachmentsVO.getOriginalFilename();
                 StringBuffer stringBuffer = new StringBuffer();
                 object.put("FName", originalFilename == null ? null : originalFilename);//文件名称含后缀
                 object.put("FNumber", attachNum == null ? null : attachNum);//附件编码
-                object.put("FRemotePath", fileUrl == null ? null : fileUrl);//文件相对路径
+                object.put("FRemotePath", webUrl == null ? null : webUrl);//文件相对路径
                 object.put("FSize", fileSize == null ? null : fileSize);// 附件大小
                 object.put("FDescription", descp == null ? null : descp);//附件来源类型
                 object.put("FCreatorId", creatorId == null ? null : creatorId); //创建人id

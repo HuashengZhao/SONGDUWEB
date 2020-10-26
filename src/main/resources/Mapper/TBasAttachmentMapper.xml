@@ -7,7 +7,7 @@
 
     <select id="selectAttachMent" resultType="com.example.EAS.vo.AttachmentsVO">
         select att.FNAME_L2 as title,att.FNUMBER as num,att.FSIZE as fileSize,
-        att.fsimplename as fileType,att.FREMOTEPATH as fileUrl,
+        att.fsimplename as fileType,att.FREMOTEPATH as webUrl,
         ass.FBOID as easId,att.FCREATETIME as createTime,
         u.FNAME_L2 as creatorName,att.FDESCRIPTION_L2 as description
         from  T_BAS_BoAttchAsso ass

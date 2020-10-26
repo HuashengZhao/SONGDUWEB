@@ -49,13 +49,6 @@ public class TBasAttachmentServiceImpl extends ServiceImpl<TBasAttachmentMapper,
 
     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
-    //    @Override
-//    public void downLoadFile(HttpServletRequest request, HttpServletResponse response, String webUrl) {
-//        String fileName = webUrl.split("/")[webUrl.split("/").length - 1];
-//        webUrl = webUrl.replace(fileName, "");
-//        String replace = webUrl.replace("/data", "");
-//        ftpUtil.downLoadEASAttachments(request, response, replace, fileName);
-//    }
     @Override
     public List<AttachmentsVO> uploadAttachment(AttachmentsVO vo) throws IOException {
         List<AttachmentsVO> attachmentsVOS = new ArrayList<>();
