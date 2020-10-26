@@ -153,6 +153,24 @@ public class TBasAttachmentServiceImpl extends ServiceImpl<TBasAttachmentMapper,
         String webUrl = vo.getWebUrl();
         String fileUUID = vo.getFileUUID();
         String num = vo.getNum();
+        Integer storgeType = vo.getStorgeType();
+        if (Util.isNotEmpty(storgeType)){
+            if (storgeType==0){
+//eas数据库 ，暂停使用
+            }else if(storgeType==1){
+//天联云ftp
+                ftpUtil.exportTLYOS(request, response, webUrl, fileUUID);
+            }else if (storgeType==2){
+//eas附件
+                easFileDownLoadUtil.login();
+                Connection connection = easFileDownLoadUtil.getConnection();
+                easFileDownLoadUtil.copyFile(connection, webUrl, response);
+            }else if (storgeType==3){
+//来自web ftp服务器
+                ftpUtil.exportOutputStream(request, response, webUrl, fileUUID);
+            }
+        }
+
         if (Util.isNotEmpty(num)) {
             //        下载来自web上传的附件  目标服务器 宋都ftp
             if (Util.isNotEmpty(webUrl) && Util.isNotEmpty(fileUUID)) {

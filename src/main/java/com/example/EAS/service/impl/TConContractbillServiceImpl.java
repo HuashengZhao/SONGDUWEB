@@ -443,25 +443,19 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                 JSONObject object = new JSONObject();
                 String attachNum = attachmentsVO.getNum();
                 String webUrl = attachmentsVO.getWebUrl();
-                String fileUUID = attachmentsVO.getFileUUID();
                 String fileType = attachmentsVO.getFileType();
                 String fileSize = attachmentsVO.getFileSize();
+                Integer storgeType = attachmentsVO.getStorgeType();
                 String originalFilename = attachmentsVO.getOriginalFilename()==null?attachmentsVO.getTitle():attachmentsVO.getOriginalFilename();
                     StringBuffer stringBuffer = new StringBuffer();
-                String s=null;
-                    if (Util.isNotEmpty(fileUUID)) {
-                        s = stringBuffer.append(webUrl).append("/").append(fileUUID).toString();
-                    }else{
-                        s=webUrl;
-                    }
-                object.put("FStorgeType", 3);
-                object.put("fBoId", contractBillId == null ? null : contractBillId);
-                object.put("FName", originalFilename == null ? null : originalFilename);
-                object.put("FRemotePath", s == null ? null : s);
-                object.put("FNumber", attachNum == null ? null : attachNum);
-                object.put("FCreatorId", creatorId == null ? null : creatorId);
-                object.put("FSimpleName", fileType == null ? null : fileType);
-                object.put("FSize", fileSize == null ? null : fileSize);
+                object.put("FStorgeType", storgeType==null?null:storgeType);//附件来源类型
+                object.put("fBoId", contractBillId == null ? null : contractBillId);//合同单据
+                object.put("FName", originalFilename == null ? null : originalFilename);//文件名称含后缀
+                object.put("FRemotePath", webUrl == null ? null : webUrl);//文件相对路径
+                object.put("FNumber", attachNum == null ? null : attachNum);//附件编码
+                object.put("FCreatorId", creatorId == null ? null : creatorId); //创建人id
+                object.put("FSimpleName", fileType == null ? null : fileType); //附件类型
+                object.put("FSize", fileSize == null ? null : fileSize);// 附件大小
                 attach.add(object);
                 }
         }
