@@ -178,6 +178,7 @@
          select oaid from oaidrecord where billId=#{id,jdbcType=VARCHAR} order by oaid desc
     </select>
 
+
     <insert id="insertAttachMent" parameterType="com.example.EAS.vo.AttachmentsVO">
         insert into webattachment(originalFilename,fileUUID,contentType,fileSize,easid,fileNum,url,webUrl,filetype,createtime,personName,fileName)
         values(#{originalFilename,jdbcType=VARCHAR},#{fileUUID,jdbcType=VARCHAR},#{contentType,jdbcType=VARCHAR},

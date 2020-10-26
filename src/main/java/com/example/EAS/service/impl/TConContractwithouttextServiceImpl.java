@@ -242,35 +242,10 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         }
         if (Util.isNotEmpty(returnVO)) {
             //            附件信息
-            //                    宋都ftp服务器上的附件
-            List<AttachmentsVO> ftpvos = supplierapplyMapper.selectAttachments(id);
-            if (ftpvos != null && ftpvos.size() > 0) {
-                for (AttachmentsVO attachmentsVO : ftpvos) {
-                    attachmentsVO.setEasId(id);
-                    String fileType = attachmentsVO.getFileType();
-                    String title = attachmentsVO.getTitle();
-                    attachmentsVO.setOriginalFilename(new StringBuffer().append(title).append(".").append(fileType).toString());
-                }
-            }
-//            eas
             List<AttachmentsVO> easFiles = attachmentMapper.selectAttachMent(id);
-            if (easFiles != null && easFiles.size() > 0) {
-                for (AttachmentsVO attachmentsVO : easFiles) {
-                    String fileUrl = attachmentsVO.getWebUrl();
-                    if (Util.isNotEmpty(fileUrl)) {
-                        String type = fileUrl.split("\\.")[fileUrl.split("\\.").length - 1];
-                        attachmentsVO.setFileType(type);
-                        if (Util.isNotEmpty(type)) {
-                            String s = FileContentTypeUtils.contentType("." + type);
-                            if (Util.isNotEmpty(s)) {
-                                attachmentsVO.setContentType(s);
-                            }
-                        }
-                    }
-                }
-                ftpvos.addAll(easFiles);
+            if (easFiles!=null && easFiles.size()>0) {
+                returnVO.setAttachmentsVOS(easFiles);
             }
-            returnVO.setAttachmentsVOS(ftpvos);
 
             //                    获取对应的oaid
             String oaid = null;
@@ -624,6 +599,9 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         if (costArray != null && costArray.size() > 0) {
             easJson.put("bgArray", costArray);
         }
+//        获取当前登录人id
+        String person = token.getString("person");
+        String creatorId = mapper.selectPersonId(person);
 
 //      保存到EAS附件
         JSONArray attach = new JSONArray();
@@ -633,19 +611,17 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
                 JSONObject object = new JSONObject();
                 String attachNum = attachmentsVO.getNum();
                 String webUrl = attachmentsVO.getWebUrl();
-                String fileUUID = attachmentsVO.getFileUUID();
-                String originalFilename = attachmentsVO.getOriginalFilename();
-//                    List<AttachmentsVO> attachmentsVOSList = attachmentMapper.selectByNumber(attachNum);
-//                    if (attachmentsVOSList != null && attachmentsVOSList.size() > 0) {
-                if (Util.isNotEmpty(webUrl) && Util.isNotEmpty(fileUUID) && Util.isNotEmpty(originalFilename)) {
-                    StringBuffer stringBuffer = new StringBuffer();
-                    String s = stringBuffer.append(webUrl).append("/").append(fileUUID).toString();
-                    object.put("FName", originalFilename == null ? null : originalFilename);
-                    object.put("FRemotePath", s == null ? null : s);
-                    object.put("FNumber", attachNum == null ? null : attachNum);
-                    attach.add(object);
-//                        }
-                }
+                String fileSize = attachmentsVO.getFileSize();
+                String descp = attachmentsVO.getDescription();
+                String originalFilename = attachmentsVO.getOriginalFilename() == null ? attachmentsVO.getTitle() : attachmentsVO.getOriginalFilename();
+                StringBuffer stringBuffer = new StringBuffer();
+                object.put("FName", originalFilename == null ? null : originalFilename);//文件名称含后缀
+                object.put("FNumber", attachNum == null ? null : attachNum);//附件编码
+                object.put("FRemotePath", webUrl == null ? null : webUrl);//文件相对路径
+                object.put("FSize", fileSize == null ? null : fileSize);// 附件大小
+                object.put("FDescription", descp == null ? null : descp);//附件来源类型
+                object.put("FCreatorId", creatorId == null ? null : creatorId); //创建人id
+                attach.add(object);
             }
         }
         if (attach != null && attach.size() > 0) {
@@ -686,8 +662,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             noTextContractVO.setId(id);
             noTextContractVO.setResult("success");
             TConContractwithouttext tConContractwithouttext = mapper.selectById(id);
-            String person = token.getString("person");
-            String creatorId = mapper.selectPersonId(person);
+
             tConContractwithouttext.setFcreatorid(creatorId);
             mapper.updateById(tConContractwithouttext);
         }

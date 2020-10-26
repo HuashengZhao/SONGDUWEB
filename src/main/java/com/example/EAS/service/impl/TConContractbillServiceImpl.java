@@ -762,8 +762,9 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         }
 //        附件信息
         List<AttachmentsVO> attachmentsVOS = attachmentMapper.selectAttachMent(vo.getId());
-
-        contractVO.setAttachmentsVOS(attachmentsVOS);
+        if (attachmentsVOS!=null && attachmentsVOS.size()>0) {
+            contractVO.setAttachmentsVOS(attachmentsVOS);
+        }
 
 //        补充合同信息
         TConContractbill tConContractbill1 = mapper.selectById(vo.getId());

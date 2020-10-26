@@ -295,35 +295,10 @@ public class TConPayrequestbillServiceImpl extends ServiceImpl<TConPayrequestbil
                 }
             }
 //            附件信息
-            //                    宋都ftp服务器上的附件
-            List<AttachmentsVO> ftpvos = supplierapplyMapper.selectAttachments(id);
-            if (ftpvos != null && ftpvos.size() > 0) {
-                for (AttachmentsVO attachmentsVO : ftpvos) {
-                    attachmentsVO.setEasId(id);
-                    String fileType = attachmentsVO.getFileType();
-                    String title = attachmentsVO.getTitle();
-                    attachmentsVO.setOriginalFilename(new StringBuffer().append(title).append(".").append(fileType).toString());
-                }
-            }
-//           attachmentFiles from eas
             List<AttachmentsVO> attachmentsVOS = attachmentMapper.selectAttachMent(id);
-            if (attachmentsVOS != null && attachmentsVOS.size() > 0) {
-                for (AttachmentsVO attachmentsVO : attachmentsVOS) {
-                    String fileUrl = attachmentsVO.getFileUrl();
-                    if (Util.isNotEmpty(fileUrl)) {
-                        String type = fileUrl.split("\\.")[fileUrl.split("\\.").length - 1];
-                        attachmentsVO.setFileType(type);
-                        if (Util.isNotEmpty(type)) {
-                            String s = FileContentTypeUtils.contentType("." + type);
-                            if (Util.isNotEmpty(s)) {
-                                attachmentsVO.setContentType(s);
-                            }
-                        }
-                    }
-                }
-                ftpvos.addAll(attachmentsVOS);
+            if (attachmentsVOS!=null && attachmentsVOS.size()>0) {
+                payRequestBillVO.setAttachmentsVOS(attachmentsVOS);
             }
-            payRequestBillVO.setAttachmentsVOS(ftpvos);
 //            纳税人
             String taxerQua = payRequestBillVO.getTaxerQua();
             if (Util.isNotEmpty(taxerQua)) {

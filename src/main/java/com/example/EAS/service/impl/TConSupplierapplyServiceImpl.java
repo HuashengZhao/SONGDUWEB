@@ -155,30 +155,10 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
                         supplierApplyVO.setOaId(oaid);
                     }
 //                       附件信息
-//                    宋都ftp服务器上的附件
-                    List<AttachmentsVO> attachmentsVOS = mapper.selectAttachments(easId);
-                    if (attachmentsVOS != null && attachmentsVOS.size() > 0) {
-                        for (AttachmentsVO attachmentsVO : attachmentsVOS) {
-                            attachmentsVO.setEasId(supplierApplyVO.getId());
-                            String fileType = attachmentsVO.getFileType();
-                            String title = attachmentsVO.getTitle();
-                            attachmentsVO.setOriginalFilename(new StringBuffer().append(title).append(".").append(fileType).toString());
-                        }
-                    }
-//                    eas上的历史附件
                     List<AttachmentsVO> easAttFiles = attachmentMapper.selectAttachMent(easId);
-                    if (easAttFiles!=null && easAttFiles.size()>0){
-                        for (AttachmentsVO easAttFile : easAttFiles) {
-                            if (Util.isNotEmpty(easAttFile.getType())) {
-                                String s = FileContentTypeUtils.contentType("." + easAttFile.getFileType());
-                                if (Util.isNotEmpty(s)) {
-                                    easAttFile.setContentType(s);
-                                }
-                            }
-                        }
-                        attachmentsVOS.addAll(easAttFiles);
+                    if (easAttFiles!=null && easAttFiles.size()>0) {
+                        supplierApplyVO.setAttachmentsVOS(easAttFiles);
                     }
-                    supplierApplyVO.setAttachmentsVOS(attachmentsVOS);
                 }
 //                纳税人资质 一般纳税人=NOMAL,小规模纳税人=SMALL,非增值税纳税人=UNNOMAL
                 String taxerQua = supplierApplyVO.getTaxerQua();
@@ -233,6 +213,8 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
     @Transactional(rollbackFor = RuntimeException.class)
     @Override
     public JSONObject addSupplierApply(SupplierApplyVO vo) {
+        //获取登录信息
+        JSONObject token = loginInfoUtil.getToken();
         JSONObject obj = new JSONObject();
         if (Util.isNotEmpty(vo.getBankAccount())) {
             obj.put("bankAccount", vo.getBankAccount());
@@ -292,6 +274,9 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         if (Util.isNotEmpty(vo.getOrgId())) {
             obj.put("orgId", vo.getOrgId());
         }
+        //        获取当前登录人id
+        String person = token.getString("person");
+        String creatorId = mapper.selectCreatorId(person);
 //      保存到EAS附件
         JSONArray attach = new JSONArray();
         List<AttachmentsVO> attachmentsVOS = vo.getAttachmentsVOS();
@@ -300,21 +285,17 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
                 JSONObject object = new JSONObject();
                 String attachNum = attachmentsVO.getNum();
                 String webUrl = attachmentsVO.getWebUrl();
-                String fileUUID = attachmentsVO.getFileUUID();
-                String originalFilename = attachmentsVO.getOriginalFilename();
-                if (Util.isNotEmpty(attachNum)) {
-                    List<AttachmentsVO> attachmentsVOSList = attachmentMapper.selectByNumber(attachNum);
-                    if (attachmentsVOSList != null && attachmentsVOSList.size() > 0) {
-                        if (Util.isNotEmpty(webUrl) && Util.isNotEmpty(fileUUID) && Util.isNotEmpty(originalFilename)) {
-                            StringBuffer stringBuffer = new StringBuffer();
-                            String s = stringBuffer.append(webUrl).append("/").append(fileUUID).toString();
-                            object.put("FName", originalFilename == null ? null: originalFilename);
-                            object.put("FRemotePath", s == null ? null : s);
-                            object.put("FNumber", attachNum == null ? null : attachNum);
-                            attach.add(object);
-                        }
-                    }
-                }
+                String fileSize = attachmentsVO.getFileSize();
+                String descp = attachmentsVO.getDescription();
+                String originalFilename = attachmentsVO.getOriginalFilename() == null ? attachmentsVO.getTitle() : attachmentsVO.getOriginalFilename();
+                StringBuffer stringBuffer = new StringBuffer();
+                object.put("FName", originalFilename == null ? null : originalFilename);//文件名称含后缀
+                object.put("FNumber", attachNum == null ? null : attachNum);//附件编码
+                object.put("FRemotePath", webUrl == null ? null : webUrl);//文件相对路径
+                object.put("FSize", fileSize == null ? null : fileSize);// 附件大小
+                object.put("FDescription", descp == null ? null : descp);//附件来源类型
+                object.put("FCreatorId", creatorId == null ? null : creatorId); //创建人id
+                attach.add(object);
             }
         }
 
@@ -331,7 +312,6 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         String id = str.getString("id");
 //更新eas创建人为当前登录人
         if (Util.isNotEmpty(vo.getPerson()) && Util.isNotEmpty(id)) {
-            String creatorId = mapper.selectCreatorId(vo.getPerson());
             if (creatorId != null) {
                 mapper.updateCreatorId(creatorId, id);
             }
@@ -344,7 +324,8 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
     @Transactional(rollbackFor = RuntimeException.class)
     @Override
     public JSONObject suplierUpdate(SupplierApplyVO vo) {
-
+        //获取登录信息
+        JSONObject token = loginInfoUtil.getToken();
         String id = vo.getId();
         JSONObject obj = new JSONObject();
         obj.put("id", id);
@@ -402,6 +383,10 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         if (Util.isNotEmpty(orgId)) {
             obj.put("orgId", orgId);
         }
+
+        //        获取当前登录人id
+        String person = token.getString("person");
+        String creatorId = mapper.selectCreatorId(person);
 //        EAS附件
         JSONArray attach = new JSONArray();
         List<AttachmentsVO> attachmentsVOS = vo.getAttachmentsVOS();
@@ -410,13 +395,16 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
                 JSONObject object = new JSONObject();
                 String attachNum = attachmentsVO.getNum();
                 String webUrl = attachmentsVO.getWebUrl();
-                String fileUUID = attachmentsVO.getFileUUID();
-                String originalFilename = attachmentsVO.getOriginalFilename();
+                String fileSize = attachmentsVO.getFileSize();
+                String descp = attachmentsVO.getDescription();
+                String originalFilename = attachmentsVO.getOriginalFilename() == null ? attachmentsVO.getTitle() : attachmentsVO.getOriginalFilename();
                 StringBuffer stringBuffer = new StringBuffer();
-                String s = stringBuffer.append(webUrl).append("/").append(fileUUID).toString();
-                object.put("FName", originalFilename == null ? null: originalFilename);
-                object.put("FRemotePath", s == null ? null : s);
-                object.put("FNumber", attachNum == null ? null : attachNum);
+                object.put("FName", originalFilename == null ? null : originalFilename);//文件名称含后缀
+                object.put("FNumber", attachNum == null ? null : attachNum);//附件编码
+                object.put("FRemotePath", webUrl == null ? null : webUrl);//文件相对路径
+                object.put("FSize", fileSize == null ? null : fileSize);// 附件大小
+                object.put("FDescription", descp == null ? null : descp);//附件来源类型
+                object.put("FCreatorId", creatorId == null ? null : creatorId); //创建人id
                 attach.add(object);
             }
         }
@@ -434,7 +422,6 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         JSONObject str = JSONObject.parseObject(result);
 //更新eas创建人为当前登录人
         if (Util.isNotEmpty(vo.getPerson()) && Util.isNotEmpty(id)) {
-            String creatorId = mapper.selectCreatorId(vo.getPerson());
             if (creatorId != null) {
                 mapper.updateCreatorId(creatorId, id);
             }
@@ -509,22 +496,6 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         mapper.updateNumberRecord(numberRecord);
         return conNumber.toString();
     }
-
-//    @Override
-//    public Integer whetherRepeat(SupplierApplyVO vo) {
-//        Integer repeat = 1;
-//        String title = vo.getTitle();
-//        List<SupplierApplyVO> supplierApplyVOS= mapper.selectByName(title);
-//        if (count.compareTo(0) == 1) {
-//            repeat = 0;
-//        }
-//        String taxerNum = vo.getTaxerNum();
-//        List<SupplierApplyVO> supplierApplyVOS = mapper.selectByTaxNum(taxerNum);
-//        if (supplierApplyVOS != null && supplierApplyVOS.size() > 0) {
-//            throw new ServiceException(UtilMessage.TAXERNUMBER_EXIST);
-//        }
-//        return repeat;
-//    }
 
     /**
      * 提交供应商申请
