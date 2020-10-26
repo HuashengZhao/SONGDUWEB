@@ -44,6 +44,8 @@ public class AttachmentsVO {
 //    附件预览地址
     private String attLink;
 
+    private String description;
+
 //    eas中附件来源类型
     private Integer storgeType;
 

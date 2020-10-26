@@ -152,7 +152,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         }
 //        过权限
         Boolean aBoolean = loginInfoUtil.ifInItDept();
-        if (aBoolean==false){
+        if (aBoolean == false) {
             vo.setAuthorNum(token.getString("person"));
         }
         PageHelper.startPage(vo.getCurrentPage(), vo.getPageSize());
@@ -268,7 +268,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             easJson.put("orgId", orgId);
         }
         String projectId = vo.getProjectId();
-        if (Util.isEmpty(projectId)){
+        if (Util.isEmpty(projectId)) {
             throw new ServiceException(UtilMessage.MISS_PROJECT_INFO);
         }
         easJson.put("projectId", projectId);
@@ -446,18 +446,19 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                 String fileType = attachmentsVO.getFileType();
                 String fileSize = attachmentsVO.getFileSize();
                 Integer storgeType = attachmentsVO.getStorgeType();
-                String originalFilename = attachmentsVO.getOriginalFilename()==null?attachmentsVO.getTitle():attachmentsVO.getOriginalFilename();
-                    StringBuffer stringBuffer = new StringBuffer();
-                object.put("FStorgeType", storgeType==null?null:storgeType);//附件来源类型
-                object.put("fBoId", contractBillId == null ? null : contractBillId);//合同单据
+                String descp = attachmentsVO.getDescription();
+                String originalFilename = attachmentsVO.getOriginalFilename() == null ? attachmentsVO.getTitle() : attachmentsVO.getOriginalFilename();
+                StringBuffer stringBuffer = new StringBuffer();
+                object.put("FDescription", descp == null ? null : descp);//附件来源类型
                 object.put("FName", originalFilename == null ? null : originalFilename);//文件名称含后缀
                 object.put("FRemotePath", webUrl == null ? null : webUrl);//文件相对路径
                 object.put("FNumber", attachNum == null ? null : attachNum);//附件编码
                 object.put("FCreatorId", creatorId == null ? null : creatorId); //创建人id
-                object.put("FSimpleName", fileType == null ? null : fileType); //附件类型
                 object.put("FSize", fileSize == null ? null : fileSize);// 附件大小
+//                object.put("FSimpleName", fileType == null ? null : fileType); //附件类型
+//                object.put("fBoId", contractBillId == null ? null : contractBillId);//合同单据
                 attach.add(object);
-                }
+            }
         }
         if (attach != null && attach.size() > 0) {
             easJson.put("attach", attach);
@@ -935,7 +936,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         JSONObject attFile = new JSONObject();
 //        obj.put("attFile", attFile);
         data.put("fd_link", sendUrl);
-        sendAppUrl="http://test.pmredstar.com:18089//easApp/index.html#/";  //当前测试使用地址 测试结束删除此行代码即可
+        sendAppUrl = "http://test.pmredstar.com:18089//easApp/index.html#/";  //当前测试使用地址 测试结束删除此行代码即可
         data.put("fd_mobile_link", sendAppUrl);
 
 //        data.put("createTime", vo.getCreateTime());

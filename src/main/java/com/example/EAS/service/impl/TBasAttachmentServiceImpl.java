@@ -83,16 +83,16 @@ public class TBasAttachmentServiceImpl extends ServiceImpl<TBasAttachmentMapper,
             StringBuffer stringBuffer = new StringBuffer();
             long l = System.currentTimeMillis();
             String currentTime = String.valueOf(l);
-//            ftp/2020/9/18/010000000
+//            ftp/2020/9/18/010000000/
             String filePath = stringBuffer.append("/").append(s).append("/").append(currentTime).toString();
-            String webUrl = String.valueOf(new StringBuffer().append(filePath));
             //TODO处理业务
 //            生产随机id 用来对应ftp存储文件名
             String fileUUID = UUID.randomUUID().toString();
             StringBuffer sbf = new StringBuffer();
             fileUUID = sbf.append(fileUUID).append(".").append(fileType).toString();
             boolean b1 = ftpUtil.uploadFile(filePath, fileUUID, inputStream);
-
+//            ftp/2020/9/18/010000000/zbcdasdasdasdasd.txt
+            String webUrl = String.valueOf(new StringBuffer().append(filePath).append(fileUUID));
 //            创建人
             String personName1 = null;
             if (vo.getPerson() != null) {
@@ -137,6 +137,7 @@ public class TBasAttachmentServiceImpl extends ServiceImpl<TBasAttachmentMapper,
             attachmentsVO.setOriginalFilename(originalFilename);
 //           附件来源类型改为3
             attachmentsVO.setStorgeType(3);
+
             Date date1 = new Date();
             String format2 = formatter.format(date1);
             attachmentsVO.setCreateTime(format2);
@@ -146,47 +147,27 @@ public class TBasAttachmentServiceImpl extends ServiceImpl<TBasAttachmentMapper,
         return attachmentsVOS;
     }
 
-
     @Override
     public void downLoadFile(HttpServletRequest request, HttpServletResponse response, AttachmentsVO vo) throws IOException {
 //        区分方法 根据 num  只有web的有num   eas 跟天联云 根据 fftpid 判断  eas没有fftpid  定位目标 用 weburl
         String webUrl = vo.getWebUrl();
-        String fileUUID = vo.getFileUUID();
-        String num = vo.getNum();
-        Integer storgeType = vo.getStorgeType();
-        if (Util.isNotEmpty(storgeType)){
-            if (storgeType==0){
-//eas数据库 ，暂停使用
-            }else if(storgeType==1){
-//天联云ftp
-                ftpUtil.exportTLYOS(request, response, webUrl, fileUUID);
-            }else if (storgeType==2){
-//eas附件
+        String fileName = webUrl.split("\\.")[webUrl.split("\\.").length - 1];
+        String description = vo.getDescription();
+        if (Util.isNotEmpty(description)) {
+             if (description.equals("天联云")) {
+//          天联云ftp
+                ftpUtil.exportTLYOS(request, response, webUrl, fileName);
+            } else if (description.equals("EAS")) {
+//          eas附件
                 easFileDownLoadUtil.login();
                 Connection connection = easFileDownLoadUtil.getConnection();
                 easFileDownLoadUtil.copyFile(connection, webUrl, response);
-            }else if (storgeType==3){
-//来自web ftp服务器
-                ftpUtil.exportOutputStream(request, response, webUrl, fileUUID);
+            } else if (description.equals("WEB")) {
+//          来自web ftp服务器
+                ftpUtil.exportOutputStream(request, response, webUrl, fileName);
             }
         }
 
-        if (Util.isNotEmpty(num)) {
-            //        下载来自web上传的附件  目标服务器 宋都ftp
-            if (Util.isNotEmpty(webUrl) && Util.isNotEmpty(fileUUID)) {
-                ftpUtil.exportOutputStream(request, response, webUrl, fileUUID);
-            }
-        } else {
-            String ftpId = vo.getFtpId();
-            if (Util.isNotEmpty(ftpId)) {
-//                天联云
-                ftpUtil.exportTLYOS(request, response, webUrl, fileUUID);
-            } else {
-//                eas Linux文件
-                easFileDownLoadUtil.login();
-                Connection connection = easFileDownLoadUtil.getConnection();
-                easFileDownLoadUtil.copyFile(connection, webUrl, response);
-            }
-        }
     }
 }
+
