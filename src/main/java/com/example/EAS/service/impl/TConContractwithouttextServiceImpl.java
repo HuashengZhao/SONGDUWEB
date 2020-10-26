@@ -210,6 +210,9 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             return null;
         }
         NoTextContractVO returnVO = mapper.selectDataByID(id);
+        if (Util.isEmpty(returnVO)) {
+            return null;
+        }
         String state = returnVO.getState();
         if (Util.isNotEmpty(state)) {
             if (state.contains("2SUBMIT")) {
@@ -751,13 +754,14 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             e.printStackTrace();
         }
 //					token
+        String tokenAppend = RequestHolder.getCurrentUser().getToken();
         String appendToken = "&token=";
         //        web端详情查看地址
         sendUrl = String.valueOf(sbv.append(appendUrl).append(appendType).append(appendId)
-                .append(appendToken).append(token));
+                .append(appendToken).append(tokenAppend));
         //        app端详情查看地址
         sendAppUrl = String.valueOf(sbv.append(appUrl).append(appendType).append(appendId)
-                .append(appendToken).append(token));
+                .append(appendToken).append(tokenAppend));
 //        sb.append("http://172.17.4.125:8082/easWeb/#/supplier").append("?token=").append(token);
         System.out.println("合同单据web端详情查看地址：" + sendUrl);
         System.out.println(" 合同单据app端详情查看地址：" + sendAppUrl);

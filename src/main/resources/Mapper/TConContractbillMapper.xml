@@ -125,9 +125,9 @@
     </select>
     <select id="selectConDetailsByCT" resultType="com.example.EAS.vo.ContractDetailVO">
        select cb.FID id,cb.fbookeddate bizDate,cb.FState state,cb.FHasSettled hasSettled,ct.fname_l2 as conTypeName,
-        cb.fnumber num,cb.FNAME as conName,pc.fname_l2 as hygh,cb.fmaincontractnumber as mainNumber,
-        cur.fname_l2 curName,cb.FSrcAmount srcAmount,cb.FOriginalAmount originalAmount,cb.famount amount,
-        supb.fname_l2 as partBName,supc.fname_l2 as partCName,cs.fname_l2 as csName,
+        cb.fnumber num,cb.FNAME as conName,pc.fname_l2 as hygh,cb.FPROGRAMMINGCONTRACT as hyghId,
+        cb.fmaincontractnumber as mainNumber,cur.fname_l2 curName,cb.FSrcAmount srcAmount,cb.FOriginalAmount originalAmount,
+        cb.famount amount,supb.fname_l2 as partBName,supc.fname_l2 as partCName,cs.fname_l2 as csName,
         cb.fsigndate signDate,oa.fname_l2 as deptName,p.fname_l2 as personName,oaa.FNAME_L2 creatDept,
         ldp.fname_l2 as partA,cb.FCostProperty costProperty,cb.FContractPropert contractNature,
         cb.FIsArchived isArchived, u.fname_l2 auditor,cb.FLastUpdateTime lastAuditTime,uc.fname_l2 as creator,
@@ -172,7 +172,7 @@
 
     <select id="viewContractVO" resultType="com.example.EAS.vo.ContractVO">
     select cb.FID id,cb.fbookeddate bizDate,cb.FState state,cb.FHasSettled hasSettled,ct.fname_l2 as conTypeName,
-    cb.fnumber num,cb.FNAME as conName,pc.fname_l2 as hygh,cb.fmaincontractnumber as mainNumber,
+    cb.fnumber num,cb.FNAME as conName,cb.FProgrammingContract as hyghId,pc.fname_l2 as hygh,cb.fmaincontractnumber as mainNumber,
     cur.fname_l2 curName,cb.FSrcAmount srcAmount,cb.FOriginalAmount originalAmount,cb.famount amount,
     supb.fname_l2 as partBName,supb.FID as partB,supc.fname_l2 as partCName,supc.fid as partC,cs.FNAME_L2 as csName,
     cb.fsigndate signDate,oa.fname_l2 as deptName,p.fname_l2 as personName,oaa.FNAME_L2 creatDept,

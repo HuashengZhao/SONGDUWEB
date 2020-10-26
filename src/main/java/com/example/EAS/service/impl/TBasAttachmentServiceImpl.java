@@ -85,7 +85,7 @@ public class TBasAttachmentServiceImpl extends ServiceImpl<TBasAttachmentMapper,
             fileUUID = sbf.append(fileUUID).append(".").append(fileType).toString();
             boolean b1 = ftpUtil.uploadFile(filePath, fileUUID, inputStream);
 //            ftp/2020/9/18/010000000/zbcdasdasdasdasd.txt
-            String webUrl = String.valueOf(new StringBuffer().append(filePath).append(fileUUID));
+            String webUrl = String.valueOf(new StringBuffer().append(filePath).append("/").append(fileUUID));
 //            创建人
             String personName1 = null;
             if (vo.getPerson() != null) {
@@ -128,9 +128,7 @@ public class TBasAttachmentServiceImpl extends ServiceImpl<TBasAttachmentMapper,
             attachmentsVO.setFileUUID(fileUUID);
             attachmentsVO.setFileType(fileType);
             attachmentsVO.setOriginalFilename(originalFilename);
-//           附件来源类型改为3
-            attachmentsVO.setStorgeType(3);
-
+            attachmentsVO.setDescription("WEB");
             Date date1 = new Date();
             String format2 = formatter.format(date1);
             attachmentsVO.setCreateTime(format2);
@@ -144,7 +142,7 @@ public class TBasAttachmentServiceImpl extends ServiceImpl<TBasAttachmentMapper,
     public void downLoadFile(HttpServletRequest request, HttpServletResponse response, AttachmentsVO vo) throws IOException {
 //        区分方法 根据 num  只有web的有num   eas 跟天联云 根据 fftpid 判断  eas没有fftpid  定位目标 用 weburl
         String webUrl = vo.getWebUrl();
-        String fileName = webUrl.split("\\.")[webUrl.split("\\.").length - 1];
+        String fileName = webUrl.split("/")[webUrl.split("/").length - 1];
         String description = vo.getDescription();
         if (Util.isNotEmpty(description)) {
              if (description.equals("天联云")) {
@@ -156,8 +154,9 @@ public class TBasAttachmentServiceImpl extends ServiceImpl<TBasAttachmentMapper,
                 Connection connection = easFileDownLoadUtil.getConnection();
                 easFileDownLoadUtil.copyFile(connection, webUrl, response);
             } else if (description.equals("WEB")) {
+                 String replace = webUrl.replace(fileName, "");
 //          来自web ftp服务器
-                ftpUtil.exportOutputStream(request, response, webUrl, fileName);
+                ftpUtil.exportOutputStream(request, response, replace, fileName);
             }
         }
 

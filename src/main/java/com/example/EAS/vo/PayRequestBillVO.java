@@ -95,6 +95,7 @@ public class PayRequestBillVO {
     //    银行
     private String recBank;
     private String recAccount;
+//    联行号
     private String unionBankNum;
     //    备注
     private String remark;
