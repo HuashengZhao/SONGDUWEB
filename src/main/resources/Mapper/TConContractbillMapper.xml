@@ -222,7 +222,13 @@
         and FBILLID is not null
     </select>
     <select id="selectHYGHInContract" resultType="java.lang.String">
-        select * from T_CON_ContractBill where FProgrammingContract=#{hyghId,jdbcType=VARCHAR}
+        select * from T_CON_ContractBill
+        <where>
+            FProgrammingContract=#{hyghId,jdbcType=VARCHAR}
+            <if test="id!=null and id!=''">
+                and fid !=#{id}
+            </if>
+        </where>
     </select>
     <select id="selectContractType" resultType="java.lang.String">
         select FNAME_L2 from T_CON_ContractWFType where fid=#{contractWFTypeId}

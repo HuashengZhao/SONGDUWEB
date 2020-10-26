@@ -5,17 +5,17 @@
     <select id="selectDatas" resultType="com.example.EAS.vo.ProgramConVO">
         select m.fid as id, m.fnumber as num ,m.fname_l2 as title,m.FLONGNUMBER as longNumber
         ,m.FAMOUNT as amount,m.FBALANCE as balance,m.FBILLID billId
-         from T_CON_ProgrammingContract m
-         left join T_CON_Programming e on e.fid=m.FProgrammingID
-         <where>
-             m.fcontracttypeid=#{contractTypeId}
-             and e.FProjectID=#{projectId}
-             and e.FIsLatest=1
-             <if test="title!=null and title!=''">
-                 and m.fname_l2 like CONCAT(CONCAT('%',#{title}),'%')
-             </if>
-         </where>
-         order by m.flongnumber
+        from T_CON_ProgrammingContract m
+        left join T_CON_Programming e on e.fid=m.FProgrammingID
+        <where>
+            m.fcontracttypeid=#{contractTypeId}
+            and e.FProjectID=#{projectId}
+            and e.FIsLatest=1
+            <if test="title!=null and title!=''">
+                and m.fname_l2 like CONCAT(CONCAT('%',#{title}),'%')
+            </if>
+        </where>
+        order by m.flongnumber
     </select>
     <select id="selectDataCanBeLinked" resultType="com.example.EAS.vo.ProgramConVO">
         select m.fid as id, m.fnumber as num ,m.fname_l2 as title,m.FLONGNUMBER as longNumber
@@ -26,7 +26,14 @@
             m.fcontracttypeid=#{contractTypeId}
             and e.FProjectID=#{projectId}
             and e.FIsLatest=1
-            and  not exists (select fid  from T_CON_CONTRACTBILL where FProgrammingContract= m.fid)
+            and not exists (select fid from T_CON_CONTRACTBILL
+            <where>
+                FProgrammingContract= m.fid
+                <if test="billId!=null and billId!=''">
+                    and fid !=#{billId}
+                </if>
+            </where>
+            )
             <if test="title!=null and title!=''">
                 and m.fname_l2 like CONCAT(CONCAT('%',#{title}),'%')
             </if>

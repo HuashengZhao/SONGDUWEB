@@ -571,6 +571,11 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
             }
 //					token
         String tokenAppend = RequestHolder.getCurrentUser().getToken();
+        try {
+            tokenAppend = URLEncoder.encode(tokenAppend, "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         String appendToken = "&token=";
         //        web端详情查看地址
             sendUrl = String.valueOf(sbv.append(appendUrl).append(appendType).append(appendId)

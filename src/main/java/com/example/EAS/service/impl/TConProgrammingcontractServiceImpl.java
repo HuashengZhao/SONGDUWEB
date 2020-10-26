@@ -50,9 +50,13 @@ public class TConProgrammingcontractServiceImpl extends ServiceImpl<TConProgramm
             vo.setIds(ids);
             programConVOList = mapper.selectDataCanBeLinked(vo);
         }
-        if (Util.isNotEmpty(vo.getBillId())){
-            List<ProgramConVO> vos = mapper.selectByBillId(vo.getBillId());
-        }
+//        if (Util.isNotEmpty(vo.getBillId())){
+//            List<ProgramConVO> vos = mapper.selectByBillId(vo.getBillId());
+//            if (vos!=null &&vos.size()>0){
+//                programConVOList.addAll(vos);
+//            }
+//        }
+//        Collections.reverse(programConVOList);
         if (Util.isNotEmpty(programConVOList)) {
             for (ProgramConVO conVO : programConVOList) {
                 Integer linked = 1;

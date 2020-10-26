@@ -243,15 +243,15 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
     public ContractVO saveContractBill(ContractVO vo) {
         //获取登录信息
         JSONObject token = loginInfoUtil.getToken();
+        String contractBillId = vo.getId();
 //        总JSONOBJECT
         ContractVO contractVO = new ContractVO();
         JSONObject easJson = new JSONObject();
-
         //判断合约规划有没有被关联
         String hyghId = vo.getHyghId();
         if (Util.isNotEmpty(hyghId)) {
             easJson.put("hygh", hyghId);
-            List<String> billIds = mapper.selectHYGHInContract(hyghId);
+            List<String> billIds = mapper.selectHYGHInContract(hyghId,contractBillId==null?"":contractBillId);
             if (billIds != null && billIds.size() > 0) {
                 throw new ServiceException(UtilMessage.HYGH_HAS_BELINKED);
             }
@@ -259,7 +259,6 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
 //        是否调用eas提交方法
         Boolean flag = vo.getFlag();
         //        根据是否携带单据id 判断新增 修改
-        String contractBillId = vo.getId();
         if (Util.isNotEmpty(contractBillId)) {
             easJson.put("id", contractBillId);
         }
@@ -919,6 +918,11 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         }
 //					token
         String tokenAppend = RequestHolder.getCurrentUser().getToken();
+        try {
+            tokenAppend = URLEncoder.encode(tokenAppend, "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         String appendToken = "&token=";
 //        web端详情查看地址
         sendUrl = String.valueOf(sbv.append(appendUrl).append(appendType).append(appendId)
