@@ -1,11 +1,11 @@
 package com.example.EAS.service.impl;
 
 import ch.ethz.ssh2.Connection;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.EAS.mapper.TBasAttachmentMapper;
 import com.example.EAS.mapper.TConSupplierapplyMapper;
 import com.example.EAS.model.TBasAttachment;
-import com.example.EAS.mapper.TBasAttachmentMapper;
 import com.example.EAS.service.ITBasAttachmentService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.EAS.util.EasFileDownLoadUtil;
 import com.example.EAS.util.FtpUtil;
 import com.example.EAS.util.Util;
@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -136,6 +135,8 @@ public class TBasAttachmentServiceImpl extends ServiceImpl<TBasAttachmentMapper,
             attachmentsVO.setFileUUID(fileUUID);
             attachmentsVO.setFileType(fileType);
             attachmentsVO.setOriginalFilename(originalFilename);
+//           附件来源类型改为3
+            attachmentsVO.setStorgeType(3);
             Date date1 = new Date();
             String format2 = formatter.format(date1);
             attachmentsVO.setCreateTime(format2);

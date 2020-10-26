@@ -56,12 +56,6 @@
         left join T_PM_USER uc on uc.fid=cb.FCreatorID
         <where>
             cb.FControlUnitID=#{orgId}
-            <if test="projectIds != null and projectIds.size > 0">
-                and cb.FCurProjectID in
-                <foreach item="item" collection="projectIds" index="index" open="(" separator="," close=")">
-                    #{item}
-                </foreach>
-            </if>
             <if test="num!=null and num!=''">
                 and cb.fnumber like CONCAT(CONCAT('%',#{num}),'%')
             </if>
@@ -101,6 +95,12 @@
             <if test="authorNum!=null and authorNum!=''">
                 and p.fnumber =#{authorNum}
                 or uc.fnumber=#{authorNum}
+            </if>
+            <if test="projectIds != null and projectIds.size > 0">
+                and cb.FCurProjectID in
+                <foreach item="item" collection="projectIds" index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
             </if>
         </where>
         order by cb.fbookeddate desc ,cb.fnumber desc

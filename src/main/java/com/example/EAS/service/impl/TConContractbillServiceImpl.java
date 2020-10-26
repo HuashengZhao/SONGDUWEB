@@ -417,7 +417,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
 //        获取当前登录人
         String creator = token.getString("person");
         String creatorId = null;
-        if (creator != null) {
+        if (Util.isNotEmpty(creator)) {
             creatorId = mapper.selectUserByNum(creator);
             easJson.put("creatorId", creatorId);
         }
@@ -444,6 +444,8 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                 String attachNum = attachmentsVO.getNum();
                 String webUrl = attachmentsVO.getWebUrl();
                 String fileUUID = attachmentsVO.getFileUUID();
+                String fileType = attachmentsVO.getFileType();
+                String fileSize = attachmentsVO.getFileSize();
                 String originalFilename = attachmentsVO.getOriginalFilename()==null?attachmentsVO.getTitle():attachmentsVO.getOriginalFilename();
                     StringBuffer stringBuffer = new StringBuffer();
                 String s=null;
@@ -452,10 +454,15 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                     }else{
                         s=webUrl;
                     }
-                    object.put("FName", originalFilename == null ? null : originalFilename);
-                    object.put("FRemotePath", s == null ? null : s);
-                    object.put("FNumber", attachNum == null ? null : attachNum);
-                    attach.add(object);
+                object.put("FStorgeType", 3);
+                object.put("fBoId", contractBillId == null ? null : contractBillId);
+                object.put("FName", originalFilename == null ? null : originalFilename);
+                object.put("FRemotePath", s == null ? null : s);
+                object.put("FNumber", attachNum == null ? null : attachNum);
+                object.put("FCreatorId", creatorId == null ? null : creatorId);
+                object.put("FSimpleName", fileType == null ? null : fileType);
+                object.put("FSize", fileSize == null ? null : fileSize);
+                attach.add(object);
                 }
         }
         if (attach != null && attach.size() > 0) {
@@ -601,11 +608,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             tConContractbill.setFcreatorid(creatorId);
             mapper.updateById(tConContractbill);
         }
-//        保存附件到web表
-        if (Util.isNotEmpty(contractBillId) && vo.getAttachmentsVOS() != null && vo.getAttachmentsVOS().size() > 0) {
-            supplierapplyMapper.deletAttach(contractBillId);
-            ftpUtil.saveAttachMent(attachmentsVOS, contractBillId);
-        }
+
         return contractVO;
     }
 
@@ -767,34 +770,8 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             contractVO.setDetailVOList(detailVOS);
         }
 //        附件信息
-//        web ftp
-        List<AttachmentsVO> attachmentsVOS = supplierapplyMapper.selectAttachments(id);
-        if (attachmentsVOS != null && attachmentsVOS.size() > 0) {
-            for (AttachmentsVO attachmentsVO : attachmentsVOS) {
-                attachmentsVO.setEasId(id);
-                String fileType = attachmentsVO.getFileType();
-                String title = attachmentsVO.getTitle();
-                attachmentsVO.setOriginalFilename(new StringBuffer().append(title).append(".").append(fileType).toString());
-            }
-        }
-//      attachmentFiles from eas
-        List<AttachmentsVO> easFiles = attachmentMapper.selectAttachMent(id);
-        if (easFiles != null && easFiles.size() > 0) {
-            for (AttachmentsVO attachmentsVO : easFiles) {
-                String fileUrl = attachmentsVO.getWebUrl();
-                if (Util.isNotEmpty(fileUrl)) {
-                    String type = fileUrl.split("\\.")[fileUrl.split("\\.").length - 1];
-                    attachmentsVO.setFileType(type);
-                    if (Util.isNotEmpty(type)) {
-                        String s = FileContentTypeUtils.contentType("." + type);
-                        if (Util.isNotEmpty(s)) {
-                            attachmentsVO.setContentType(s);
-                        }
-                    }
-                }
-            }
-            attachmentsVOS.addAll(easFiles);
-        }
+        List<AttachmentsVO> attachmentsVOS = attachmentMapper.selectAttachMent(vo.getId());
+
         contractVO.setAttachmentsVOS(attachmentsVOS);
 
 //        补充合同信息

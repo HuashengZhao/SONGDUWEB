@@ -25,12 +25,14 @@ public class AttachmentsVO {
     private String webUrl;
     //    后缀名
     private String fileType;
+//    单据id
     private String easId;
     //    员工编号
     private String person;
     //    员工名称
     private String personName;
     private String createTime;
+    private String creatorName;
 //    ftpId
     private String ftpId;
     /**
@@ -41,5 +43,8 @@ public class AttachmentsVO {
     private String fboid;
 //    附件预览地址
     private String attLink;
+
+//    eas中附件来源类型
+    private Integer storgeType;
 
 }

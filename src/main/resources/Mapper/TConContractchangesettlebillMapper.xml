@@ -20,12 +20,7 @@
         left join T_PM_User uc on uc.fid=bill.FCREATORID
         <where>
             and bill.FCONTROLUNITID=#{orgId}
-            <if test="projectIds != null and projectIds.size > 0">
-                and bill.FCurProjectID in
-                <foreach item="item" collection="projectIds" index="index" open="(" separator="," close=")">
-                    #{item}
-                </foreach>
-            </if>
+
             <if test="title!=null and title!=''">
                 and bill.fname like CONCAT(CONCAT('%',#{title}),'%')
             </if>
@@ -46,6 +41,12 @@
             </if>
             <if test="authorNum!=null and authorNum!=''">
                 and uc.fnumber =#{authorNum}
+            </if>
+            <if test="projectIds != null and projectIds.size > 0">
+                and bill.FCurProjectID in
+                <foreach item="item" collection="projectIds" index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
             </if>
         </where>
         order by bill.FBOOKEDDATE desc,bill.fnumber desc
