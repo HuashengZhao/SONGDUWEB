@@ -9,11 +9,10 @@
         select att.FNAME_L2 as title,att.FNUMBER as num,att.FSIZE as fileSize,
         att.fsimplename as fileType,att.FREMOTEPATH as webUrl,
         ass.FBOID as easId,att.FCREATETIME as createTime,
-        u.FNAME_L2 as creatorName,att.FDESCRIPTION_L2 as description
+        att.FDESCRIPTION_L2 as description
         from  T_BAS_BoAttchAsso ass
         left join T_BAS_Attachment att on ass.FATTACHMENTID=att.FID
-        left join T_PM_User u on u.fid=att.FCREATORID
-        where ass.FBOID=#{id} and att.FNAME_L2 is not null and att.FNUMBER is null
+        where ass.FBOID=#{id} and att.FNAME_L2 is not null
         order by att.FREMOTEPATH
     </select>
     <select id="selectByNumber"  resultType="com.example.EAS.vo.AttachmentsVO">
