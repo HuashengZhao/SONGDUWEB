@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.EAS.mapper.*;
+import com.example.EAS.model.TBasAttachment;
 import com.example.EAS.model.TConContractbill;
 import com.example.EAS.model.TConMarketproject;
 import com.example.EAS.model.TConMarketprojectcostentry;
@@ -85,6 +86,8 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
 
     @Override
     public PageBean<ContractVO> getContractList(ContractVO vo) throws Exception {
+        System.out.println("合同列表查看开始");
+        long startTime = System.currentTimeMillis();
         //获取登录信息
         JSONObject token = loginInfoUtil.getToken();
 //        項目id集合      有父節點則是分期 沒有是項目 id防入集合
@@ -175,15 +178,9 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                         contractVO.setCsName("战略合作");
                     }
                 }
-                //                查看是否有附件
-                contractVO.setHasFile(0);
-                Call call = getCall("EASURL", "ifHasAttachFile");
-                JSONObject data = new JSONObject();
-                data.put("contractBillId", contractVO.getId() == null ? null : contractVO.getId());
-                String result = (String) call.invoke(new Object[]{data.toString()});
-                JSONObject str = JSONObject.parseObject(result);
-                String file = str.getString("file");
-                if (file != null && file.contains("T")) {
+                    contractVO.setHasFile(0);
+                Integer attNums = contractVO.getAttNums();
+                if (Util.isNotEmpty(attNums)&&attNums.compareTo(0)==1){
                     contractVO.setHasFile(1);
                 }
 //                保存=1SAVED,已提交=2SUBMITTED,审批中=3AUDITTING,已审批=4AUDITTED,终止=5CANCEL,已下发=7ANNOUNCE,已签证=8VISA,
@@ -229,9 +226,12 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                 }
             }
         }
+
         PageBean<ContractVO> pageBean = new PageBean<>();
         pageBean.setTotalCount(((Page) contractVOList).getTotal());
         pageBean.setPageData(contractVOList);
+        long endTime = System.currentTimeMillis();
+        System.out.println("总耗时：" + (endTime - startTime) + "ms");
         return pageBean;
     }
 

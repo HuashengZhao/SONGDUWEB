@@ -35,6 +35,7 @@ public class NoTextContractVO {
     private String description;
     //    附件
     private Integer ifHasAttach;
+    private Integer attNums;
     private List<AttachmentsVO> attachmentsVOS;
     //    本位币金额
     @JsonSerialize(using = CustomBigDecimalSerialize.class, nullsUsing = CustomBigDecimalSerialize.class)

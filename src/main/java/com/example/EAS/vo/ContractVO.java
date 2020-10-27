@@ -51,6 +51,8 @@ public class ContractVO {
     private String srcAmount;
     //    原币金额
     private String originalAmount;
+    //    附件数
+    private Integer attNums;
     //    大写
     private String originalAmountBIG;
     //    本位币
@@ -61,7 +63,7 @@ public class ContractVO {
     private String grtRate;
     //    保修金金额
     private String grtAmount;
-//    是否进入动态成本
+    //    是否进入动态成本
     private Integer isCost;
     //    变更提示比例  张佳萍说这个字段没有用
     private String chgPerForWarn;

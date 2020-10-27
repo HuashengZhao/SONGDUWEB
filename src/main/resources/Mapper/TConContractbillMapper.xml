@@ -39,7 +39,8 @@
         ldp.fname_l2 as partAName,cb.FCostProperty costProperty,cb.FContractPropert contractNature,
         cb.FIsArchived isArchived, u.fname_l2 auditor,cb.FLastUpdateTime lastAuditTime,uc.fname_l2 as creator,
         cb.fcreatetime createTime,cb.FIsRespite isRespite,cb.FCONTRACTTYPEID as conTypeId,
-        cp.FNAME_L2 as projectName,un.FNAME_L2 as orgName,cb.FISCOSTSPLIT as isCost
+        cp.FNAME_L2 as projectName,un.FNAME_L2 as orgName,cb.FISCOSTSPLIT as isCost,
+        (select count(ass.fid) from T_BAS_BoAttchAsso ass where ass.FBOID=cb.fid) as attNums
         from T_CON_ContractBill cb left join T_FDC_ContractType ct on cb.FContractTypeID=ct.fid
         left join T_CON_ProgrammingContract pc on pc.fid=cb.FProgrammingContract
         left join T_BD_Currency cur on cur.fid=cb.FCurrencyID

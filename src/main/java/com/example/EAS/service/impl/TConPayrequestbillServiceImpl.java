@@ -146,8 +146,7 @@ public class TConPayrequestbillServiceImpl extends ServiceImpl<TConPayrequestbil
                 if (Util.isNotEmpty(id)) {
 //                    是否有附件
                     payRequestBillVO.setIfHasAttach(0);
-                    List<AttachmentsVO> attachmentsVOS = attachmentMapper.selectAttachMent(id);
-                    if (attachmentsVOS != null && attachmentsVOS.size() > 0) {
+                    if (payRequestBillVO.getAttNums()!=null&&payRequestBillVO.getAttNums().compareTo(0)==1){
                         payRequestBillVO.setIfHasAttach(1);
                     }
                     List<TConDeductofpayreqbill> billList = deductofpayreqbillMapper.selectList

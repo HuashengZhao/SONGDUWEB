@@ -105,6 +105,7 @@ public class PayRequestBillVO {
     private Integer pageSize;
     //    附件
     private Integer ifHasAttach;
+    private Integer attNums;
     private List<AttachmentsVO> attachmentsVOS;
 
     //    付款事项

@@ -12,7 +12,8 @@
         cur.FNAME_L2 as currencyName,bill.FAMOUNT as amount,bill.FORIGINALAMOUNT as oriAmount,
         bill.FRECBANK as recBank,bill.FRECACCOUNT as recAccount,bill.FUSAGE as remark,
         pt.FNAME_L2 as paymentTypeName,bill.FAUDITORID as auditorId,u1.FNAME_L2 as auditorName,
-        bill.FAUDITTIME auditTime,bill.FCREATETIME createTime
+        bill.FAUDITTIME auditTime,bill.FCREATETIME createTime,
+        (select count(ass.fid) from T_BAS_BoAttchAsso ass where ass.FBOID=bill.fid) as attNums
         from T_CON_PayRequestBill bill
         left join t_pm_user u on u.fid=bill.FCREATORID
         left join t_pm_user u1 on u1.fid=bill.FAUDITORID
