@@ -252,7 +252,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         String hyghId = vo.getHyghId();
         if (Util.isNotEmpty(hyghId)) {
             easJson.put("hygh", hyghId);
-            List<String> billIds = mapper.selectHYGHInContract(hyghId,contractBillId==null?"":contractBillId);
+            List<String> billIds = mapper.selectHYGHInContract(hyghId, contractBillId == null ? "" : contractBillId);
             if (billIds != null && billIds.size() > 0) {
                 throw new ServiceException(UtilMessage.HYGH_HAS_BELINKED);
             }
@@ -374,11 +374,11 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         }
 //        是否进入动态成本
         Integer isCost = vo.getIsCost();
-        if (Util.isNotEmpty(isCost)&&isCost==0){
-                easJson.put("isCoseSplit","false");
-            }else{
-                easJson.put("isCoseSplit","true");
-            }
+        if (Util.isNotEmpty(isCost) && isCost == 0) {
+            easJson.put("isCoseSplit", "false");
+        } else {
+            easJson.put("isCoseSplit", "true");
+        }
         String csName = vo.getCsName();
         if (Util.isNotEmpty(csName)) {
             String contractSourceId = mapper.selectContractSourceId(csName);
@@ -569,6 +569,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             }
         }
         easJson.put("marketConArray", jsonArray);
+        long saveStart = System.currentTimeMillis();
         String result = null;
         Call call = null;
 //        调用eas 保存方法进行保存
@@ -592,7 +593,8 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                 throw new ServiceException(e.getMessage());
             }
         }
-
+        long saveEnd = System.currentTimeMillis();
+        System.out.println("调用EAS合同保存时间:" + (saveEnd - saveStart) + "ms");
 //        接收返回eas信息
         JSONObject object = JSONObject.parseObject(result);
         if (result != null && object.get("result").toString().contains("fault")) {
@@ -773,7 +775,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         }
 //        附件信息
         List<AttachmentsVO> attachmentsVOS = attachmentMapper.selectAttachMent(vo.getId());
-        if (attachmentsVOS!=null && attachmentsVOS.size()>0) {
+        if (attachmentsVOS != null && attachmentsVOS.size() > 0) {
             contractVO.setAttachmentsVOS(attachmentsVOS);
         }
 
