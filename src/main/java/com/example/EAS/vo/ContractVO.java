@@ -61,6 +61,8 @@ public class ContractVO {
     private String grtRate;
     //    保修金金额
     private String grtAmount;
+//    是否进入动态成本
+    private Integer isCost;
     //    变更提示比例  张佳萍说这个字段没有用
     private String chgPerForWarn;
     private String partAName;

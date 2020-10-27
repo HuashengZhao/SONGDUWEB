@@ -27,7 +27,7 @@ public class ContractTypeVO {
 //    内部关联公司往来类=NEIBU,外部供应商客户往来类=WAIBU
     private String contractWFStartType;
 //    是否成本拆分项
-    private String isCost;
+    private Integer isCost;
     private String enabled;
     private String description;
 //自动生成的合同编码 web+组织编码+合同类型编码+四位数序列号
