@@ -241,6 +241,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
 
     @Override
     public ContractVO saveContractBill(ContractVO vo) {
+        long startTime = System.currentTimeMillis();
         //获取登录信息
         JSONObject token = loginInfoUtil.getToken();
         String contractBillId = vo.getId();
@@ -371,6 +372,13 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         if (Util.isNotEmpty(grtRate)) {
             easJson.put("grtRate", grtRate);
         }
+//        是否进入动态成本
+        Integer isCost = vo.getIsCost();
+        if (Util.isNotEmpty(isCost)&&isCost==0){
+                easJson.put("isCoseSplit","false");
+            }else{
+                easJson.put("isCoseSplit","true");
+            }
         String csName = vo.getCsName();
         if (Util.isNotEmpty(csName)) {
             String contractSourceId = mapper.selectContractSourceId(csName);
@@ -442,11 +450,12 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                 JSONObject object = new JSONObject();
                 String attachNum = attachmentsVO.getNum();
                 String webUrl = attachmentsVO.getWebUrl();
+                String title = attachmentsVO.getTitle();
                 String fileSize = attachmentsVO.getFileSize();
                 String descp = attachmentsVO.getDescription();
                 String originalFilename = attachmentsVO.getOriginalFilename() == null ? attachmentsVO.getTitle() : attachmentsVO.getOriginalFilename();
                 StringBuffer stringBuffer = new StringBuffer();
-                object.put("FName", originalFilename == null ? null : originalFilename);//文件名称含后缀
+                object.put("FName", title == null ? null : title);//文件名称不含含后缀
                 object.put("FNumber", attachNum == null ? null : attachNum);//附件编码
                 object.put("FRemotePath", webUrl == null ? null : webUrl);//文件相对路径
                 object.put("FSize", fileSize == null ? null : fileSize);// 附件大小
@@ -598,12 +607,14 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             tConContractbill.setFcreatorid(creatorId);
             mapper.updateById(tConContractbill);
         }
-
+        long endTime = System.currentTimeMillis();
+        System.out.println("合同列表运行时间：" + (endTime - startTime) + "ms");
         return contractVO;
     }
 
     @Override
     public ContractVO viewContractBill(ContractVO vo) throws Exception {
+        long startTime = System.currentTimeMillis();
         String id = vo.getId();
         if (Util.isEmpty(id)) {
             return null;
@@ -614,6 +625,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         }
         //获取登录信息
         JSONObject token = loginInfoUtil.getToken();
+
         //                保存=1SAVED,已提交=2SUBMITTED,审批中=3AUDITTING,已审批=4AUDITTED,终止=5CANCEL,已下发=7ANNOUNCE,已签证=8VISA,
 //                作废=9INVALID,已上报=10PUBLISH,被打回=11BACK,修订中=12REVISING,已修订=12REVISE,已确认=13CONFIRMED
         String state = contractVO.getState();
@@ -803,6 +815,8 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             }
             contractVO.setMarketContDetailVOS(marketContDetailVOS);
         }
+        long endTime = System.currentTimeMillis();
+        System.out.println("合同查看详情运行时间：" + (endTime - startTime) + "ms");
         return contractVO;
     }
 
