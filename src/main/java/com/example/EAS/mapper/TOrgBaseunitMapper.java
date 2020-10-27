@@ -31,4 +31,7 @@ public interface TOrgBaseunitMapper extends BaseMapper<TOrgBaseunit> {
 
     List<String> selectNextCostIds(String orgId);
 
+    List<OrgVO> selectEntitiesFinalOrgs();
+
+
 }

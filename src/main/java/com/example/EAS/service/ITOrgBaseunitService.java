@@ -19,4 +19,6 @@ public interface ITOrgBaseunitService extends IService<TOrgBaseunit> {
     OrgVO getData(OrgVO vo);
 
     List<OrgVO> getCostEntitys(OrgVO vo);
+
+    List<OrgVO> getEntityFinalOrg(OrgVO vo);
 }

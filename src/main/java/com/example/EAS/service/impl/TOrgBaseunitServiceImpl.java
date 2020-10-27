@@ -92,6 +92,13 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
         return orgVOS;
     }
 
+    @Override
+    public List<OrgVO> getEntityFinalOrg(OrgVO vo) {
+        List<OrgVO> orgVOS = baseunitMapper.selectEntitiesFinalOrgs();
+
+        return orgVOS;
+    }
+
     //    获取children
     public List<OrgVO> getChildren(List<OrgVO> list) {//参数为数据库的（原数据，一级id）
         for (OrgVO orgVO : list) {
@@ -118,4 +125,7 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
             }
         return counts;
     }
+
+
+
 }

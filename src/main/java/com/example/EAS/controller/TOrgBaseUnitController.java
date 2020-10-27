@@ -67,4 +67,18 @@ public class TOrgBaseUnitController {
         return R.ok(result);
     }
 
+    /**
+     * 实体财务组织
+     *  只展示实体财务组织，无文本录入时获取预算承担公司调用
+     */
+    @RequestMapping(value = "/getEntityFinalOrg", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public R getEntityFinalOrg(@RequestBody String body) throws Exception {
+        HashMap<String, Object> result = new HashMap<>(10);
+        OrgVO vo = BodyDecodeUtil.decodeBody(body, OrgVO.class);
+        List<OrgVO> orgVOS= orgBaseunitService.getEntityFinalOrg(vo);
+        result.put("data", orgVOS);
+        result.put("msg", UtilMessage.GET_MSG_SUCCESS);
+        result.put("code", HttpStatus.SC_OK);
+        return R.ok(result);
+    }
 }
