@@ -144,22 +144,21 @@ public class TBasAttachmentServiceImpl extends ServiceImpl<TBasAttachmentMapper,
         String webUrl = vo.getWebUrl();
         String fileName = webUrl.split("/")[webUrl.split("/").length - 1];
         String description = vo.getDescription();
-        if (Util.isNotEmpty(description)) {
-             if (description.equals("天联云")) {
-//          天联云ftp
-                ftpUtil.exportTLYOS(request, response, webUrl, fileName);
-            } else if (description.equals("EAS")) {
-//          eas附件
-                easFileDownLoadUtil.login();
-                Connection connection = easFileDownLoadUtil.getConnection();
-                easFileDownLoadUtil.copyFile(connection, webUrl, response);
-            } else if (description.equals("WEB")) {
-                 String replace = webUrl.replace(fileName, "");
+        String storgeType = vo.getStorgeType();
+        String ftpId = vo.getFtpId();
+        if (Util.isNotEmpty(description) && description.equals("WEB")) {
+            String replace = webUrl.replace(fileName, "");
 //          来自web ftp服务器
-                ftpUtil.exportOutputStream(request, response, replace, fileName);
-            }
+            ftpUtil.exportOutputStream(request, response, replace, fileName);
+        } else if (Util.isNotEmpty(storgeType) && storgeType.equals("1")) {
+//             天联云
+            ftpUtil.exportTLYOS(request, response, webUrl, fileName);
+        } else if (Util.isNotEmpty(storgeType) && storgeType.equals("2")) {
+//             eas附件
+            easFileDownLoadUtil.login();
+            Connection connection = easFileDownLoadUtil.getConnection();
+            easFileDownLoadUtil.copyFile(connection, webUrl, response);
         }
-
     }
 }
 

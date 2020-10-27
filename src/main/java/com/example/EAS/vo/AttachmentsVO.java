@@ -47,6 +47,6 @@ public class AttachmentsVO {
     private String description;
 
 //    eas中附件来源类型
-    private Integer storgeType;
+    private String storgeType;
 
 }

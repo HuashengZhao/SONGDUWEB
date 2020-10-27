@@ -8,8 +8,8 @@
     <select id="selectAttachMent" resultType="com.example.EAS.vo.AttachmentsVO">
         select att.FNAME_L2 as title,att.FNUMBER as num,att.FSIZE as fileSize,
         att.fsimplename as fileType,att.FREMOTEPATH as webUrl,
-        ass.FBOID as easId,att.FCREATETIME as createTime,
-        att.FDESCRIPTION_L2 as description
+        ass.FBOID as easId,att.FCREATETIME as createTime,att.FFTPID as ftpId,
+        att.FDESCRIPTION_L2 as description,to_char(att.FSTORAGETYPE) as storgeType
         from  T_BAS_BoAttchAsso ass
         left join T_BAS_Attachment att on ass.FATTACHMENTID=att.FID
         where ass.FBOID=#{id} and att.FNAME_L2 is not null

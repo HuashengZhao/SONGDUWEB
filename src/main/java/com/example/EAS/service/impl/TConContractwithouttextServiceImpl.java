@@ -808,6 +808,9 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         String oaid = str.getString("oaid");
         if (Util.isNotEmpty(oaid) && Util.isNotEmpty(id)) {
             oaIdUtil.getString(id, oaid);
+            TConContractwithouttext contractwithouttext = mapper.selectById(id);
+            contractwithouttext.setFsourcefunction(oaid);
+            mapper.updateById(contractwithouttext);
         }
 //       成功提交后，修改eas当前状态为审批中0
         if (code != null && code.contains("1")) {

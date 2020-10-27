@@ -973,6 +973,9 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         String oaid = str.getString("oaid");
         if (Util.isNotEmpty(oaid) && Util.isNotEmpty(id)) {
             oaIdUtil.getString(id, oaid);
+            TConContractbill conContractbill = mapper.selectById(id);
+            conContractbill.setFsourcefunction(oaid);
+            mapper.updateById(conContractbill);
         }
 //       成功提交后，修改eas当前状态为审批中0
         if (code != null && code.contains("1")) {

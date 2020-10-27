@@ -2,8 +2,12 @@ server:
  tomcat:
   max-threads: 10
   min-spare-threads: 10
+  connection-timeout: 5000
 
- port: 8888
+ port: 8080
+ servlet:
+   session:
+     timeout: 30
 
 spring:
   application:
