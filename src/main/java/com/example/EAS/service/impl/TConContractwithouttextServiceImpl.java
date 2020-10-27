@@ -98,7 +98,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         JSONObject token = loginInfoUtil.getToken();
 //        过权限
         Boolean aBoolean = loginInfoUtil.ifInItDept();
-        if (aBoolean==false){
+        if (aBoolean == false) {
             vo.setAuthorNum(token.getString("person"));
         }
 
@@ -246,7 +246,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         if (Util.isNotEmpty(returnVO)) {
             //            附件信息
             List<AttachmentsVO> easFiles = attachmentMapper.selectAttachMent(id);
-            if (easFiles!=null && easFiles.size()>0) {
+            if (easFiles != null && easFiles.size() > 0) {
                 returnVO.setAttachmentsVOS(easFiles);
             }
 
@@ -371,7 +371,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
 
     @Override
     public NoTextContractVO saveNoTextBill(NoTextContractVO vo) {
-
+        long saveStart = System.currentTimeMillis();
         //获取登录信息
         JSONObject token = loginInfoUtil.getToken();
         JSONObject easJson = new JSONObject();
@@ -631,6 +631,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             easJson.put("attach", attach);
         }
 
+        long easStart = System.currentTimeMillis();
         String result = null;
         Call call = null;
 //        调用eas 保存方法进行保存
@@ -654,6 +655,8 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
                 throw new ServiceException(e.getMessage());
             }
         }
+        long easEnd = System.currentTimeMillis();
+        System.out.println("无文本调用eas保存时间" + (easEnd - easStart) + "ms");
 //        接收返回eas信息
         JSONObject object = JSONObject.parseObject(result);
         if (result != null && object.get("result").toString().contains("fault")) {
@@ -676,6 +679,8 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         } else {
             supplierapplyMapper.deletAttach(id);
         }
+        long saveEnd = System.currentTimeMillis();
+        System.out.println("无文本保存方法耗时：" + (saveEnd - saveStart) + "ms");
         return noTextContractVO;
     }
 
