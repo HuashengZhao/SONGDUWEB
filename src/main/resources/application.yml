@@ -4,7 +4,7 @@ server:
   min-spare-threads: 10
   connection-timeout: 5000
 
- port: 8080
+ port: 18888
  servlet:
    session:
      timeout: 30
