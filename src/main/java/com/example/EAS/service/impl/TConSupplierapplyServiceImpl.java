@@ -92,7 +92,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         JSONObject token = loginInfoUtil.getToken();
         //        过权限
         Boolean aBoolean = loginInfoUtil.ifInItDept();
-        if (aBoolean==false){
+        if (aBoolean == false) {
             vo.setAuthorNum(token.getString("person"));
         }
         if (Util.isNotEmpty(state1)) {
@@ -131,10 +131,10 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
                 if (Util.isNotEmpty(vo.getId())) {
                     String easId = vo.getId();
                     //                    获取对应的oaid
-                    String oaid=null;
+                    String oaid = null;
                     List<String> oaids = mapper.selectOaid(easId);
-                    if (oaids!=null && oaids.size()>0){
-                        oaid=oaids.get(0);
+                    if (oaids != null && oaids.size() > 0) {
+                        oaid = oaids.get(0);
                     }
                     if (Util.isNotEmpty(oaid)) {
 //            获取当前登录信息 取用户账号用作oa流程查看登录
@@ -156,7 +156,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
                     }
 //                       附件信息
                     List<AttachmentsVO> easAttFiles = attachmentMapper.selectAttachMent(easId);
-                    if (easAttFiles!=null && easAttFiles.size()>0) {
+                    if (easAttFiles != null && easAttFiles.size() > 0) {
                         supplierApplyVO.setAttachmentsVOS(easAttFiles);
                     }
                 }
@@ -303,7 +303,10 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         Call call = getCall("EASURL", "saveSupplierApply");
         String result = null;
         try {
+            long startTime = System.currentTimeMillis();
             result = (String) call.invoke(new Object[]{obj.toString()});
+            long endTime = System.currentTimeMillis();
+            System.out.println("供应商保存eas方法时长：" + (endTime - startTime) + "ms");
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -528,7 +531,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         SupplierApplyVO supplierApplyVO = mapper.selectDataById(id);
         String oaId = null;
         List<String> oaIds = mapper.selectOaid(id);
-        if (oaIds!=null && oaIds.size()>0) {
+        if (oaIds != null && oaIds.size() > 0) {
             oaId = oaIds.get(0);
         }
 //        基本参数
@@ -562,13 +565,13 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         if (Util.isEmpty(appendUrl) || Util.isEmpty(appUrl)) {
             throw new ServiceException(UtilMessage.VIEW_URL_NOT_FOUND);
         }
-            String appendType = "supplier/view?from=oa&id=";
-            String appendId = null;
-            try {
-                appendId = URLEncoder.encode(id, "utf-8");
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
+        String appendType = "supplier/view?from=oa&id=";
+        String appendId = null;
+        try {
+            appendId = URLEncoder.encode(id, "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
 //					token
         String tokenAppend = RequestHolder.getCurrentUser().getToken();
         try {
@@ -578,8 +581,8 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         }
         String appendToken = "&token=";
         //        web端详情查看地址
-            sendUrl = String.valueOf(sbv.append(appendUrl).append(appendType).append(appendId)
-                    .append(appendToken).append(tokenAppend));
+        sendUrl = String.valueOf(sbv.append(appendUrl).append(appendType).append(appendId)
+                .append(appendToken).append(tokenAppend));
         //        app端详情查看地址
         sendAppUrl = String.valueOf(sbv.append(appUrl).append(appendType).append(appendId)
                 .append(appendToken).append(tokenAppend));
@@ -592,7 +595,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
 //        obj.put("attFile", attFile);
         JSONObject data = new JSONObject();
         data.put("fd_link", sendUrl);
-        sendAppUrl="http://test.pmredstar.com:18089//easApp/index.html#/";  //当前测试使用地址 测试结束删除此行代码即可
+        sendAppUrl = "http://test.pmredstar.com:18089//easApp/index.html#/";  //当前测试使用地址 测试结束删除此行代码即可
         data.put("fd_mobile_link", sendAppUrl);
 
 //        data.put("createTime", vo.getCreateTime());

@@ -82,7 +82,7 @@
         from T_ORG_BASEUNIT m
         left join T_ORG_OUPartFI fi on fi.FID=m.FPARTFIID
         <where>
-            m.FIsCompanyOrgUnit=1
+           exists (select fi.fid from T_ORG_OUPartFI fi where fi.fid=m.FPartFIID)
             <if test="title!=null and title!=''">
                 and m.FNAME_L2 like CONCAT(CONCAT('%',#{title}),'%')
             </if>

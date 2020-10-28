@@ -94,6 +94,10 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
                 if (Util.isNotEmpty(vo.getId())) {
                     getFinalChildren(orgVOS);
                 }
+                Integer isCompany = org.getIsCompany();
+                if (Util.isEmpty(isCompany)){
+                    org.setIsCompany(0);
+                }
                 String longNumber = org.getLongNumber();
                 if (Util.isNotEmpty(longNumber)) {
                     org.setLongNumber(longNumber
