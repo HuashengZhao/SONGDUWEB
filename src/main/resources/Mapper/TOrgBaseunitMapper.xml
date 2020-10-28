@@ -8,8 +8,7 @@
         m.FSIMPLENAME as simpleName
         from T_ORG_BASEUNIT m
         <where>
-            m.FISADMINORGUNIT=1
-            and not exists (select m1.fid from T_ORG_BASEUNIT m1 where m1.FPARENTID=m.fid)
+            m.FISADMINORGUNIT=1 and m.FIsOUSealUp=0
             <if test="id!=null and id!=''">
                 and m.fid=#{id}
             </if>
@@ -37,6 +36,7 @@
         FISLEAF as isLeaf,FSIMPLENAME as simpleName
         from T_ORG_BASEUNIT
         <where>
+            FIsOUSealUp=0 and
             FISADMINORGUNIT=1
             and FParentID=#{id,jdbcType=VARCHAR}
         </where>
@@ -46,6 +46,7 @@
         select fid as id
         from T_ORG_BASEUNIT
         <where>
+            FIsOUSealUp=0 and
             FISADMINORGUNIT=1
             and FParentID=#{id,jdbcType=VARCHAR}
         </where>
@@ -57,6 +58,7 @@
         from T_ORG_BASEUNIT m
         left join T_ORG_OUPartCostCenter cc on cc.fid=m.FPARTCOSTCENTERID
         <where>
+            m.FIsOUSealUp=0
             <if test="list != null and list.size > 0">
                 and m.FID in
                 <foreach item="item" collection="list" index="index" open="(" separator="," close=")">
@@ -72,7 +74,8 @@
         select fid as id
         from T_ORG_BASEUNIT
         <where>
-            FISADMINORGUNIT=1
+            FISADMINORGUNIT=1 and
+            FIsOUSealUp=0
             and FIsCostOrgUnit=1
             and FParentID=#{id,jdbcType=VARCHAR}
         </where>
@@ -85,6 +88,7 @@
         from T_ORG_BASEUNIT m
         left join T_ORG_OUPartFI fi on fi.FID=m.FPARTFIID
         <where>
+            m.FIsOUSealUp=0 and
             exists (select fi.fid from T_ORG_OUPartFI fi where fi.fid=m.FPartFIID)
             and not exists (select m1.fid from T_ORG_BASEUNIT m1 where m1.FPARENTID=m.fid)
             <if test="title!=null and title!=''">
@@ -106,7 +110,8 @@
         from T_ORG_BASEUNIT m
         left join T_ORG_OUPartFI fi on fi.FID=m.FPARTFIID
         where
-         exists (select fi.fid from T_ORG_OUPartFI fi where fi.fid=m.FPartFIID)
+        m.FIsOUSealUp=0
+        and  exists (select fi.fid from T_ORG_OUPartFI fi where fi.fid=m.FPartFIID)
         and m.FPARENTID=#{id}
         order by m.flongnumber
     </select>

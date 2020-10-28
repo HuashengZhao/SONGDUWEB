@@ -185,7 +185,7 @@
     cb.FCONTROLUNITID as orgId,un.FNAME_L2 as orgName,mar.FNAME as marketProjectName,cost.FNAME_L2 as costAccountName,
     cb.FGRTRATE as grtRate,cb.FGRTAMOUNT as grtAmount,cb.FSTARTDATE as startDate,cb.FENDDATE as endDate,
     cb.FCONTRACTWFTYPEID as contractWFTypeId,wf.FNAME_L2 as contractWFTypeName,cb.FOrgType as contractWFStartType,
-    cb.FREMARK as description,bank.FNUMBER as unionBankNum,cb.FBANK as bank,cb.FBANKACCOUNT as bankAccount,
+    cb.FDESCRIPTION as description,bank.FNUMBER as unionBankNum,cb.FBANK as bank,cb.FBANKACCOUNT as bankAccount,
     cb.FTAXERNUM as taxNum,cb.FTAXERQUA as taxQua,cb.FISJT as isjt,cb.FISCOSTSPLIT as isCost
     from T_CON_ContractBill cb
     left join T_FDC_ContractType ct on cb.FContractTypeID=ct.fid
