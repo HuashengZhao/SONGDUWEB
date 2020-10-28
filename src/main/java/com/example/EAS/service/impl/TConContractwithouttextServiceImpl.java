@@ -55,6 +55,8 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
     @Autowired
     private TConSupplierapplyMapper supplierapplyMapper;
     @Autowired
+    private TFdcCurprojectMapper tFdcCurprojectMapper;
+    @Autowired
     private TConMarketprojectcostentryMapper tConMarketprojectcostentryMapper;
     @Autowired
     private FtpUtil ftpUtil;
@@ -390,15 +392,16 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         if (Util.isNotEmpty(title)) {
             easJson.put("name", title);
         }
-        String orgId = vo.getOrgId();
-        if (Util.isNotEmpty(orgId)) {
-            easJson.put("orgId", orgId);
-        }
         String projectId = vo.getProjectId();
         if (Util.isEmpty(projectId)) {
-            throw new ServiceException(UtilMessage.REQUEST_PROJECT_INFO);
+            throw new ServiceException(UtilMessage.MISS_PROJECT_INFO);
         }
         easJson.put("projectId", projectId);
+        TFdcCurproject tFdcCurproject = tFdcCurprojectMapper.selectById(projectId);
+        String fcostcenterid = tFdcCurproject.getFcostcenterid();
+        if (Util.isNotEmpty(fcostcenterid)){
+            easJson.put("orgId", fcostcenterid);
+        }
         String contractTypeId = vo.getContractTypeId();
         if (Util.isNotEmpty(contractTypeId)) {
             easJson.put("conTypeId", contractTypeId);
@@ -619,7 +622,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
                 String originalFilename = attachmentsVO.getOriginalFilename() == null ? attachmentsVO.getTitle() : attachmentsVO.getOriginalFilename();
                 StringBuffer stringBuffer = new StringBuffer();
                 object.put("FName", originalFilename == null ? null : originalFilename);//文件名称含后缀
-                object.put("FNumber", attachNum == null ? null : attachNum);//附件编码
+                object.put("FNumber", attachNum == null ? "upLoadFromEas" : attachNum);//附件编码
                 object.put("FRemotePath", webUrl == null ? null : webUrl);//文件相对路径
                 object.put("FSize", fileSize == null ? null : fileSize);// 附件大小
                 object.put("FDescription", descp == null ? null : descp);//附件来源类型

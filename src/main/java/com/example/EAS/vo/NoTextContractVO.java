@@ -57,6 +57,9 @@ public class NoTextContractVO {
     //框架合约
     private String programContractId;
     private String programContractName;
+    //    规划余额
+    @JsonSerialize(using = CustomBigDecimalSerialize.class, nullsUsing = CustomBigDecimalSerialize.class)
+    private BigDecimal balance;
     //    费用归属
     private String costAccountId;
     private String costAccountName;

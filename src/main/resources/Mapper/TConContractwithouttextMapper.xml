@@ -7,7 +7,7 @@
 
     <select id="selectDatas" resultType="com.example.EAS.vo.NoTextContractVO">
         select bill.fid as id,bill.FNUMBER as num,bill.FNAME as title,
-        bill.FBOOKEDDATE as bizDate,bill.FSTATE as state,
+        bill.FBOOKEDDATE as bizDate,bill.FSTATE as state,pc.FAMOUNT as balance,
         bill.FCONTRACTTYPEID as contractTypeId,ct.FNAME_L2 as contractTypeName,
         bill.FProgrammingContract as programContractId,pc.FNAME_L2 as programContractName,
         bill.FCURRENCYID as currencyId,cur.FNAME_L2 as currencyName,
@@ -78,8 +78,8 @@
         bill.FCURRENCYID as currencyId,cur.FNAME_L2 as currencyName,bill.FAMOUNT as amount,bill.FORIGINALAMOUNT as oriAmount,
         sup.FNAME_L2 as receiverName,bill.FRECEIVEUNITID as supplierId,bill.FSIGNDATE as signDate,u.FNAME_L2 as creatorName,bill.FCREATETIME as createTime,
         bill.FAUDITTIME as auditTime,bill.FAUDITORID as auditorId,u1.FNAME_L2 as auditorName,bill.FPAYCONTENTTYPEID as payContentId,
-        bill.FPERSONID as personId,p.FNAME_L2 as personName,unit.FNAME_L2 as orgName,pro.FNAME_L2 as projectName,
-        pbt.FNAME_L2 as payBillTypeName,bill.FCONTROLUNITID as orgId,pct.FNAME_L2 as payContentName,bill.FPERIODID as periodId,
+        bill.FPERSONID as personId,p.FNAME_L2 as personName,unit.FNAME_L2 as orgName,pro.FNAME_L2 as projectName,pc.FAMOUNT as balance,
+        pbt.FNAME_L2 as payBillTypeName,pro.FFULLORGUNIT as orgId,pct.FNAME_L2 as payContentName,bill.FPERIODID as periodId,
         per.FPERIODYEAR as periodYear,per.FPERIODNUMBER as periodNumber,bill.FTAXERQUA as taxerQua,bill.FTAXERNUM as taxerNumber,
         bank.fnumber as unionBankNum,bill.FBANKACCT as bankAccount,bill.fbank as bank,bill.FSETTLEMENTTYPEID as settlementTypeId,
         st.FNAME_L2 as settlementTypeName,bill.FApplierId as applierId,p1.FNAME_L2 as applierName,bill.FUseDepartmentID as useDeptId,
@@ -98,8 +98,8 @@
         left join T_PM_User u1 on u1.fid=bill.FAUDITORID
         left join T_BD_Person p on p.fid=bill.FPERSONID
         left join T_BD_Person p1 on p1.fid=bill.FApplierId
-        left join T_ORG_CTRLUNIT unit on unit.fid=bill.FControlUnitID
         left join T_FDC_CurProject pro on pro.fid=bill.FCURPROJECTID
+        left join T_ORG_BASEUNIT unit on unit.fid=pro.FFULLORGUNIT
         left join T_CAS_PaymentBillType pbt on pbt.fid=bill.FPAYBILLTYPEID
         left join T_CON_PayContentType pct on pct.fid=bill.FPAYCONTENTTYPEID
         left join T_BD_Period per on per.fid = bill.FPERIODID

@@ -139,8 +139,7 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
     //    获取下级是财务组织的children
     public List<OrgVO> getFinalChildren(List<OrgVO> list) {//参数为数据库的（原数据，一级id）
         for (OrgVO orgVO : list) {
-            String id = orgVO.getId();
-            List<OrgVO> orgVOS = baseunitMapper.selectNextFinalOrgs(id);
+            List<OrgVO> orgVOS = baseunitMapper.selectNextFinalOrgs(orgVO);
             if (orgVOS != null && orgVOS.size() > 0) {
                 orgVO.setChildren(orgVOS);
                 getChildren(orgVOS);
@@ -148,5 +147,4 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
         }
         return list;
     }
-
 }
