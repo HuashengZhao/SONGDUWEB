@@ -3,25 +3,26 @@
 <mapper namespace="com.example.EAS.mapper.TOrgBaseunitMapper">
 
     <select id="selectDatas" resultType="com.example.EAS.vo.OrgVO">
-        select fid as id,FNAME_L2 as title,FDESCRIPTION_L2 as description,fnumber as num,
-        FLONGNUMBER as longNumber,flevel,FPartCostCenterID as costCenterId,FISLEAF as isLeaf,FSIMPLENAME as simpleName
-        from T_ORG_BASEUNIT
+        select m.fid as id,m.FNAME_L2 as title,m.FDESCRIPTION_L2 as description,m.fnumber as num,
+        m.FLONGNUMBER as longNumber,m.flevel,m.FPartCostCenterID as costCenterId,m.FISLEAF as isLeaf,m.FSIMPLENAME as simpleName
+        from T_ORG_BASEUNIT m
         <where>
-            FISADMINORGUNIT=1
+            m.FISADMINORGUNIT=1
+            not exists (select m1.fid from T_ORG_BASEUNIT m1 where m1.FPARENTID=m.fid)
             <if test="id!=null and id!=''">
-                and fid=#{id}
+                and m.fid=#{id}
             </if>
             <if test="title!=null and title!=''">
-                and FNAME_L2 like CONCAT(CONCAT('%',#{title}),'%')
+                and m.FNAME_L2 like CONCAT(CONCAT('%',#{title}),'%')
             </if>
             <if test="num!=null and num!=''">
-                and fnumber like CONCAT(CONCAT('%',#{num}),'%')
+                and m.fnumber like CONCAT(CONCAT('%',#{num}),'%')
             </if>
             <if test="isCompany!=null">
-                and fid in (select fid from T_ORG_Company)
+                and m.fid in (select fid from T_ORG_Company)
             </if>
         </where>
-        order by FLONGNUMBER
+        order by m.FLONGNUMBER
     </select>
     <select id="selectByOrgId" resultType="java.lang.Integer">
         select FIsBizUnit as unit from T_ORG_Company where fid=#{id}
@@ -105,5 +106,6 @@
         where
          exists (select fi.fid from T_ORG_OUPartFI fi where fi.fid=m.FPartFIID)
         and m.FPARENTID=#{id}
+        order by m.flongnumber
     </select>
 </mapper>

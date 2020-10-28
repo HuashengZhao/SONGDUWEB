@@ -2,7 +2,6 @@ server:
  tomcat:
   max-threads: 10
   min-spare-threads: 10
-  connection-timeout: 5000
 
  port: 18080
  servlet:

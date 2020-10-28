@@ -41,34 +41,14 @@ public class TConProgrammingcontractServiceImpl extends ServiceImpl<TConProgramm
         if (Util.isEmpty(vo.getProjectId())) {
             return null;
         }
-        Integer ifBeLinked = vo.getIfBeLinked();
-
-        List<String> ids = mapper.selectIdsFromContract();
         List<ProgramConVO> programConVOList = new ArrayList<>();
         PageHelper.startPage(vo.getCurrentPage(), vo.getPageSize());
-        if (ids!=null && ids.size()>0) {
-            vo.setIds(ids);
             programConVOList = mapper.selectDataCanBeLinked(vo);
-        }
-//        if (Util.isNotEmpty(vo.getBillId())){
-//            List<ProgramConVO> vos = mapper.selectByBillId(vo.getBillId());
-//            if (vos!=null &&vos.size()>0){
-//                programConVOList.addAll(vos);
-//            }
-//        }
-//        Collections.reverse(programConVOList);
+
         if (Util.isNotEmpty(programConVOList)) {
             for (ProgramConVO conVO : programConVOList) {
                 Integer linked = 1;
                 String billId = conVO.getBillId();
-//                if (Util.isNotEmpty(billId)) {
-//                    List<TConContractbill> conContractbills = contractbillMapper.selectList(new QueryWrapper<TConContractbill>()
-//                            .eq("fid", billId));
-//                    if (conContractbills != null && conContractbills.size() > 0) {
-//                        linked = 0;
-//                    }
-//                }
-//                conVO.setIfBeLinked(linked);
                 String longNumber = conVO.getLongNumber();
                 if (Util.isNotEmpty(longNumber)) {
                     conVO.setLongNumber(longNumber
