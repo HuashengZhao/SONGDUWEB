@@ -31,10 +31,8 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
         OrgVO orgVO1 = new OrgVO();
         List<OrgVO> orgVOS = baseunitMapper.selectDatas(vo);
         if (orgVOS.size() > 0) {
+            orgVOS = getChildren(orgVOS);
             for (OrgVO orgVO : orgVOS) {
-                if (Util.isNotEmpty(vo.getId())) {
-                    getChildren(orgVOS);
-                }
 //                是否实体财务组织
                 orgVO.setIsCompany(0);
                 String id = orgVO.getId();
@@ -90,10 +88,8 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
         OrgVO orgVO = new OrgVO();
         List<OrgVO> orgVOS = baseunitMapper.selectEntitiesFinalOrgs(vo);
         if (orgVOS != null && orgVOS.size() > 0) {
+            orgVOS = getFinalChildren(orgVOS);
             for (OrgVO org : orgVOS) {
-                if (Util.isNotEmpty(vo.getId())) {
-                    orgVOS = getFinalChildren(orgVOS);
-                }
                 Integer isCompany = org.getIsCompany();
                 if (Util.isEmpty(isCompany)) {
                     org.setIsCompany(0);

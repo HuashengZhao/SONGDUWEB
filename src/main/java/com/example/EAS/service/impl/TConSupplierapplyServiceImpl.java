@@ -312,6 +312,9 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         }
         JSONObject str = JSONObject.parseObject(result);
         String state = str.getString("result");
+        if (Util.isNotEmpty(state) && state.contains("fault")) {
+            throw new ServiceException("保存失败：" + str.getString("message"));
+        }
         String id = str.getString("id");
 //更新eas创建人为当前登录人
         if (Util.isNotEmpty(vo.getPerson()) && Util.isNotEmpty(id)) {
@@ -320,7 +323,6 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
             }
         }
 
-        System.out.println(state);
         return str;
     }
 
@@ -423,12 +425,17 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         }
 
         JSONObject str = JSONObject.parseObject(result);
+        String state = str.getString("result");
+        if (Util.isNotEmpty(state) && state.contains("fault")) {
+            throw new ServiceException("保存失败：" + str.getString("message"));
+        }
 //更新eas创建人为当前登录人
         if (Util.isNotEmpty(vo.getPerson()) && Util.isNotEmpty(id)) {
             if (creatorId != null) {
                 mapper.updateCreatorId(creatorId, id);
             }
         }
+
         return str;
     }
 
