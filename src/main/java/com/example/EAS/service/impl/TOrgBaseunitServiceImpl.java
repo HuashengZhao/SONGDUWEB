@@ -89,13 +89,13 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
     public OrgVO getEntityFinalOrg(OrgVO vo) {
         OrgVO orgVO = new OrgVO();
         List<OrgVO> orgVOS = baseunitMapper.selectEntitiesFinalOrgs(vo);
-        if (orgVOS!=null && orgVOS.size()>0){
+        if (orgVOS != null && orgVOS.size() > 0) {
             for (OrgVO org : orgVOS) {
                 if (Util.isNotEmpty(vo.getId())) {
-                    getFinalChildren(orgVOS);
+                    orgVOS = getFinalChildren(orgVOS);
                 }
                 Integer isCompany = org.getIsCompany();
-                if (Util.isEmpty(isCompany)){
+                if (Util.isEmpty(isCompany)) {
                     org.setIsCompany(0);
                 }
                 String longNumber = org.getLongNumber();
