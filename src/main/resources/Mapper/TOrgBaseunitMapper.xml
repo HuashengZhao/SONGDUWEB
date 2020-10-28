@@ -77,10 +77,33 @@
     </select>
     <select id="selectEntitiesFinalOrgs" resultType="com.example.EAS.vo.OrgVO">
         select m.fid as id,m.FNAME_L2 as title,m.FNUMBER as num,m.FLONGNUMBER as longNumber,
-        m.FSIMPLENAME as simpleName,m.FISLEAF as isLeaf,m.FDESCRIPTION_L2 as description
+        m.FSIMPLENAME as simpleName,m.FISLEAF as isLeaf,m.FDESCRIPTION_L2 as description,
+        fi.FISBIZUNIT as isCompany
         from T_ORG_BASEUNIT m
         left join T_ORG_OUPartFI fi on fi.FID=m.FPARTFIID
-        where fi.FISBIZUNIT = 1
+        <where>
+            exists (select fi.fid from T_ORG_OUPartFI fi where fi.fid=m.FPartFIID)
+            and not exists (select m1.fid from T_ORG_BASEUNIT m1 where m1.FPARENTID=m.fid)
+            <if test="title!=null and title!=''">
+                and m.FNAME_L2 like CONCAT(CONCAT('%',#{title}),'%')
+            </if>
+            <if test="num!=null and num!=''">
+                and m.FNUMBER like CONCAT(CONCAT('%',#{num}),'%')
+            </if>
+            <if test="longNumber!=null and longNumber!=''">
+                and m.FLONGNUMBER like CONCAT(CONCAT('%',#{longNumber}),'%')
+            </if>
+        </where>
         order by m.FLONGNUMBER
+    </select>
+    <select id="selectNextFinalOrgs" resultType="com.example.EAS.vo.OrgVO">
+        select  m.fid as id,m.FNAME_L2 as title,m.FNUMBER as num,m.FLONGNUMBER as longNumber,
+        m.FSIMPLENAME as simpleName,m.FISLEAF as isLeaf,m.FDESCRIPTION_L2 as description,
+        fi.FISBIZUNIT as isCompany
+        from T_ORG_BASEUNIT m
+        left join T_ORG_OUPartFI fi on fi.FID=m.FPARTFIID
+        where
+         exists (select fi.fid from T_ORG_OUPartFI fi where fi.fid=m.FPartFIID)
+        and m.FPARENTID=#{id}
     </select>
 </mapper>
