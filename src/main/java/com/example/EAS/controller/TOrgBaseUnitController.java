@@ -75,8 +75,8 @@ public class TOrgBaseUnitController {
     public R getEntityFinalOrg(@RequestBody String body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         OrgVO vo = BodyDecodeUtil.decodeBody(body, OrgVO.class);
-        List<OrgVO> orgVOS= orgBaseunitService.getEntityFinalOrg(vo);
-        result.put("data", orgVOS);
+        OrgVO orgVO= orgBaseunitService.getEntityFinalOrg(vo);
+        result.put("data", orgVO);
         result.put("msg", UtilMessage.GET_MSG_SUCCESS);
         result.put("code", HttpStatus.SC_OK);
         return R.ok(result);
