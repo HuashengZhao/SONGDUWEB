@@ -59,6 +59,12 @@
                 and u.fnumber =#{authorNum}
                 or p.fnumber  =#{authorNum}
             </if>
+            <if test="projectIds != null and projectIds.size > 0">
+                and bill.FCURPROJECTID in
+                <foreach item="item" collection="projectIds" index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
         </where>
         order by bill.FBOOKEDDATE desc,bill.fnumber desc
     </select>

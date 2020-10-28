@@ -32,7 +32,7 @@
     <select id="selectDatas" resultType="com.example.EAS.vo.ContractVO">
         select cb.FID id,cb.fbookeddate bizDate,cb.FState state,cb.FHasSettled hasSettled,ct.fname_l2 as conTypeName,
         cb.fnumber num,cb.FNAME as conName,pc.fname_l2 as hygh,cb.FProgrammingContract as hyghId,
-        cb.fmaincontractnumber as mainNumber,cb.famount as amount,
+        cb.fmaincontractnumber as mainNumber,cb.famount as amount,pc.FAMOUNT as balance,
         cur.fname_l2 curName,cb.FSrcAmount srcAmount,cb.FOriginalAmount originalAmount,
         supb.fname_l2 as partBName,supc.fname_l2 as partCName,cb.FCONTRACTSOURCE as csName,
         cb.fsigndate signDate,oa.fname_l2 as deptName,p.fname_l2 as personName,oaa.FNAME_L2 creatDept,
@@ -49,8 +49,8 @@
         left join T_FDC_ContractSource cs on cs.fid=cb.FContractSourceId
         left join T_BD_Person p on p.fid=cb.FRespPersonID
         left join T_FDC_CURPROJECT cp on cp.fid=cb.FCURPROJECTID
+        left join T_ORG_BASEUNIT un on un.fid=cp.FFULLORGUNIT
         left join T_ORG_Admin oa on oa.fid=cb.FRespDeptID
-        left join T_ORG_BASEUNIT un on un.fid=cb.FORGUNITID
         left join T_ORG_Admin oaa on oaa.fid=cb.FCreateDeptID
         left join T_FDC_LandDeveloper ldp on ldp.fid=cb.FLandDeveloperID
         left join T_PM_User u on u.fid=cb.FAuditorID
@@ -180,9 +180,9 @@
     ldp.fname_l2 as partAName,ldp.FID as partA,cb.FCostProperty costProperty,cb.FContractPropert contractNature,
     cb.FIsArchived isArchived, u.fname_l2 auditor,cb.FLastUpdateTime lastAuditTime,uc.fname_l2 as creator,
     cb.fcreatetime createTime,cb.FIsRespite isRespite,cb.FCONTRACTTYPEID as conTypeId,cb.FEXRATE as exRate,
-    cb.FMARKETPROJECTID as marketProjectId,cb.FMPCOSTACCOUNTID as costAccountId,
+    cb.FMARKETPROJECTID as marketProjectId,cb.FMPCOSTACCOUNTID as costAccountId,pc.FAMOUNT as balance,
     cb.FCURRENCYID as currencyId,p.FNUMBER as person,cb.FCURPROJECTID as projectId,cp.FNAME_L2 as projectName,
-    cb.FCONTROLUNITID as orgId,un.FNAME_L2 as orgName,mar.FNAME as marketProjectName,cost.FNAME_L2 as costAccountName,
+    cp.FFULLORGUNIT as orgId,un.FNAME_L2 as orgName,mar.FNAME as marketProjectName,cost.FNAME_L2 as costAccountName,
     cb.FGRTRATE as grtRate,cb.FGRTAMOUNT as grtAmount,cb.FSTARTDATE as startDate,cb.FENDDATE as endDate,
     cb.FCONTRACTWFTYPEID as contractWFTypeId,wf.FNAME_L2 as contractWFTypeName,cb.FOrgType as contractWFStartType,
     cb.FDESCRIPTION as description,bank.FNUMBER as unionBankNum,cb.FBANK as bank,cb.FBANKACCOUNT as bankAccount,
@@ -199,8 +199,8 @@
     left join T_FDC_LandDeveloper ldp on ldp.fid=cb.FLandDeveloperID
     left join T_PM_User u on u.fid=cb.FAuditorID
     left join T_FDC_CURPROJECT cp on cp.fid=cb.FCURPROJECTID
+    left join T_ORG_BASEUNIT un on un.fid=cp.FFULLORGUNIT
     left join T_PM_USER uc on uc.fid=cb.FCreatorID
-    left join T_ORG_BASEUNIT un on un.fid=cb.FORGUNITID
     left join T_CON_MarketProject mar on mar.fid = cb.FMARKETPROJECTID
     left join T_FDC_CostAccount cost on cost.fid=cb.FMPCOSTACCOUNTID
     left join T_CON_ContractWFType wf on wf.fid=cb.FCONTRACTWFTYPEID

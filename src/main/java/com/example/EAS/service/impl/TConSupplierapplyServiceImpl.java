@@ -290,7 +290,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
                 String originalFilename = attachmentsVO.getOriginalFilename() == null ? attachmentsVO.getTitle() : attachmentsVO.getOriginalFilename();
                 StringBuffer stringBuffer = new StringBuffer();
                 object.put("FName", originalFilename == null ? null : originalFilename);//文件名称含后缀
-                object.put("FNumber", attachNum == null ? null : attachNum);//附件编码
+                object.put("FNumber", attachNum == null ? "upLoadFromEas" : attachNum);//附件编码
                 object.put("FRemotePath", webUrl == null ? null : webUrl);//文件相对路径
                 object.put("FSize", fileSize == null ? null : fileSize);// 附件大小
                 object.put("FDescription", descp == null ? null : descp);//附件来源类型
@@ -405,7 +405,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
                 String originalFilename = attachmentsVO.getOriginalFilename() == null ? attachmentsVO.getTitle() : attachmentsVO.getOriginalFilename();
                 StringBuffer stringBuffer = new StringBuffer();
                 object.put("FName", originalFilename == null ? null : originalFilename);//文件名称含后缀
-                object.put("FNumber", attachNum == null ? null : attachNum);//附件编码
+                object.put("FNumber", attachNum == null ? "upLoadFromEas" : attachNum);//附件编码
                 object.put("FRemotePath", webUrl == null ? null : webUrl);//文件相对路径
                 object.put("FSize", fileSize == null ? null : fileSize);// 附件大小
                 object.put("FDescription", descp == null ? null : descp);//附件来源类型

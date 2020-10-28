@@ -28,6 +28,7 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
 
     @Override
     public OrgVO getData(OrgVO vo) {
+        long st = System.currentTimeMillis();
         OrgVO orgVO1 = new OrgVO();
         List<OrgVO> orgVOS = baseunitMapper.selectDatas(vo);
         if (orgVOS.size() > 0) {
@@ -51,6 +52,8 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
             }
         }
         orgVO1.setOrgVOList(orgVOS);
+        long et = System.currentTimeMillis();
+        System.out.println("组织查询耗时：" + (et - st) + "ms");
         return orgVO1;
     }
 
@@ -136,8 +139,7 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
     //    获取下级是财务组织的children
     public List<OrgVO> getFinalChildren(List<OrgVO> list) {//参数为数据库的（原数据，一级id）
         for (OrgVO orgVO : list) {
-            String id = orgVO.getId();
-            List<OrgVO> orgVOS = baseunitMapper.selectNextFinalOrgs(id);
+            List<OrgVO> orgVOS = baseunitMapper.selectNextFinalOrgs(orgVO);
             if (orgVOS != null && orgVOS.size() > 0) {
                 orgVO.setChildren(orgVOS);
                 getChildren(orgVOS);
@@ -145,5 +147,4 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
         }
         return list;
     }
-
 }

@@ -5,10 +5,10 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.EAS.mapper.*;
-import com.example.EAS.model.TBasAttachment;
 import com.example.EAS.model.TConContractbill;
 import com.example.EAS.model.TConMarketproject;
 import com.example.EAS.model.TConMarketprojectcostentry;
+import com.example.EAS.model.TFdcCurproject;
 import com.example.EAS.service.ITConContractbillService;
 import com.example.EAS.util.*;
 import com.example.EAS.vo.*;
@@ -49,6 +49,8 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
     @Autowired
     private TConSupplierapplyMapper supplierapplyMapper;
     @Autowired
+    private TFdcCurprojectMapper tFdcCurprojectMapper;
+
     private TConContractmarketentryMapper contractmarketentryMapper;
     @Autowired
     private TConMarketprojectcostentryMapper tConMarketprojectcostentryMapper;
@@ -263,18 +265,19 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         if (Util.isNotEmpty(contractBillId)) {
             easJson.put("id", contractBillId);
         }
-        String orgId = vo.getOrgId();
-        if (Util.isNotEmpty(orgId)) {
-            easJson.put("orgId", orgId);
+        String conName = vo.getConName();
+        if (Util.isNotEmpty(conName)) {
+            easJson.put("conName", conName);
         }
         String projectId = vo.getProjectId();
         if (Util.isEmpty(projectId)) {
             throw new ServiceException(UtilMessage.MISS_PROJECT_INFO);
         }
         easJson.put("projectId", projectId);
-        String conName = vo.getConName();
-        if (Util.isNotEmpty(conName)) {
-            easJson.put("conName", conName);
+        TFdcCurproject tFdcCurproject = tFdcCurprojectMapper.selectById(projectId);
+        String fcostcenterid = tFdcCurproject.getFcostcenterid();
+        if (Util.isNotEmpty(fcostcenterid)){
+            easJson.put("orgId", fcostcenterid);
         }
         String num = vo.getNum();
         if (Util.isNotEmpty(num)) {
@@ -456,7 +459,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                 String originalFilename = attachmentsVO.getOriginalFilename() == null ? attachmentsVO.getTitle() : attachmentsVO.getOriginalFilename();
                 StringBuffer stringBuffer = new StringBuffer();
                 object.put("FName", title == null ? null : title);//文件名称不含含后缀
-                object.put("FNumber", attachNum == null ? null : attachNum);//附件编码
+                object.put("FNumber", attachNum == null ? "upLoadFromEas" : attachNum);//附件编码
                 object.put("FRemotePath", webUrl == null ? null : webUrl);//文件相对路径
                 object.put("FSize", fileSize == null ? null : fileSize);// 附件大小
                 object.put("FDescription", descp == null ? null : descp);//附件来源类型
@@ -702,6 +705,8 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                 contractVO.setContractWFStartType("集团/事业部/城市公司-项目部");
             } else if (contractWFStartType.contains("NEIBU")) {
                 contractVO.setContractWFStartType("内部关联公司往来类");
+            } else if (contractWFStartType.contains("WAIBU")) {
+                contractVO.setContractWFStartType("外部供应商客户往来类");
             }
         }
 //       形成方式

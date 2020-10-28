@@ -3,10 +3,7 @@ package com.example.EAS.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.EAS.mapper.TBasAttachmentMapper;
-import com.example.EAS.mapper.TConDeductofpayreqbillMapper;
-import com.example.EAS.mapper.TConPayrequestbillMapper;
-import com.example.EAS.mapper.TConSupplierapplyMapper;
+import com.example.EAS.mapper.*;
 import com.example.EAS.model.TConDeductofpayreqbill;
 import com.example.EAS.model.TConPayrequestbill;
 import com.example.EAS.service.ITConPayrequestbillService;
@@ -22,6 +19,7 @@ import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -46,7 +44,8 @@ public class TConPayrequestbillServiceImpl extends ServiceImpl<TConPayrequestbil
     private TConSupplierapplyMapper supplierapplyMapper;
     @Autowired
     private LoginInfoUtil loginInfoUtil;
-
+    @Autowired
+    private TConContractbillMapper contractbillMapper;
 
     DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
@@ -59,9 +58,18 @@ public class TConPayrequestbillServiceImpl extends ServiceImpl<TConPayrequestbil
         if (Util.isEmpty(orgId)) {
             return null;
         }
-        String projectId = vo.getProjectId();
-        if (Util.isEmpty(projectId)) {
-            return null;
+//        項目id集合      有父節點則是分期 沒有是項目 id防入集合
+        List<String> projectIdList = new ArrayList<>();
+        if (Util.isNotEmpty(vo.getProjectId())) {
+            projectIdList.add(vo.getProjectId());
+            String parentId = contractbillMapper.selectProject(vo.getProjectId());
+            if (Util.isEmpty(parentId)) {
+                List<String> ids = contractbillMapper.selectProjectIds(vo.getProjectId());
+                projectIdList.addAll(ids);
+            }
+        }
+        if (projectIdList != null && projectIdList.size() > 0) {
+            vo.setProjectIds(projectIdList);
         }
         //        过权限
         Boolean aBoolean = loginInfoUtil.ifInItDept();

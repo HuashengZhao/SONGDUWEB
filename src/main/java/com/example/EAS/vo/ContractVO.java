@@ -41,6 +41,8 @@ public class ContractVO {
     private String hygh;
     private String hyghId;
     private String mainNumber;
+    @JsonSerialize(using = CustomBigDecimalSerialize.class, nullsUsing = CustomBigDecimalSerialize.class)
+    private BigDecimal balance;
     //    币别
     private String currencyId;
     private String curName;
