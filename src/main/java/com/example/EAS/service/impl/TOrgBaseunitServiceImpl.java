@@ -28,6 +28,7 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
 
     @Override
     public OrgVO getData(OrgVO vo) {
+        long st = System.currentTimeMillis();
         OrgVO orgVO1 = new OrgVO();
         List<OrgVO> orgVOS = baseunitMapper.selectDatas(vo);
         if (orgVOS.size() > 0) {
@@ -51,6 +52,8 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
             }
         }
         orgVO1.setOrgVOList(orgVOS);
+        long et = System.currentTimeMillis();
+        System.out.println("组织查询耗时：" + (et - st) + "ms");
         return orgVO1;
     }
 

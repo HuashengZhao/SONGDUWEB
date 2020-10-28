@@ -22,6 +22,7 @@ public class PayRequestBillVO {
     private String orgNumber;
     private String orgName;
     private String projectId;
+    private List<String> projectIds;
     private String projectNumber;
     private String projectName;
     private String creatorId;
