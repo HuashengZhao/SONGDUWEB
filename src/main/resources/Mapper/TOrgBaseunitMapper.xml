@@ -100,6 +100,9 @@
             <if test="longNumber!=null and longNumber!=''">
                 and m.FLONGNUMBER like CONCAT(CONCAT('%',#{longNumber}),'%')
             </if>
+            <if test="isCompany!=null and isCompany!=''">
+                and fi.FISBIZUNIT =#{isCompany}
+            </if>
         </where>
         order by m.FLONGNUMBER
     </select>
