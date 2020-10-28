@@ -77,7 +77,7 @@
     </select>
     <select id="selectEntitiesFinalOrgs" resultType="com.example.EAS.vo.OrgVO">
         select m.fid as id,m.FNAME_L2 as title,m.FNUMBER as num,m.FLONGNUMBER as longNumber,
-        m.FSIMPLENAME as simpleName
+        m.FSIMPLENAME as simpleName,m.FISLEAF as isLeaf,m.FDESCRIPTION_L2 as description
         from T_ORG_BASEUNIT m
         left join T_ORG_OUPartFI fi on fi.FID=m.FPARTFIID
         where fi.FISBIZUNIT = 1
