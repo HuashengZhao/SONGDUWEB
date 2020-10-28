@@ -34,6 +34,7 @@ public class TConProgrammingcontractServiceImpl extends ServiceImpl<TConProgramm
 
     @Override
     public PageBean<ProgramConVO> getProgramCon(ProgramConVO vo) {
+        long st = System.currentTimeMillis();
         ProgramConVO programConVO = new ProgramConVO();
         if (Util.isEmpty(vo.getContractTypeId())) {
             return null;
@@ -43,12 +44,10 @@ public class TConProgrammingcontractServiceImpl extends ServiceImpl<TConProgramm
         }
         List<ProgramConVO> programConVOList = new ArrayList<>();
         PageHelper.startPage(vo.getCurrentPage(), vo.getPageSize());
-            programConVOList = mapper.selectDataCanBeLinked(vo);
+        programConVOList = mapper.selectDataCanBeLinked(vo);
 
         if (Util.isNotEmpty(programConVOList)) {
             for (ProgramConVO conVO : programConVOList) {
-                Integer linked = 1;
-                String billId = conVO.getBillId();
                 String longNumber = conVO.getLongNumber();
                 if (Util.isNotEmpty(longNumber)) {
                     conVO.setLongNumber(longNumber
@@ -61,6 +60,8 @@ public class TConProgrammingcontractServiceImpl extends ServiceImpl<TConProgramm
         PageBean<ProgramConVO> pageBean = new PageBean<>();
         pageBean.setTotalCount(((Page) programConVOList).getTotal());
         pageBean.setPageData(programConVOList);
+        long et = System.currentTimeMillis();
+        System.out.println("查询合约规划耗时：" + (et - st) + "ms");
         return pageBean;
     }
 }

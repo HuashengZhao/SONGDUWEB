@@ -9,7 +9,7 @@
         from T_ORG_BASEUNIT m
         <where>
             m.FISADMINORGUNIT=1
-            not exists (select m1.fid from T_ORG_BASEUNIT m1 where m1.FPARENTID=m.fid)
+            and not exists (select m1.fid from T_ORG_BASEUNIT m1 where m1.FPARENTID=m.fid)
             <if test="id!=null and id!=''">
                 and m.fid=#{id}
             </if>
