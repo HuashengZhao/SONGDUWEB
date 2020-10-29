@@ -889,6 +889,10 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         String result = null;
         try {
             result = (String) call.invoke(new Object[]{jsonObject.toString()});
+            JSONObject jsonObject1 = JSONObject.parseObject(result);
+            String result1 = jsonObject1.getString("result");
+            System.out.println(result1);
+            System.out.println(jsonObject1.toString());
         } catch (RemoteException e) {
             e.printStackTrace();
         }
