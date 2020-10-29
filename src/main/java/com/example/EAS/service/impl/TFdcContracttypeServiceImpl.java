@@ -36,16 +36,7 @@ public class TFdcContracttypeServiceImpl extends ServiceImpl<TFdcContracttypeMap
         List<ContractTypeVO> contractTypes = contracttypeMapper.selectData(vo);
         if (contractTypes != null && contractTypes.size() > 0) {
             for (ContractTypeVO contractType : contractTypes) {
-//                需关联合约规划的合同类型：土地合同、前期合同、建安合同、基础设施、公建配套、设计合同、工程营销（工程合同）
-                String title = contractType.getTitle();
-                contractType.setWhetherPC(0);
-                if (Util.isNotEmpty(title)){
-                    if (title.contains("土地合同")||title.contains("前期合同")||title.contains("建安合同")
-                    ||title.contains("基础设施")||title.contains("公建配套")||title.contains("设计合同")
-                    ||title.contains("工程营销")){
-                        contractType.setWhetherPC(1);
-                    }
-                }
+
                 Integer isMarket = contractType.getIsMarket();
                 if (Util.isEmpty(isMarket)||isMarket==0){
                     contractType.setIsMarket(0);
