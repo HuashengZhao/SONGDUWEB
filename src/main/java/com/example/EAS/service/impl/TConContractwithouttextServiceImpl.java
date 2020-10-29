@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -64,7 +65,8 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
     private OaIdUtil oaIdUtil;
     @Autowired
     private LoginInfoUtil loginInfoUtil;
-
+    @Autowired
+    private TFdcContracttypeMapper ctMapper;
 
     DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     org.apache.axis.client.Service service = new org.apache.axis.client.Service();
@@ -402,9 +404,18 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         if (Util.isNotEmpty(fcostcenterid)) {
             easJson.put("orgId", fcostcenterid);
         }
+//    根据合同类型判断是否是营销类合同
+        Integer isMarket = null;
         String contractTypeId = vo.getContractTypeId();
         if (Util.isNotEmpty(contractTypeId)) {
             easJson.put("conTypeId", contractTypeId);
+            TFdcContracttype tFdcContracttype = ctMapper.selectById(contractTypeId);
+            Long fismarket = tFdcContracttype.getFismarket();
+            if (Util.isEmpty(fismarket)) {
+                isMarket = 0;
+            } else if (fismarket == 1) {
+                isMarket = 1;
+            }
         }
         String programContractId = vo.getProgramContractId();
         if (Util.isNotEmpty(programContractId)) {
@@ -415,34 +426,56 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             easJson.put("marketProjectId", marketProjectId);
         }
 
-//        立项金额控制合同金额
-        BigDecimal useAmount = BigDecimal.ZERO;
-        Double famount = Double.valueOf("0");
+//        立项金额控制 立项金额+负数金额-关联的无文本金额合计与金额相比
+//       2.2.4.3.营销类无文本合同申请金额受营销立项的控制，营销立项与营销类无文本是一对多的关系
+//       ，无文本累计申请金额必须小于等于营销立项可用余额（单据状态含已提交、审批中、已审批）
+        BigDecimal useAmount = BigDecimal.ZERO;//       已用金额
+        BigDecimal mkAmount = BigDecimal.ZERO;//        立项金额
+        BigDecimal negAmount = BigDecimal.ZERO;//        负数金额
         if (Util.isNotEmpty(marketProjectId)) {
             TConMarketprojectcostentry contractmarketentry =
                     tConMarketprojectcostentryMapper.selectOne(new QueryWrapper<TConMarketprojectcostentry>()
                             .eq("FHEADID", marketProjectId)
-                            .eq("FTYPE", "CONTRACT")
+                            .eq("FTYPE", "NOTEXTCONTRACT")
                             .eq("fcostaccountid", vo.getCostAccountId() == null ? null : vo.getCostAccountId()));
             if (Util.isNotEmpty(contractmarketentry)) {
-                famount = contractmarketentry.getFamount();
-                BigDecimal voAmount = vo.getAmount();
-                if (Util.isNotEmpty(famount) && Util.isNotEmpty(voAmount)) {
-                    BigDecimal famountDe = new BigDecimal(famount);
-                    if (voAmount.compareTo(famountDe) == 1) {
-                        throw new ServiceException(UtilMessage.CONTRACT_AMOUNT_BEYOND);
+                mkAmount =mkAmount.add(new BigDecimal(contractmarketentry.getFamount()));
+            }
+            List<String> mpIds = marketProjectMapper.selectList(new QueryWrapper<TConMarketproject>()
+                    .eq("FMPID", marketProjectId)
+                    .eq("FISSUB", 1)
+                    .lambda())
+                    .stream().map(TConMarketproject::getFid)
+                    .collect(Collectors.toList());
+            if (mpIds!=null && mpIds.size()>0) {
+                List<Double> collect = tConMarketprojectcostentryMapper.selectList(new QueryWrapper<TConMarketprojectcostentry>()
+                        .lambda()
+                        .in(TConMarketprojectcostentry::getFheadid, mpIds))
+                        .stream()
+                        .map(TConMarketprojectcostentry::getFamount)
+                        .collect(Collectors.toList());
+                if (collect!=null && collect.size()>0){
+                    for (Double aDouble : collect) {
+                        negAmount=negAmount.add(new BigDecimal(aDouble));
                     }
                 }
             }
-//        立项金额+负数金额-关联无文本的金额合计  对比  当前无文本录入金额
-
-
+            List<TConContractwithouttext> mps = mapper.selectList(new QueryWrapper<TConContractwithouttext>()
+                    .eq("FMarketProjectId", marketProjectId));
+            if (mps!=null && mps.size()>0){
+                for (TConContractwithouttext mp : mps) {
+                    Double famount = mp.getFamount();
+                    if (Util.isNotEmpty(famount)){
+                        useAmount=useAmount.add(new BigDecimal(famount));
+                    }
+                }
+            }
+            BigDecimal divide = mkAmount.add(negAmount).divide(useAmount);
+            BigDecimal oriAmount = vo.getOriAmount();
+            if (oriAmount.compareTo(divide)==1){
+                throw new ServiceException(UtilMessage.NOTEXT_AMOUNT_BEYOND_MARKET);
+            }
         }
-
-//       负数金额
-//       营销立项已关联无文本的金额总和
-//        marketProjectMapper.selectCountUsedAmount(marketProjectId);
-//        useAmount = useAmount.add(new BigDecimal(famount));
 
         String costAccountId = vo.getCostAccountId();
         if (Util.isNotEmpty(costAccountId)) {
@@ -457,13 +490,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             throw new ServiceException(UtilMessage.CONTRACT_AMOUNT_NOT_FOUND);
         }
         easJson.put("originalAmount", oriAmount.toString());
-//        此处疑问 前端合同金额字段 存值到原币与本位币两个字段 加判断 若传本位币则赋值 否则都一样
-//        BigDecimal amount = vo.getAmount();
-//        if (Util.isNotEmpty(amount)) {
-//            easJson.put("amount", amount.toString());
-//        } else {
         easJson.put("amount", oriAmount.toString());
-//        }
         String capitalAmount = vo.getBwbdx();
         if (Util.isNotEmpty(capitalAmount)) {
             easJson.put("capitalAmount", capitalAmount);

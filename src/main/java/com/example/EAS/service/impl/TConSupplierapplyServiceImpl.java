@@ -157,6 +157,13 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
 //                       附件信息
                     List<AttachmentsVO> easAttFiles = attachmentMapper.selectAttachMent(easId);
                     if (easAttFiles != null && easAttFiles.size() > 0) {
+                        for (AttachmentsVO easAttFile : easAttFiles) {
+                            String fileType = easAttFile.getFileType();
+                            if (Util.isNotEmpty(fileType)) {
+                                String s = FileContentTypeUtils.contentType("." + fileType);
+                                easAttFile.setContentType(s);
+                            }
+                        }
                         supplierApplyVO.setAttachmentsVOS(easAttFiles);
                     }
                 }
