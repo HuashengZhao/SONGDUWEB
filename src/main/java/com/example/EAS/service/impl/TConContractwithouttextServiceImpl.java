@@ -399,7 +399,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         easJson.put("projectId", projectId);
         TFdcCurproject tFdcCurproject = tFdcCurprojectMapper.selectById(projectId);
         String fcostcenterid = tFdcCurproject.getFcostcenterid();
-        if (Util.isNotEmpty(fcostcenterid)){
+        if (Util.isNotEmpty(fcostcenterid)) {
             easJson.put("orgId", fcostcenterid);
         }
         String contractTypeId = vo.getContractTypeId();
@@ -414,14 +414,18 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         if (Util.isNotEmpty(marketProjectId)) {
             easJson.put("marketProjectId", marketProjectId);
         }
+
 //        立项金额控制合同金额
+        BigDecimal useAmount = BigDecimal.ZERO;
+        Double famount = Double.valueOf("0");
         if (Util.isNotEmpty(marketProjectId)) {
             TConMarketprojectcostentry contractmarketentry =
                     tConMarketprojectcostentryMapper.selectOne(new QueryWrapper<TConMarketprojectcostentry>()
                             .eq("FHEADID", marketProjectId)
-                            .eq("FTYPE", "CONTRACT"));
+                            .eq("FTYPE", "CONTRACT")
+                            .eq("fcostaccountid", vo.getCostAccountId() == null ? null : vo.getCostAccountId()));
             if (Util.isNotEmpty(contractmarketentry)) {
-                Double famount = contractmarketentry.getFamount();
+                famount = contractmarketentry.getFamount();
                 BigDecimal voAmount = vo.getAmount();
                 if (Util.isNotEmpty(famount) && Util.isNotEmpty(voAmount)) {
                     BigDecimal famountDe = new BigDecimal(famount);
@@ -430,7 +434,16 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
                     }
                 }
             }
+//        立项金额+负数金额-关联无文本的金额合计  对比  当前无文本录入金额
+
+
         }
+
+//       负数金额
+//       营销立项已关联无文本的金额总和
+//        marketProjectMapper.selectCountUsedAmount(marketProjectId);
+//        useAmount = useAmount.add(new BigDecimal(famount));
+
         String costAccountId = vo.getCostAccountId();
         if (Util.isNotEmpty(costAccountId)) {
             easJson.put("costAccountId", costAccountId);

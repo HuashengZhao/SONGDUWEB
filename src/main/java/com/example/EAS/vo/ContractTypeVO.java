@@ -35,5 +35,7 @@ public class ContractTypeVO {
 //    操作类型  1：新增合同 0：查询
     private Integer operatType;
     private List<ContractTypeVO> contractTypeVOList;
+//    是否需要关联合约规划 0 1
+    private Integer whetherPC;
 
 }
