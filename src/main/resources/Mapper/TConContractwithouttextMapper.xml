@@ -26,9 +26,9 @@
         left join T_BD_Person p1 on p1.fid=bill.FApplierId
         left join T_CON_PayRequestBill pb on pb.FCONTRACTID = bill.fid
         left join t_bd_supplier sup2 on sup2.fid=pb.FREALSUPPLIERID
+        left join T_FDC_CURPROJECT cp on cp.fid=bill.FCurProjectID
         <where>
-            and bill.FControlUnitID=#{orgId}
-
+            and cp.FFULLORGUNIT=#{orgId}
             <if test="bizDate!=null">
                 and  <![CDATA[  #{bookDate} <= ]]> bill.FBOOKEDDATE and bill.FBOOKEDDATE <![CDATA[   <= #{bizDate}]]>
             </if>

@@ -10,6 +10,7 @@ public class ContractSignDetailVO {
     private String totalAmount;
     private String id;
 //    不含税金额
+
     private String amount;
 
     private String rate;
