@@ -141,6 +141,9 @@ public class NoTextContractVO {
     //    营销立项
     private String marketProjectId;
     private String marketProjectName;
+    //    营销立项可用余额
+    @JsonSerialize(using = CustomBigDecimalSerialize.class, nullsUsing = CustomBigDecimalSerialize.class)
+    private BigDecimal marProBalance;
     private List<MarketContDetailVO> marketContDetailVOS;
     //    eas返回
     private String result;

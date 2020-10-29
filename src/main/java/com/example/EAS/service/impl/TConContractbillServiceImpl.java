@@ -320,12 +320,6 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                             .eq("FTYPE", "CONTRACT")
                             .eq("fcostaccountid", vo.getCostAccountId() == null ? null : vo.getCostAccountId()));
 
-//            Long fisjt = tConMarketproject.getFisjt();
-//            if (fisjt != null && fisjt == 1) {
-//                easJson.put("isJT", "true");
-//            } else if (fisjt != null && fisjt == 0) {
-//                easJson.put("isJT", "false");
-//            }
 //            营销立项金额控制合同金额
             if (Util.isNotEmpty(contractmarketentry)) {
                 Double famount = contractmarketentry.getFamount();
