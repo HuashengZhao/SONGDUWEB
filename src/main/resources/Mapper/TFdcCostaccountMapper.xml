@@ -48,6 +48,9 @@
 
     </select>
     <select id="selectCostAccountId" resultType="java.lang.String">
-        select fmpcostaccountid from T_CON_ContractBill where FMARKETPROJECTID=#{marketId}
+        select distinct fmpcostaccountid from T_CON_ContractBill where FMARKETPROJECTID=#{marketId}
+    </select>
+    <select id="selectNTCostAccountId" resultType="java.lang.String">
+         select distinct fmpcostaccountid from T_CON_CONTRACTWITHOUTTEXT where FMARKETPROJECTID=#{marketId}
     </select>
 </mapper>
