@@ -44,4 +44,8 @@ public interface TOrgBaseunitMapper extends BaseMapper<TOrgBaseunit> {
     List<Long> selectFlevels();
 
 
+    OrgVO selectFirstLevel();
+
+
+    List<OrgVO> selectDatasByParentID(String id);
 }
