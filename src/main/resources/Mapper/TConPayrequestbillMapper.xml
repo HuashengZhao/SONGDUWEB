@@ -25,8 +25,7 @@
         left join T_ORG_BASEUNIT bu on bu.fid=bill.FCONTROLUNITID
         left join t_bd_person p on p.fid=bill.FApplierId
         <where>
-            bill.FControlUnitID=#{orgId}
-            and bill.FCurProjectID=#{projectId}
+            cp.FFULLORGUNIT=#{orgId}
             and bill.FSource='0D6DD1F4'
             <if test="title!=null and title!=''">
                 and bill.FNAME like CONCAT(CONCAT('%',#{title}),'%')

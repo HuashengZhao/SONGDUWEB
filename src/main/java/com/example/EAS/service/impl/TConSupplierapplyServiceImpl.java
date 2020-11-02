@@ -573,6 +573,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         String sendUrl = null;
         String sendAppUrl = null;
         StringBuffer sbv = new StringBuffer();
+        StringBuffer sba = new StringBuffer();
         String appendUrl = mapper.selectViewUrl();
         String appUrl = mapper.selectAppUrl();
 //					审批单 approval
@@ -580,6 +581,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
             throw new ServiceException(UtilMessage.VIEW_URL_NOT_FOUND);
         }
         String appendType = "supplier/view?from=oa&id=";
+        String appAppendType = "supplier/?from=oa&id=";
         String appendId = null;
         try {
             appendId = URLEncoder.encode(id, "utf-8");
@@ -598,7 +600,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         sendUrl = String.valueOf(sbv.append(appendUrl).append(appendType).append(appendId)
                 .append(appendToken).append(tokenAppend));
         //        app端详情查看地址
-        sendAppUrl = String.valueOf(sbv.append(appUrl).append(appendType).append(appendId)
+        sendAppUrl = String.valueOf(sba.append(appUrl).append(appAppendType).append(appendId)
                 .append(appendToken).append(tokenAppend));
 //        sb.append("http://172.17.4.125:8082/easWeb/#/supplier").append("?token=").append(token);
         System.out.println("合同单据web端详情查看地址：" + sendUrl);
@@ -609,7 +611,6 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
 //        obj.put("attFile", attFile);
         JSONObject data = new JSONObject();
         data.put("fd_link", sendUrl);
-        sendAppUrl = "http://test.pmredstar.com:18089//easApp/index.html#/";  //当前测试使用地址 测试结束删除此行代码即可
         data.put("fd_mobile_link", sendAppUrl);
 
 //        data.put("createTime", vo.getCreateTime());

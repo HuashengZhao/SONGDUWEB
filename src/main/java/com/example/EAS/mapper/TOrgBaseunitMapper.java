@@ -35,4 +35,13 @@ public interface TOrgBaseunitMapper extends BaseMapper<TOrgBaseunit> {
 
 
     List<OrgVO> selectNextFinalOrgs(OrgVO orgVO);
+
+    List<OrgVO> selectALLCWSTS();
+
+
+    OrgVO selectDataById(String parentId);
+
+    List<Long> selectFlevels();
+
+
 }

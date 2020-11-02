@@ -26,6 +26,7 @@ public class UtilMessage {
     public static final String REQUEST_NUMBER_EMPTY = "编码不能为空！";
     public static final String REQUEST_PROJECTID_EMPTY = "项目Id不能为空！";
     public static final String REQUEST_PROJECT_INFO = "缺失项目信息！";
+    public static final String REQUEST_ORG_INFO = "缺失项目信息！";
     public static final String REQUEST_PARAM_EMPTY_LL = "参数缺失！";
     public static final String MODIFY_DATA_SUCCESS = "修改成功！";
     public static final String MODIFY_DATA_ERROR = "修改失败！";
@@ -89,6 +90,7 @@ public class UtilMessage {
     public static final String NO_TAXERQUA = "请完善纳税人信息！";
     public static final String EXIST_TAX_NUM = "纳税人识别号重复！";
 
+    public static final String UNSUPPORT_ORG_INFO = "当前组织信息与eas信息不符请查看组织信息或与管理员联系！";
     public static final String DETAIL_AMOUNT_BEYOND = "签订明细金额不能大于合同金额！";
     public static final String CONTRACT_AMOUNT_BEYOND = "合同金额超过营销立项金额，不允许保存，请修改!！";
     public static final String NOTEXT_AMOUNT_BEYOND_MARKET = "申请金额超过营销立项可用余额，请修改后再提交！";

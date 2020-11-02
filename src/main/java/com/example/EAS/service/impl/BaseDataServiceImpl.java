@@ -70,7 +70,8 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
      * Oa审批通过 eas改成已审批,
      * oa审批驳回，eas改为已提交 此时可以修改并二次提交 二次提交时 携带oa原有id提交,
      * oa废弃流程，eas改为保存 此时为新流程
-     *
+     * acceptinfo 日志表(billId varchar(255),accepttime varchar(255),billtype varchar(255)
+     *  ,optype varchar(255),state int,message varchar(555))
      * @param body
      */
 
