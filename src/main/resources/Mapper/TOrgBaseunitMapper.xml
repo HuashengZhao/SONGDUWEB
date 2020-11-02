@@ -124,13 +124,30 @@
         order by m.flongnumber
     </select>
     <select id="selectALLCWSTS" resultType="com.example.EAS.vo.OrgVO">
-        select m.fid as id,m.FPARENTID as parentId,m.FNAME_L2 as title,m.FNUMBER as num,m.FLONGNUMBER as longNumber,
-        m.FSIMPLENAME as simpleName,m.FISLEAF as isLeaf,m.FDESCRIPTION_L2 as description,
-        fi.FISBIZUNIT as isCompany,m.FLEVEL
+        select fi.FISBIZUNIT as isCompany,
+        m.fid as id,
+        m.FPARENTID as parentId,
+        m.FNAME_L2 as title,
+        m.FNUMBER as num,
+        m.FLONGNUMBER as longNumber,
+        m.FSIMPLENAME as simpleName,
+        m.FISLEAF as isLeaf,
+        m.FDESCRIPTION_L2 as description,
+        m.FLEVEL
         from T_ORG_BASEUNIT m
-        left join T_ORG_OUPartFI fi on fi.FID=m.FPARTFIID
-        where
-        m.FIsOUSealUp=0 and fi.FISBIZUNIT=1 and m.FISLEAF=0
+        left join T_ORG_OUPartFI fi on fi.FID = m.FPARTFIID
+        <where>
+            m.FIsOUSealUp = 0
+            and m.FISLEAF = 0
+            and fi.FISBIZUNIT = 1
+            <if test="title!=null and title!=''">
+                and m.FNAME_L2 like CONCAT(CONCAT('%',#{title}),'%')
+            </if>
+            <if test="num !=null and num!=''">
+                and m.FNUMBER like CONCAT(CONCAT('%',#{num}),'%')
+            </if>
+        </where>
+        order by m.flongnumber
     </select>
     <select id="selectDataById" resultType="com.example.EAS.vo.OrgVO">
          select m.fid as id,m.FPARENTID as parentId,m.FNAME_L2 as title,m.FNUMBER as num,m.FLONGNUMBER as longNumber,
@@ -151,15 +168,18 @@ where
     m.FIsOUSealUp=0  and m.FISLEAF=0 and m.FLEVEL=1 and fi.FISBIZUNIT is not null  order by m.FNUMBER
     </select>
     <select id="selectDatasByParentID" resultType="com.example.EAS.vo.OrgVO">
-select fi.FISBIZUNIT as isCompany,m.fid as id,m.FPARENTID as parentId,m.FNAME_L2 as title,m.FNUMBER as num,m.FLONGNUMBER as longNumber,
-       m.FSIMPLENAME as simpleName,m.FISLEAF as isLeaf,m.FDESCRIPTION_L2 as description,
-       m.FLEVEL
-from T_ORG_BASEUNIT m
-       left join T_ORG_OUPartFI fi on fi.FID=m.FPARTFIID
-where
-    m.FIsOUSealUp=0  and m.FISLEAF=0
-    and m.FPARENTID=#{id}
-    and fi.FISBIZUNIT is not null  order by m.flongnumber
+        select fi.FISBIZUNIT as isCompany,m.fid as id,m.FPARENTID as parentId,m.FNAME_L2 as title,m.FNUMBER as
+        num,m.FLONGNUMBER as longNumber,
+        m.FSIMPLENAME as simpleName,m.FISLEAF as isLeaf,m.FDESCRIPTION_L2 as description,
+        m.FLEVEL
+        from T_ORG_BASEUNIT m
+        left join T_ORG_OUPartFI fi on fi.FID=m.FPARTFIID
+        where
+            m.FIsOUSealUp=0
+            and m.FISLEAF=0
+            and m.FPARENTID=#{id}
+            and fi.FISBIZUNIT is not null
+        order by m.flongnumber
     </select>
 
 </mapper>

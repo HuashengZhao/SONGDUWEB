@@ -578,7 +578,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         }
         String description = vo.getDescription();
         if (Util.isNotEmpty(description)) {
-            easJson.put("description", description);
+            easJson.put("moneyDesc", description);
         }
 
         String receiverType = vo.getReceiverType();
