@@ -95,23 +95,20 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
     @Override
     public OrgVO getEntityFinalOrg(OrgVO vo) {
         long st = System.currentTimeMillis();
-        OrgVO orgVO = new OrgVO();
-        List<OrgVO> orgVOS = baseunitMapper.selectEntitiesFinalOrgs(vo);
-        if (orgVOS!=null && orgVOS.size()>0){
-            for (OrgVO org : orgVOS) {
-                if (Util.isNotEmpty(vo.getId())) {
-                    getFinalChildren(orgVOS);
-                }
-                String longNumber = org.getLongNumber();
-                if (Util.isNotEmpty(longNumber)) {
-                    org.setLongNumber(longNumber
-                            .replace("-", ".")
-                            .replace("!", "."));
-                }
+        List<OrgVO> vos = new ArrayList<>();
+        OrgVO orgVO = baseunitMapper.selectFirstLevel();
+        if (Util.isNotEmpty(orgVO)){
+            String id = orgVO.getId();
+            if (Util.isNotEmpty(id)) {
+//                getChildren
+                getEFChildren(orgVO,id);
+                vos.add(orgVO);
             }
         }
-        orgVO.setOrgVOList(orgVOS);
-        return orgVO;
+        long et = System.currentTimeMillis();
+        System.out.println("获取预算公司、财务组织耗时：" + (et - st) + "ms");
+        vo.setOrgVOList(vos);//犹豫有改动 前端取值从这里取  所以需要集合放入这里返回；
+        return vo;
     }
 
 
@@ -142,16 +139,18 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
         return counts;
     }
 
-    //    获取下级是财务组织的children
-    public List<OrgVO> getFinalChildren(List<OrgVO> list) {//参数为数据库的（原数据，一级id）
-        for (OrgVO orgVO : list) {
-            String id = orgVO.getId();
-            List<OrgVO> orgVOS = baseunitMapper.selectNextFinalOrgs(id);
-            if (orgVOS != null && orgVOS.size() > 0) {
-                orgVO.setChildren(orgVOS);
-                getChildren(orgVOS);
+//    财务实体组织children
+    public OrgVO getEFChildren(OrgVO orgVO,String id){
+        List<OrgVO> orgVOS = baseunitMapper.selectDatasByParentID(id);
+        if (orgVOS!=null && orgVOS.size()>0){
+            orgVO.setChildren(orgVOS);
+            for (OrgVO vo : orgVOS) {
+                String id1 = vo.getId();
+                if (Util.isNotEmpty(id1)){
+                    getEFChildren(vo,id1);
+                }
             }
         }
-        return list;
+        return orgVO;
     }
 }

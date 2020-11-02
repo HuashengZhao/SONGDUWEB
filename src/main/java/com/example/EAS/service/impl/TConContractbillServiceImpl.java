@@ -180,9 +180,9 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                         contractVO.setCsName("战略合作");
                     }
                 }
-                    contractVO.setHasFile(0);
+                contractVO.setHasFile(0);
                 Integer attNums = contractVO.getAttNums();
-                if (Util.isNotEmpty(attNums)&&attNums.compareTo(0)==1){
+                if (Util.isNotEmpty(attNums) && attNums.compareTo(0) == 1) {
                     contractVO.setHasFile(1);
                 }
 //                保存=1SAVED,已提交=2SUBMITTED,审批中=3AUDITTING,已审批=4AUDITTED,终止=5CANCEL,已下发=7ANNOUNCE,已签证=8VISA,
@@ -276,7 +276,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         easJson.put("projectId", projectId);
         TFdcCurproject tFdcCurproject = tFdcCurprojectMapper.selectById(projectId);
         String fcostcenterid = tFdcCurproject.getFcostcenterid();
-        if (Util.isNotEmpty(fcostcenterid)){
+        if (Util.isNotEmpty(fcostcenterid)) {
             easJson.put("orgId", fcostcenterid);
         }
         String num = vo.getNum();
@@ -951,14 +951,27 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         System.out.println("合同单据web端详情查看地址：" + sendUrl);
         System.out.println(" 合同单据app端详情查看地址：" + sendAppUrl);
         obj.put("loginName", "00561");
-//        附件参数 todo
-        JSONObject attFile = new JSONObject();
-//        obj.put("attFile", attFile);
+
         data.put("fd_link", sendUrl);
         data.put("fd_mobile_link", sendAppUrl);
-
 //        data.put("createTime", vo.getCreateTime());
         obj.put("data", data.toString());
+
+        //                附件参数
+        JSONArray attFile = new JSONArray();
+        List<AttachmentsVO> easFiles = attachmentMapper.selectAttachMent(id);
+        if (easFiles != null && easFiles.size() > 0) {
+            for (AttachmentsVO easFile : easFiles) {
+                JSONObject attObj = new JSONObject();
+                attObj.put("filename", easFile.getTitle());
+                attObj.put("filepath", easFile.getWebUrl());
+                attObj.put("filetype", easFile.getFileType());
+                attFile.add(attObj);
+            }
+        }
+
+        obj.put("attFile", attFile);
+        obj.put("fileType", "01");
         //        当当前流程未提交时 oaidrecord没有对应oaid 调用oa新增提交方法
         String result = null;
         JSONObject str = null;
@@ -1000,29 +1013,26 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             tConContractbill.setFstate("3AUDITTING");
             mapper.updateById(tConContractbill);
 //            获取返回的附件查看路径   预览 todo
-//            JSONArray attUrlArray = str.getJSONArray("atturl");
-//            if (attUrlArray!=null && attUrlArray.size()>0){
+            JSONArray attUrlArray = str.getJSONArray("atturl");
+            if (attUrlArray!=null && attUrlArray.size()>0){
 ////               附件预览地址
-//                List<String> attLinkList =new ArrayList<>();
-//                for(int i=0;i<attUrlArray.size();i++){
-//                    JSONObject atturlObj = attUrlArray.getJSONObject(i);
-//                    String attName = atturlObj.getString("name");
-//                    String atturl = atturlObj.getString("url");
-////                 取用户账号用作oa流程查看登录
-//                    JSONObject loginInfo = getToken();
-//                    String personInfo = loginInfo.getString("person");
-//                    if (Util.isEmpty(personInfo)) {
-//                        throw new ServiceException(UtilMessage.PERSON_MISSING);
-//                    }
-//                    try {
-//                        String mtLoginNum = OaUtil.encrypt(personInfo);
-//                        String attLink = new StringBuffer().append(atturl).append(mtLoginNum).toString();
-//                        attachmentMapper.updateAttLink(id,attName,attLink);
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            }
+                for(int i=0;i<attUrlArray.size();i++){
+                    JSONObject atturlObj = attUrlArray.getJSONObject(i);
+                    String attName = atturlObj.getString("name");
+                    String atturl = atturlObj.getString("url");
+//                 取用户账号用作oa流程查看登录
+                    if (Util.isEmpty(personNum)) {
+                        throw new ServiceException(UtilMessage.PERSON_MISSING);
+                    }
+                    try {
+                        String mtLoginNum = OaUtil.encrypt(personNum);
+                        String attLink = new StringBuffer().append(atturl).append(mtLoginNum).toString();
+                        attachmentMapper.updateAttLink(id,attName,attLink);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
         } else {
             throw new ServiceException(UtilMessage.SUBMIT_FAULT);
         }

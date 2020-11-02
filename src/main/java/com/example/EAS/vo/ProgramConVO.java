@@ -13,7 +13,8 @@ import java.util.List;
  */
 @Data
 public class ProgramConVO {
-
+//	操作类型 合同获取 1 无文本获取 2
+    private Integer operationType;
     private String contractTypeId;
     private String projectId;
     private String id;

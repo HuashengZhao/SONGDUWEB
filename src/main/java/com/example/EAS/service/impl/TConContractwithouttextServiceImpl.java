@@ -578,7 +578,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         }
         String description = vo.getDescription();
         if (Util.isNotEmpty(description)) {
-            easJson.put("description", description);
+            easJson.put("moneyDesc", description);
         }
 
         String receiverType = vo.getReceiverType();
@@ -823,14 +823,25 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         System.out.println("合同单据web端详情查看地址：" + sendUrl);
         System.out.println(" 合同单据app端详情查看地址：" + sendAppUrl);
         obj.put("loginName", "00561");
-//        附件参数 todo
-        JSONObject attFile = new JSONObject();
-//        obj.put("attFile", attFile);
         data.put("fd_link", sendUrl);
         data.put("fd_mobile_link", sendAppUrl);
-
-//        data.put("createTime", vo.getCreateTime());
         obj.put("data", data.toString());
+//                附件参数 todo
+        JSONArray attFile = new JSONArray();
+        List<AttachmentsVO> easFiles = attachmentMapper.selectAttachMent(id);
+        if (easFiles!=null && easFiles.size()>0){
+            for (AttachmentsVO easFile : easFiles) {
+                JSONObject attObj = new JSONObject();
+                attObj.put("filename",easFile.getTitle());
+                attObj.put("filepath",easFile.getWebUrl());
+                attObj.put("filetype",easFile.getFileType());
+                attFile.add(attObj);
+            }
+        }
+
+        obj.put("attFile", attFile);
+        obj.put("fileType","03");
+
         //        当当前流程未提交时 oaidrecord没有对应oaid 调用oa新增提交方法
         String result = null;
         JSONObject str = null;
@@ -926,6 +937,10 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         String result = null;
         try {
             result = (String) call.invoke(new Object[]{jsonObject.toString()});
+            JSONObject jsonObject1 = JSONObject.parseObject(result);
+            String result1 = jsonObject1.getString("result");
+            System.out.println(result1);
+            System.out.println(jsonObject1.toString());
         } catch (RemoteException e) {
             e.printStackTrace();
         }
