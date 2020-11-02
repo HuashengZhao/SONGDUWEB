@@ -53,7 +53,7 @@
         order by flongnumber
     </select>
     <select id="selectCostEntities" resultType="com.example.EAS.vo.OrgVO">
-        select m.fid as id,m.FNAME_L2 as title,m.FNUMBER as num,m.FLONGNUMBER as longNumber,
+        select m.fid as id,m.FNAME_L2 as title,m.FNUMBER as num,m.FLONGNUMBER as longNumber,,m.FLEVEL
         m.FSIMPLENAME as simpleName,cc.FCOSTCENTERTYPE as costCenterType,cc.FISBIZUNIT as isBizUnit
         from T_ORG_BASEUNIT m
         left join T_ORG_OUPartCostCenter cc on cc.fid=m.FPARTCOSTCENTERID
@@ -84,13 +84,13 @@
     <select id="selectEntitiesFinalOrgs" resultType="com.example.EAS.vo.OrgVO">
         select m.fid as id,m.FNAME_L2 as title,m.FNUMBER as num,m.FLONGNUMBER as longNumber,
         m.FSIMPLENAME as simpleName,m.FISLEAF as isLeaf,m.FDESCRIPTION_L2 as description,
-        fi.FISBIZUNIT as isCompany
+        fi.FISBIZUNIT as isCompany,m.FLEVEL
         from T_ORG_BASEUNIT m
         left join T_ORG_OUPartFI fi on fi.FID=m.FPARTFIID
         <where>
-            m.FIsOUSealUp=0 and
-            exists (select fi.fid from T_ORG_OUPartFI fi where fi.fid=m.FPartFIID)
-            and not exists (select m1.fid from T_ORG_BASEUNIT m1 where m1.FPARENTID=m.fid)
+            m.FIsOUSealUp=0
+--             and fi.FISBIZUNIT=1
+            -- and not exists (select m1.fid from T_ORG_BASEUNIT m1 where m1.FPARENTID=m.fid)
             <if test="title!=null and title!=''">
                 and m.FNAME_L2 like CONCAT(CONCAT('%',#{title}),'%')
             </if>
@@ -109,17 +109,36 @@
     <select id="selectNextFinalOrgs" resultType="com.example.EAS.vo.OrgVO">
         select m.fid as id,m.FNAME_L2 as title,m.FNUMBER as num,m.FLONGNUMBER as longNumber,
         m.FSIMPLENAME as simpleName,m.FISLEAF as isLeaf,m.FDESCRIPTION_L2 as description,
-        fi.FISBIZUNIT as isCompany
+        fi.FISBIZUNIT as isCompany,m.FLEVEL
         from T_ORG_BASEUNIT m
         left join T_ORG_OUPartFI fi on fi.FID=m.FPARTFIID
         <where>
             m.FIsOUSealUp=0
             and exists (select fi.fid from T_ORG_OUPartFI fi where fi.fid=m.FPartFIID)
             and m.FPARENTID=#{id}
-            <if test="isCompany!=null and isCompany!=''">
-                and fi.FISBIZUNIT =#{isCompany}
-            </if>
+            and fi.FISBIZUNIT=1
+            <!--<if test="isCompany!=null and isCompany!=''">-->
+                <!--and fi.FISBIZUNIT =#{isCompany}-->
+            <!--</if>-->
         </where>
         order by m.flongnumber
+    </select>
+    <select id="selectALLCWSTS" resultType="com.example.EAS.vo.OrgVO">
+        select m.fid as id,m.FPARENTID as parentId,m.FNAME_L2 as title,m.FNUMBER as num,m.FLONGNUMBER as longNumber,
+        m.FSIMPLENAME as simpleName,m.FISLEAF as isLeaf,m.FDESCRIPTION_L2 as description,
+        fi.FISBIZUNIT as isCompany,m.FLEVEL
+        from T_ORG_BASEUNIT m
+        left join T_ORG_OUPartFI fi on fi.FID=m.FPARTFIID
+        where
+        m.FIsOUSealUp=0 and fi.FISBIZUNIT=1 and m.FISLEAF=0
+    </select>
+    <select id="selectDataById" resultType="com.example.EAS.vo.OrgVO">
+         select m.fid as id,m.FPARENTID as parentId,m.FNAME_L2 as title,m.FNUMBER as num,m.FLONGNUMBER as longNumber,
+        m.FSIMPLENAME as simpleName,m.FISLEAF as isLeaf,m.FDESCRIPTION_L2 as description,m.FLEVEL
+        from T_ORG_BASEUNIT m
+        where m.fid=#{parentId} and m.FISLEAF=0
+    </select>
+    <select id="selectFlevels" resultType="java.lang.Long">
+        select distinct FLEVEL from T_ORG_BASEUNIT where FLEVEL>0 order by FLEVEL
     </select>
 </mapper>

@@ -34,7 +34,7 @@
         cb.fnumber num,cb.FNAME as conName,pc.fname_l2 as hygh,cb.FProgrammingContract as hyghId,
         cb.fmaincontractnumber as mainNumber,cb.famount as amount,pc.FAMOUNT as balance,
         cur.fname_l2 curName,cb.FSrcAmount srcAmount,cb.FOriginalAmount originalAmount,
-        supb.fname_l2 as partBName,supc.fname_l2 as partCName,cb.FCONTRACTSOURCE as csName,
+        supb.fname_l2 as partBName,supc.fname_l2 as partCName,cs.FNAME_L2 as csName,
         cb.fsigndate signDate,oa.fname_l2 as deptName,p.fname_l2 as personName,oaa.FNAME_L2 creatDept,
         ldp.fname_l2 as partAName,cb.FCostProperty costProperty,cb.FContractPropert contractNature,
         cb.FIsArchived isArchived, u.fname_l2 auditor,cb.FLastUpdateTime lastAuditTime,uc.fname_l2 as creator,
@@ -56,7 +56,7 @@
         left join T_PM_User u on u.fid=cb.FAuditorID
         left join T_PM_USER uc on uc.fid=cb.FCreatorID
         <where>
-            cb.FControlUnitID=#{orgId}
+            cp.FFULLORGUNIT=#{orgId}
             <if test="num!=null and num!=''">
                 and cb.fnumber like CONCAT(CONCAT('%',#{num}),'%')
             </if>

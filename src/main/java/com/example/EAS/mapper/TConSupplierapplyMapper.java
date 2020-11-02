@@ -91,12 +91,13 @@ public interface TConSupplierapplyMapper extends BaseMapper<TConSupplierapply> {
 
     List<OrgVO> selectOrgList();
 
-
     List<SupplierApplyVO> selectByNameId(String title,String id);
 
     List<Object> selectSupplierByName(String title);
 
     String selectViewUrl();
+
     String selectAppUrl();
+
 }
 

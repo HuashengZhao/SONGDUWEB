@@ -67,6 +67,8 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
     private LoginInfoUtil loginInfoUtil;
     @Autowired
     private TFdcContracttypeMapper ctMapper;
+    @Autowired
+    private TOrgBaseunitMapper baseunitMapper;
 
     DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     org.apache.axis.client.Service service = new org.apache.axis.client.Service();
@@ -439,7 +441,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
                             .eq("FTYPE", "NOTEXTCONTRACT")
                             .eq("fcostaccountid", vo.getCostAccountId() == null ? null : vo.getCostAccountId()));
             if (Util.isNotEmpty(contractmarketentry)) {
-                mkAmount =mkAmount.add(new BigDecimal(contractmarketentry.getFamount()));
+                mkAmount = mkAmount.add(new BigDecimal(contractmarketentry.getFamount()));
             }
             List<String> mpIds = marketProjectMapper.selectList(new QueryWrapper<TConMarketproject>()
                     .eq("FMPID", marketProjectId)
@@ -447,32 +449,32 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
                     .lambda())
                     .stream().map(TConMarketproject::getFid)
                     .collect(Collectors.toList());
-            if (mpIds!=null && mpIds.size()>0) {
+            if (mpIds != null && mpIds.size() > 0) {
                 List<Double> collect = tConMarketprojectcostentryMapper.selectList(new QueryWrapper<TConMarketprojectcostentry>()
                         .lambda()
                         .in(TConMarketprojectcostentry::getFheadid, mpIds))
                         .stream()
                         .map(TConMarketprojectcostentry::getFamount)
                         .collect(Collectors.toList());
-                if (collect!=null && collect.size()>0){
+                if (collect != null && collect.size() > 0) {
                     for (Double aDouble : collect) {
-                        negAmount=negAmount.add(new BigDecimal(aDouble));
+                        negAmount = negAmount.add(new BigDecimal(aDouble));
                     }
                 }
             }
             List<TConContractwithouttext> mps = mapper.selectList(new QueryWrapper<TConContractwithouttext>()
                     .eq("FMarketProjectId", marketProjectId));
-            if (mps!=null && mps.size()>0){
+            if (mps != null && mps.size() > 0) {
                 for (TConContractwithouttext mp : mps) {
                     Double famount = mp.getFamount();
-                    if (Util.isNotEmpty(famount)){
-                        useAmount=useAmount.add(new BigDecimal(famount));
+                    if (Util.isNotEmpty(famount)) {
+                        useAmount = useAmount.add(new BigDecimal(famount));
                     }
                 }
             }
             BigDecimal divide = mkAmount.add(negAmount).divide(useAmount);
             BigDecimal oriAmount = vo.getOriAmount();
-            if (oriAmount.compareTo(divide)==1){
+            if (oriAmount.compareTo(divide) == 1) {
                 throw new ServiceException(UtilMessage.NOTEXT_AMOUNT_BEYOND_MARKET);
             }
         }
@@ -788,6 +790,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         String sendUrl = null;
         String sendAppUrl = null;
         StringBuffer sbv = new StringBuffer();
+        StringBuffer sba = new StringBuffer();
         String appendUrl = supplierapplyMapper.selectViewUrl();
         String appUrl = supplierapplyMapper.selectAppUrl();
 //					审批单 approval
@@ -795,6 +798,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             throw new ServiceException(UtilMessage.VIEW_URL_NOT_FOUND);
         }
         String appendType = "notext/view?from=oa&id=";
+        String appAppendType = "notext/?from=oa&id=";
         String appendId = null;
         try {
             appendId = URLEncoder.encode(id, "utf-8");
@@ -813,7 +817,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         sendUrl = String.valueOf(sbv.append(appendUrl).append(appendType).append(appendId)
                 .append(appendToken).append(tokenAppend));
         //        app端详情查看地址
-        sendAppUrl = String.valueOf(sbv.append(appUrl).append(appendType).append(appendId)
+        sendAppUrl = String.valueOf(sba.append(appUrl).append(appAppendType).append(appendId)
                 .append(appendToken).append(tokenAppend));
 //        sb.append("http://172.17.4.125:8082/easWeb/#/supplier").append("?token=").append(token);
         System.out.println("合同单据web端详情查看地址：" + sendUrl);
@@ -823,7 +827,6 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         JSONObject attFile = new JSONObject();
 //        obj.put("attFile", attFile);
         data.put("fd_link", sendUrl);
-        sendAppUrl = "http://test.pmredstar.com:18089//easApp/index.html#/";  //当前测试使用地址 测试结束删除此行代码即可
         data.put("fd_mobile_link", sendAppUrl);
 
 //        data.put("createTime", vo.getCreateTime());
@@ -878,9 +881,11 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
 
     @Override
     public String getNoTextNum(NoTextContractVO vo) {
-
+        if (Util.isEmpty(vo.getOrgId())){
+            throw new ServiceException(UtilMessage.REQUEST_ORG_INFO);
+        }
         //获取登录信息
-        JSONObject token = loginInfoUtil.getToken();
+//        JSONObject token = loginInfoUtil.getToken();
         //        生成合同编码规则额："web"+组织编码+8位数流水号
         DecimalFormat decimalFormat = new DecimalFormat("00000000");
         Integer numRecord = mapper.selectNewNum();
@@ -891,7 +896,12 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             mapper.updateNumRecord(value);
             format = decimalFormat.format(value);
         }
-        String org = token.getString("org");
+//        String org = token.getString("org");
+        TOrgBaseunit tOrgBaseunit = baseunitMapper.selectById(vo.getOrgId());
+        if (tOrgBaseunit==null || tOrgBaseunit.getFnumber()==null){
+            throw new ServiceException(UtilMessage.UNSUPPORT_ORG_INFO);
+        }
+        String org = tOrgBaseunit.getFnumber();
         StringBuffer sb = new StringBuffer();
         String newNumber = sb.append("WEB.").append(org).append(format).toString();
 
