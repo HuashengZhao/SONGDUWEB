@@ -53,7 +53,7 @@
         order by flongnumber
     </select>
     <select id="selectCostEntities" resultType="com.example.EAS.vo.OrgVO">
-        select m.fid as id,m.FNAME_L2 as title,m.FNUMBER as num,m.FLONGNUMBER as longNumber,,m.FLEVEL
+        select m.fid as id,m.FNAME_L2 as title,m.FNUMBER as num,m.FLONGNUMBER as longNumber,m.FLEVEL,
         m.FSIMPLENAME as simpleName,cc.FCOSTCENTERTYPE as costCenterType,cc.FISBIZUNIT as isBizUnit
         from T_ORG_BASEUNIT m
         left join T_ORG_OUPartCostCenter cc on cc.fid=m.FPARTCOSTCENTERID

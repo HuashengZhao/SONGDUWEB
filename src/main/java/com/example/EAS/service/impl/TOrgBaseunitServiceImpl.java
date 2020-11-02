@@ -6,15 +6,11 @@ import com.example.EAS.model.TOrgBaseunit;
 import com.example.EAS.service.ITOrgBaseunitService;
 import com.example.EAS.util.Util;
 import com.example.EAS.vo.OrgVO;
-import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * <p>
@@ -100,69 +96,22 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
     public OrgVO getEntityFinalOrg(OrgVO vo) {
         long st = System.currentTimeMillis();
         OrgVO orgVO = new OrgVO();
-        List<OrgVO> cwsts = baseunitMapper.selectALLCWSTS();
-        if (cwsts != null && cwsts.size() > 0) {
-            Map<String, List<OrgVO>> map = Maps.newHashMap();
-            Map<String, Integer> mapRe = Maps.newHashMap();
-            for (OrgVO cwst : cwsts) {
-                getParent(cwst, map, mapRe);
-            }
-//            取map信息
-            List<OrgVO> orgVOS = getKeyAndValue(map);
-            if (orgVOS != null && orgVOS.size() > 0) ;
-            orgVO.setChildren(orgVOS);
-        }
-        long et = System.currentTimeMillis();
-        System.out.println("获取预算公司、财务组织耗时：" + (et - st) + "ms");
-
-//        List<Long> flevels= baseunitMapper.selectFlevels();
-        return orgVO;
-    }
-
-    //    财务组织
-    public void getParent(OrgVO orgVO, Map<String, List<OrgVO>> map, Map<String, Integer> mapRe) {
-        String parentId = orgVO.getParentId();
-        if (Util.isNotEmpty(parentId)) {
-            TOrgBaseunit parentOrg = baseunitMapper.selectById(parentId);
-            if (Util.isNotEmpty(parentOrg) && Util.isNotEmpty(parentOrg.getFpartfiid())) {
-                String fpartfiid = parentOrg.getFpartfiid();
-                if (Util.isNotEmpty(fpartfiid)) { //判断是否财务组织
-                    List<OrgVO> orgVOS = map.get(parentId);
-                    Integer integer = mapRe.get(parentId);
-                    if (Util.isEmpty(integer)) {
-                        if (orgVOS != null && orgVOS.size() > 0) {
-                            orgVOS.add(orgVO);
-                            map.put(parentId, orgVOS);
-                        } else {
-                            List<OrgVO> orgVOList = new ArrayList<>();
-                            orgVOList.add(orgVO);
-                            map.put(parentId, orgVOList);
-                        }
-                    }
-                    mapRe.put(parentId, 1);
-                    OrgVO org = baseunitMapper.selectDataById(parentId);
-                    if (Util.isNotEmpty(org)) {
-                        List<OrgVO> orgVOS1 = map.get(parentId);
-                        org.setChildren(orgVOS1);
-                        getParent(org, map, mapRe);
-                    }
+        List<OrgVO> orgVOS = baseunitMapper.selectEntitiesFinalOrgs(vo);
+        if (orgVOS!=null && orgVOS.size()>0){
+            for (OrgVO org : orgVOS) {
+                if (Util.isNotEmpty(vo.getId())) {
+                    getFinalChildren(orgVOS);
+                }
+                String longNumber = org.getLongNumber();
+                if (Util.isNotEmpty(longNumber)) {
+                    org.setLongNumber(longNumber
+                            .replace("-", ".")
+                            .replace("!", "."));
                 }
             }
         }
-    }
-
-    //获取key和value
-    public List<OrgVO> getKeyAndValue(Map<String, List<OrgVO>> map) {
-        List<OrgVO> orgVOS = new ArrayList<>();
-        Iterator<Entry<String, List<OrgVO>>> iterator = map.entrySet().iterator();
-        while (iterator.hasNext()) {
-            String key = iterator.next().getKey();
-            List<OrgVO> value = iterator.next().getValue();
-            OrgVO orgVO = baseunitMapper.selectDataById(key);
-            orgVO.setChildren(value);
-            orgVOS.add(orgVO);
-        }
-        return orgVOS;
+        orgVO.setOrgVOList(orgVOS);
+        return orgVO;
     }
 
 
@@ -196,7 +145,8 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
     //    获取下级是财务组织的children
     public List<OrgVO> getFinalChildren(List<OrgVO> list) {//参数为数据库的（原数据，一级id）
         for (OrgVO orgVO : list) {
-            List<OrgVO> orgVOS = baseunitMapper.selectNextFinalOrgs(orgVO);
+            String id = orgVO.getId();
+            List<OrgVO> orgVOS = baseunitMapper.selectNextFinalOrgs(id);
             if (orgVOS != null && orgVOS.size() > 0) {
                 orgVO.setChildren(orgVOS);
                 getChildren(orgVOS);
