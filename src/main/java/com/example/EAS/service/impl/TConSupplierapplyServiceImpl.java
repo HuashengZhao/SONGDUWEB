@@ -606,21 +606,30 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         System.out.println("合同单据web端详情查看地址：" + sendUrl);
         System.out.println(" 合同单据app端详情查看地址：" + sendAppUrl);
         obj.put("loginName", "00561");
-//        附件参数 todo
-        JSONObject attFile = new JSONObject();
-//        obj.put("attFile", attFile);
         JSONObject data = new JSONObject();
         data.put("fd_link", sendUrl);
         data.put("fd_mobile_link", sendAppUrl);
-
-//        data.put("createTime", vo.getCreateTime());
         obj.put("data", data.toString());
 
+        //      附件参数
+        JSONArray attFile = new JSONArray();
+        List<AttachmentsVO> easFiles = attachmentMapper.selectAttachMent(id);
+        if (easFiles != null && easFiles.size() > 0) {
+            for (AttachmentsVO easFile : easFiles) {
+                JSONObject attObj = new JSONObject();
+                attObj.put("filename", easFile.getTitle());
+                attObj.put("filepath", easFile.getWebUrl());
+                attObj.put("fileType", "04");
+                attFile.add(attObj);
+            }
+        }
+
+        obj.put("attFile", attFile);
 //        当当前流程未提交时 oaidrecord没有对应oaid 调用oa新增提交方法
         String result = null;
         JSONObject str = null;
         if (Util.isEmpty(oaId)) {
-            Call call = getCall("OAURL", "addEkpReview");
+            Call call = getCall("OAURL", "addtestEkpReview");
             try {
                 result = (String) call.invoke(new Object[]{obj.toString()});
                 str = JSONObject.parseObject(result);
@@ -628,7 +637,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
                 e.printStackTrace();
             }
         } else {
-            Call call = getCall("OAURL", "updateEkpReview");
+            Call call = getCall("OAURL", "updatetestEkpReview");
             try {
                 obj.put("id", oaId);
                 result = (String) call.invoke(new Object[]{obj.toString()});
@@ -652,8 +661,33 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
             TConSupplierapply tConSupplierapply = mapper.selectById(supplierApplyVO.getId());
             tConSupplierapply.setFstate("3AUDITTING");
             mapper.updateById(tConSupplierapply);
+            //            获取返回的附件查看路径   预览
+            JSONArray attUrlArray = str.getJSONArray("atturl");
+            if (attUrlArray!=null && attUrlArray.size()>0){
+////               附件预览地址
+                for(int i=0;i<attUrlArray.size();i++){
+                    JSONObject atturlObj = attUrlArray.getJSONObject(i);
+                    String attName = atturlObj.getString("name");
+                    String atturl = atturlObj.getString("url");
+//                 取用户账号用作oa流程查看登录
+                    if (Util.isEmpty(personNum)) {
+                        throw new ServiceException(UtilMessage.PERSON_MISSING);
+                    }
+                    try {
+                        String mtLoginNum = OaUtil.encrypt(personNum);
+                        String attLink = new StringBuffer().append(atturl).append(mtLoginNum).toString();
+                        attachmentMapper.updateAttLink(id,attName,attLink);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
         } else {
-            throw new ServiceException(UtilMessage.SUBMIT_FAULT);
+            if (str.getString("massage") != null) {
+                throw new ServiceException(str.getString("massage"));
+            } else {
+                throw new ServiceException(UtilMessage.SUBMIT_FAULT);
+            }
         }
         return supplierApplyVO1;
     }
