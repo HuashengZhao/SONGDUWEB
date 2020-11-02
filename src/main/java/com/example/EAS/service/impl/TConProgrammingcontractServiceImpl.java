@@ -44,7 +44,11 @@ public class TConProgrammingcontractServiceImpl extends ServiceImpl<TConProgramm
         }
         List<ProgramConVO> programConVOList = new ArrayList<>();
         PageHelper.startPage(vo.getCurrentPage(), vo.getPageSize());
-        programConVOList = mapper.selectDataCanBeLinked(vo);
+        if (vo.getOperationType()!=null && vo.getOperationType()==1) {
+            programConVOList = mapper.selectDataCanBeLinked(vo);
+        }else if (vo.getOperationType()!=null && vo.getOperationType()==2){
+            programConVOList = mapper.selectDataHasBalance(vo);
+        }
 
         if (Util.isNotEmpty(programConVOList)) {
             for (ProgramConVO conVO : programConVOList) {

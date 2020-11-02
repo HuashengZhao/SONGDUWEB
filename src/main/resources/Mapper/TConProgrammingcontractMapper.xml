@@ -50,4 +50,20 @@
         left join T_CON_CONTRACTBILL bill on bill.FPROGRAMMINGCONTRACT=m.FID
         where bill.FID=#{billId}
     </select>
+    <select id="selectDataHasBalance" resultType="com.example.EAS.vo.ProgramConVO">
+        select m.fid as id, m.fnumber as num ,m.fname_l2 as title,m.FLONGNUMBER as longNumber
+        ,m.FAMOUNT as amount,m.FBALANCE as balance,m.FBILLID billId
+        from T_CON_ProgrammingContract m
+        left join T_CON_Programming e on e.fid=m.FProgrammingID
+        <where>
+            m.fcontracttypeid=#{contractTypeId}
+            and e.FProjectID=#{projectId}
+            and e.FIsLatest=1
+            and m.FBALANCE > 0
+            <if test="title!=null and title!=''">
+                and m.fname_l2 like CONCAT(CONCAT('%',#{title}),'%')
+            </if>
+        </where>
+        order by m.flongnumber
+    </select>
 </mapper>

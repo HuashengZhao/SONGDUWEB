@@ -23,4 +23,6 @@ public interface TConProgrammingcontractMapper extends BaseMapper<TConProgrammin
     List<String> selectIdsFromContract();
 
     List<ProgramConVO> selectByBillId(String billId);
+
+    List<ProgramConVO> selectDataHasBalance(ProgramConVO vo);
 }

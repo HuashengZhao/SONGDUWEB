@@ -86,7 +86,7 @@
         org.FNAME_L2 as useDeptName,bill.FCostedDeptId as costDeptId,bill.FCOSTEDCOMPANYID as costCompanyId,
         cc.FNAME_L2 as costDeptName,cp.FNAME_L2 as costCompanyName,bill.FMarketProjectId as marketProjectId,
         mar.FNAME as marketProjectName,cost.FNAME_L2 as costAccountName,bill.FMpCostAccountId as costAccountId,
-        bill.FInvoiceAmt as invoiceAMT,bill.FRATEAMOUNT as rateAmount,bill.FDESCRIPTION as description,
+        bill.FInvoiceAmt as invoiceAMT,bill.FRATEAMOUNT as rateAmount,pb.FMoneyDesc as description,
         pb.FREALSUPPLIERID as receiveUnitId,sup2.FNAME_L2 as realReceiveUnitName,bill.FISJT as isjt
         from T_CON_CONTRACTWITHOUTTEXT bill
         left join T_FDC_ContractType ct on ct.fid=bill.FCONTRACTTYPEID
