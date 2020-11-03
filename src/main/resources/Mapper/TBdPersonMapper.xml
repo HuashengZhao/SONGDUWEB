@@ -27,12 +27,22 @@
         select m.FPersonID as id, m.fpersonid,m.FPositionID,p.fname_l2 as zwName,c.fname_l2 as personName ,c.fid as
         userId,c.fnumber as person,c.FDELETEDSTATUS as deleteStatus,p.FAdminOrgUnitID as unitId,
         o.FLONGNUMBER as orgLongNumber,o.FNAME_L2 as orgName,t.FNAME_L2 as typeName
-        from T_ORG_PositionMember m left join T_ORG_Position p on p.fid=m.FPositionID
+        from T_ORG_PositionMember m l
+        eft join T_ORG_Position p on p.fid=m.FPositionID
         left join T_BD_Person c on c.fid=m.FPersonID
         left join T_ORG_BASEUNIT o on o.fid=p.FAdminOrgUnitID
         left join T_HR_BDEmployeeType t on t.FID=c.FEMPLOYEETYPEID
         <where>
             c.fname_l2 is not null
+            <if test="deleteStatus!=null and deleteStatus!=''">
+                and c.FDELETEDSTATUS = #{deleteStatus}
+            </if>
+            <if test="personName!=null and personName!=''">
+                and c.fname_l2 like CONCAT(CONCAT('%',#{personName}),'%')
+            </if>
+            <if test="personNumber!=null and personNumber!=''">
+                and c.fnumber like CONCAT(CONCAT('%',#{personNumber}),'%')
+            </if>
             <if test="orgidList != null and orgidList.size > 0">
                 and p.FAdminOrgUnitID in
                 <foreach item="item" collection="orgidList" index="index" open="(" separator="," close=")">
@@ -44,15 +54,6 @@
                 <foreach item="item" collection="morePartIdList" index="index" open="(" separator="," close=")">
                     #{item}
                 </foreach>
-            </if>
-            <if test="deleteStatus!=null and deleteStatus!=''">
-                and c.FDELETEDSTATUS = #{deleteStatus}
-            </if>
-            <if test="personName!=null and personName!=''">
-                and c.fname_l2 like CONCAT(CONCAT('%',#{personName}),'%')
-            </if>
-            <if test="personNumber!=null and personNumber!=''">
-                and c.fnumber like CONCAT(CONCAT('%',#{personNumber}),'%')
             </if>
         </where>
     </select>

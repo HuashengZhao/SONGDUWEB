@@ -155,7 +155,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         LocalDateTime bizDate = vo.getBizDate();
         if (Util.isNotEmpty(bizDate)) {
             LocalDateTime bornDate = bizDate.plusDays(1).minusSeconds(1);
-            LocalDateTime bookDate = bizDate.plusSeconds(1);
+            LocalDateTime bookDate = bizDate.minusSeconds(1);
             vo.setBizDate(bornDate);
             vo.setBookDate(bookDate);
         }
@@ -739,8 +739,8 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         vo.setFlag(true);
 
         NoTextContractVO noTextContractVO1 = saveNoTextBill(vo);
-        if (Util.isNotEmpty(noTextContractVO1)){
-            id=noTextContractVO1.getId();
+        if (Util.isNotEmpty(noTextContractVO1)) {
+            id = noTextContractVO1.getId();
         }
         String saveResult = noTextContractVO1.getResult();
         if (Util.isNotEmpty(saveResult) && saveResult.contains("fault")) {
@@ -883,9 +883,9 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             mapper.updateById(tConContractbill);
             //            获取返回的附件查看路径   预览
             JSONArray attUrlArray = str.getJSONArray("atturl");
-            if (attUrlArray!=null && attUrlArray.size()>0){
+            if (attUrlArray != null && attUrlArray.size() > 0) {
 ////               附件预览地址
-                for(int i=0;i<attUrlArray.size();i++){
+                for (int i = 0; i < attUrlArray.size(); i++) {
                     JSONObject atturlObj = attUrlArray.getJSONObject(i);
                     String attName = atturlObj.getString("name");
                     String atturl = atturlObj.getString("url");
@@ -897,7 +897,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
                         String s2 = "&MtFdLoinName=";
                         String mtLoginNum = OaUtil.encrypt(personNum);
                         String attLink = new StringBuffer().append(atturl).append(s2).append(mtLoginNum).toString();
-                        attachmentMapper.updateAttLink(id,attName,attLink);
+                        attachmentMapper.updateAttLink(id, attName, attLink);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

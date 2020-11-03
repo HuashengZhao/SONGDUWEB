@@ -61,7 +61,7 @@
                 and cb.fnumber like CONCAT(CONCAT('%',#{num}),'%')
             </if>
             <if test="bizDate!=null">
-                and  <![CDATA[  #{bookDate} <= ]]> cb.fbookeddate and cb.fbookeddate <![CDATA[   <= #{bizDate}]]>
+                and  <![CDATA[  #{bookDate} < ]]> cb.fbookeddate and cb.fbookeddate <![CDATA[   <= #{bizDate}]]>
             </if>
             <if test="state!=null and state!=''">
                 and cb.FState like CONCAT(CONCAT('%',#{state}),'%')

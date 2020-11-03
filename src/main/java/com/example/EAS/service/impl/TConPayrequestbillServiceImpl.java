@@ -73,7 +73,7 @@ public class TConPayrequestbillServiceImpl extends ServiceImpl<TConPayrequestbil
         }
         //        过权限
         Boolean aBoolean = loginInfoUtil.ifInItDept();
-        if (aBoolean==false){
+        if (aBoolean == false) {
             vo.setAuthorNum(token.getString("person"));
         }
         String state1 = vo.getState();
@@ -109,7 +109,7 @@ public class TConPayrequestbillServiceImpl extends ServiceImpl<TConPayrequestbil
         LocalDateTime bizDate = vo.getBizDate();
         if (Util.isNotEmpty(bizDate)) {
             LocalDateTime bornDate = bizDate.plusDays(1).minusSeconds(1);
-            LocalDateTime bookDate = bizDate.plusSeconds(1);
+            LocalDateTime bookDate = bizDate.minusSeconds(1);
             vo.setBizDate(bornDate);
             vo.setBookDate(bookDate);
         }
@@ -154,7 +154,7 @@ public class TConPayrequestbillServiceImpl extends ServiceImpl<TConPayrequestbil
                 if (Util.isNotEmpty(id)) {
 //                    是否有附件
                     payRequestBillVO.setIfHasAttach(0);
-                    if (payRequestBillVO.getAttNums()!=null&&payRequestBillVO.getAttNums().compareTo(0)==1){
+                    if (payRequestBillVO.getAttNums() != null && payRequestBillVO.getAttNums().compareTo(0) == 1) {
                         payRequestBillVO.setIfHasAttach(1);
                     }
                     List<TConDeductofpayreqbill> billList = deductofpayreqbillMapper.selectList
@@ -213,32 +213,32 @@ public class TConPayrequestbillServiceImpl extends ServiceImpl<TConPayrequestbil
 
 //            本位币金转大写
             BigDecimal amount = payRequestBillVO.getAmount();
-            if (Util.isNotEmpty(amount)){
+            if (Util.isNotEmpty(amount)) {
                 String s = TransToBigAmount.toChinese(String.valueOf(amount));
                 payRequestBillVO.setCapitalAmount(s);
             }
 //            合同起止时间转换
-            String start="";
-            String end="";
+            String start = "";
+            String end = "";
             LocalDateTime startDate = payRequestBillVO.getStartDate();
-            if (Util.isNotEmpty(startDate)){
-                start= df.format(startDate);
+            if (Util.isNotEmpty(startDate)) {
+                start = df.format(startDate);
             }
             LocalDateTime endDate = payRequestBillVO.getEndDate();
-            if (Util.isNotEmpty(endDate)){
-                end= df.format(endDate);
+            if (Util.isNotEmpty(endDate)) {
+                end = df.format(endDate);
             }
             StringBuffer sb = new StringBuffer();
             String startEndDate = sb.append(start).append("--").append(end).toString();
             payRequestBillVO.setStartEndDate(startEndDate);
 //            是否提交付款
             Integer isPay = payRequestBillVO.getIsPay();
-            if (Util.isEmpty(isPay)){
+            if (Util.isEmpty(isPay)) {
                 payRequestBillVO.setIsPay(0);
             }
 //            是否后评估审核
             Integer isJT = payRequestBillVO.getIsJT();
-            if (Util.isEmpty(isJT)){
+            if (Util.isEmpty(isJT)) {
                 payRequestBillVO.setIsJT(0);
             }
 //           内外部合同
@@ -252,7 +252,7 @@ public class TConPayrequestbillServiceImpl extends ServiceImpl<TConPayrequestbil
                     payRequestBillVO.setOrgType("集团/事业部/城市公司-项目部");
                 } else if (orgType.contains("NEIBU")) {
                     payRequestBillVO.setOrgType("内部关联公司往来类");
-                }else if (orgType.contains("WAIBU")){
+                } else if (orgType.contains("WAIBU")) {
                     payRequestBillVO.setOrgType("外部供应商客户往来类");
                 }
             }
@@ -303,7 +303,7 @@ public class TConPayrequestbillServiceImpl extends ServiceImpl<TConPayrequestbil
             }
 //            附件信息
             List<AttachmentsVO> attachmentsVOS = attachmentMapper.selectAttachMent(id);
-            if (attachmentsVOS!=null && attachmentsVOS.size()>0) {
+            if (attachmentsVOS != null && attachmentsVOS.size() > 0) {
                 payRequestBillVO.setAttachmentsVOS(attachmentsVOS);
             }
 //            纳税人
@@ -320,20 +320,27 @@ public class TConPayrequestbillServiceImpl extends ServiceImpl<TConPayrequestbil
 //    累计完工工程量  合同对应的所有付款申请单本次完工工程量的和
             BigDecimal allAMT = BigDecimal.ZERO;
             String contractId = payRequestBillVO.getContractId();
-            if (Util.isNotEmpty(contractId)){
+            if (Util.isNotEmpty(contractId)) {
                 List<TConPayrequestbill> bills = mapper.selectList(new QueryWrapper<TConPayrequestbill>()
                         .eq("FCONTRACTID", contractId));
-                if (bills!=null && bills.size()>0){
+                if (bills != null && bills.size() > 0) {
                     for (TConPayrequestbill bill : bills) {
                         Double fcompleteprjamt = bill.getFcompleteprjamt();
-                        if (Util.isNotEmpty(fcompleteprjamt)){
-                            allAMT=allAMT.add(new BigDecimal(fcompleteprjamt));
+                        if (Util.isNotEmpty(fcompleteprjamt)) {
+                            allAMT = allAMT.add(new BigDecimal(fcompleteprjamt));
                         }
                     }
                 }
                 payRequestBillVO.setAllAMT(allAMT);
             }
 //            累计完工工程比例
+            BigDecimal allAMTRATE = BigDecimal.ZERO;
+            if (Util.isNotEmpty(payRequestBillVO.getThisAMT()) && payRequestBillVO.getThisAMT().compareTo(BigDecimal.ZERO) == 1
+                    && allAMT.compareTo(BigDecimal.ZERO) == 1) {
+                allAMTRATE = payRequestBillVO.getThisAMT().divide(allAMT).setScale(2, BigDecimal.ROUND_HALF_UP);
+                payRequestBillVO.setAllAMTRATE(allAMTRATE);
+            }
+
 //            累计进度款付款比例  （张佳萍说不要了）
 //            付款申请金额
 //            PaymentApplyVO paymentApplyVO = new PaymentApplyVO();
