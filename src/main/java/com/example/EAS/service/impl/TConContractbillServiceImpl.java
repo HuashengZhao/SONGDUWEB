@@ -1023,8 +1023,9 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                         throw new ServiceException(UtilMessage.PERSON_MISSING);
                     }
                     try {
+                        String s2 = "&MtFdLoinName=";
                         String mtLoginNum = OaUtil.encrypt(personNum);
-                        String attLink = new StringBuffer().append(atturl).append(mtLoginNum).toString();
+                        String attLink = new StringBuffer().append(atturl).append(s2).append(mtLoginNum).toString();
                         attachmentMapper.updateAttLink(id,attName,attLink);
                     } catch (Exception e) {
                         e.printStackTrace();

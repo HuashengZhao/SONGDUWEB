@@ -6,11 +6,13 @@ import com.example.EAS.model.TOrgBaseunit;
 import com.example.EAS.service.ITOrgBaseunitService;
 import com.example.EAS.util.Util;
 import com.example.EAS.vo.OrgVO;
+import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -96,26 +98,20 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
     public OrgVO getEntityFinalOrg(OrgVO vo) {
         long st = System.currentTimeMillis();
         List<OrgVO> vos = new ArrayList<>();
-        OrgVO orgVO = baseunitMapper.selectFirstLevel();
-        if (Util.isNotEmpty(orgVO)) {
-            String id = orgVO.getId();
-            if (Util.isNotEmpty(id)) {
-//                getChildren
-                getEFChildren(orgVO, id);
-                vos.add(orgVO);
-            }
-        }
-
-        long et = System.currentTimeMillis();
-        System.out.println("获取预算公司、财务组织耗时：" + (et - st) + "ms");
-        vo.setOrgVOList(vos);//犹豫有改动 前端取值从这里取  所以需要集合放入这里返回；
-        //先查实体财务组织
         List<OrgVO> orgVOS = baseunitMapper.selectALLCWSTS(vo);
+        Map<String, OrgVO> map = Maps.newHashMap();
         if (orgVOS != null && orgVOS.size() > 0) {
             for (OrgVO orgVO1 : orgVOS) {
-//                    setChildren(orgVO1);
+                if (Util.isNotEmpty(orgVO1)) {
+                    getParents(map, orgVO1);
+                }
             }
         }
+        OrgVO total = map.get("topOrgVO");
+        vos.add(total);
+        vo.setOrgVOList(vos);
+        long et = System.currentTimeMillis();
+        System.out.println("获取预算公司、财务组织耗时：" + (et - st) + "ms");
         return vo;
     }
 
@@ -125,23 +121,27 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
      * @param
      * @return
      */
-//    public void setChildren(OrgVO vo) {
-//        Map map = Maps.newHashMap();
-//        String parentId = vo.getParentId();
-//        if (Util.isNotEmpty(vo)) {
-//        OrgVO orgVO = baseunitMapper.selectDataById(parentId);
-//        if (Util.isNotEmpty(orgVO)) {
-//            if (Util.isEmpty(map.get(parentId))) {
-//                List<OrgVO> vos = new ArrayList<>();
-//                vos.add(vo);
-//                orgVO.setChildren(vos);
-//                map.put(parentId,);
-//            }else {
-//
-//            }
-//        }
-//    }
-//    }
+    public void getParents(Map<String, OrgVO> map, OrgVO orgVO) {
+        String parentId = orgVO.getParentId();
+        if (Util.isNotEmpty(parentId)) {
+            OrgVO orgVO1 = map.get(parentId);
+            if (Util.isEmpty(orgVO1)) {
+                orgVO1 = baseunitMapper.selectDataById(parentId);
+                List<OrgVO> os = new ArrayList<>();
+                os.add(orgVO);
+                orgVO1.setChildren(os);
+                if (Util.isEmpty(orgVO1.getParentId())) {
+                    map.put("topOrgVO", orgVO1);
+                    map.put(parentId, orgVO1);
+                } else {
+                    map.put(parentId, orgVO1);
+                }
+                getParents(map, orgVO1);
+            } else {
+                orgVO1.getChildren().add(orgVO);
+            }
+        }
+    }
 
 
     //    获取children

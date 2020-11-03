@@ -50,6 +50,7 @@ public class TOrgBaseUnitController {
         result.put("code", HttpStatus.SC_OK);
         return R.ok(result);
     }
+
     /**
      * 获取实体成本组织--用于无文本的预算承担部门
      * getOrgs
