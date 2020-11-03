@@ -965,18 +965,16 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                 JSONObject attObj = new JSONObject();
                 attObj.put("filename", easFile.getTitle());
                 attObj.put("filepath", easFile.getWebUrl());
-                attObj.put("filetype", easFile.getFileType());
+                attObj.put("fileType", "01");
                 attFile.add(attObj);
             }
         }
-
         obj.put("attFile", attFile);
-        obj.put("fileType", "01");
         //        当当前流程未提交时 oaidrecord没有对应oaid 调用oa新增提交方法
         String result = null;
         JSONObject str = null;
         if (Util.isEmpty(oaId)) {
-            Call call = getCall("OAURL", "addEkpReview");
+            Call call = getCall("OAURL", "addtestEkpReview");
             try {
                 result = (String) call.invoke(new Object[]{obj.toString()});
                 System.out.println(vo.getConName() + "本次提交传给oa的参数" + obj.toString());
@@ -986,7 +984,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                 e.printStackTrace();
             }
         } else {
-            Call call = getCall("OAURL", "updateEkpReview");
+            Call call = getCall("OAURL", "updatetestEkpReview");
             try {
                 obj.put("id", oaId);
                 result = (String) call.invoke(new Object[]{obj.toString()});
@@ -1012,7 +1010,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             TConContractbill tConContractbill = mapper.selectById(id);
             tConContractbill.setFstate("3AUDITTING");
             mapper.updateById(tConContractbill);
-//            获取返回的附件查看路径   预览 todo
+//            获取返回的附件查看路径   预览
             JSONArray attUrlArray = str.getJSONArray("atturl");
             if (attUrlArray!=null && attUrlArray.size()>0){
 ////               附件预览地址
@@ -1034,7 +1032,11 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                 }
             }
         } else {
-            throw new ServiceException(UtilMessage.SUBMIT_FAULT);
+            if (str.getString("massage") != null) {
+                throw new ServiceException(str.getString("massage"));
+            } else {
+                throw new ServiceException(UtilMessage.SUBMIT_FAULT);
+            }
         }
         return contractVO;
     }

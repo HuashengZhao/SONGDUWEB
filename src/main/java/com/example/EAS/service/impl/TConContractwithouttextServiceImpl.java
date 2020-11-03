@@ -826,27 +826,25 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         data.put("fd_link", sendUrl);
         data.put("fd_mobile_link", sendAppUrl);
         obj.put("data", data.toString());
-//                附件参数 todo
+//      附件参数
         JSONArray attFile = new JSONArray();
         List<AttachmentsVO> easFiles = attachmentMapper.selectAttachMent(id);
-        if (easFiles!=null && easFiles.size()>0){
+        if (easFiles != null && easFiles.size() > 0) {
             for (AttachmentsVO easFile : easFiles) {
                 JSONObject attObj = new JSONObject();
-                attObj.put("filename",easFile.getTitle());
-                attObj.put("filepath",easFile.getWebUrl());
-                attObj.put("filetype",easFile.getFileType());
+                attObj.put("filename", easFile.getTitle());
+                attObj.put("filepath", easFile.getWebUrl());
+                attObj.put("fileType", "03");
                 attFile.add(attObj);
             }
         }
-
         obj.put("attFile", attFile);
-        obj.put("fileType","03");
 
         //        当当前流程未提交时 oaidrecord没有对应oaid 调用oa新增提交方法
         String result = null;
         JSONObject str = null;
         if (Util.isEmpty(oaId)) {
-            Call call = getCall("OAURL", "addEkpReview");
+            Call call = getCall("OAURL", "addtestEkpReview");
             try {
                 result = (String) call.invoke(new Object[]{obj.toString()});
                 System.out.println(vo.getTitle() + "oa流程传参：" + obj.toString());
@@ -855,7 +853,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
                 e.printStackTrace();
             }
         } else {
-            Call call = getCall("OAURL", "updateEkpReview");
+            Call call = getCall("OAURL", "updatetestEkpReview");
             try {
                 obj.put("id", oaId);
                 result = (String) call.invoke(new Object[]{obj.toString()});
@@ -880,6 +878,27 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             TConContractwithouttext tConContractbill = mapper.selectById(id);
             tConContractbill.setFstate("3AUDITTING");
             mapper.updateById(tConContractbill);
+            //            获取返回的附件查看路径   预览
+            JSONArray attUrlArray = str.getJSONArray("atturl");
+            if (attUrlArray!=null && attUrlArray.size()>0){
+////               附件预览地址
+                for(int i=0;i<attUrlArray.size();i++){
+                    JSONObject atturlObj = attUrlArray.getJSONObject(i);
+                    String attName = atturlObj.getString("name");
+                    String atturl = atturlObj.getString("url");
+//                 取用户账号用作oa流程查看登录
+                    if (Util.isEmpty(personNum)) {
+                        throw new ServiceException(UtilMessage.PERSON_MISSING);
+                    }
+                    try {
+                        String mtLoginNum = OaUtil.encrypt(personNum);
+                        String attLink = new StringBuffer().append(atturl).append(mtLoginNum).toString();
+                        attachmentMapper.updateAttLink(id,attName,attLink);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
         } else {
             if (str.getString("massage") != null) {
                 throw new ServiceException(str.getString("massage"));
@@ -892,7 +911,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
 
     @Override
     public String getNoTextNum(NoTextContractVO vo) {
-        if (Util.isEmpty(vo.getOrgId())){
+        if (Util.isEmpty(vo.getOrgId())) {
             throw new ServiceException(UtilMessage.REQUEST_ORG_INFO);
         }
         //获取登录信息
@@ -909,7 +928,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         }
 //        String org = token.getString("org");
         TOrgBaseunit tOrgBaseunit = baseunitMapper.selectById(vo.getOrgId());
-        if (tOrgBaseunit==null || tOrgBaseunit.getFnumber()==null){
+        if (tOrgBaseunit == null || tOrgBaseunit.getFnumber() == null) {
             throw new ServiceException(UtilMessage.UNSUPPORT_ORG_INFO);
         }
         String org = tOrgBaseunit.getFnumber();
