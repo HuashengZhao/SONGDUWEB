@@ -145,6 +145,11 @@ public class TConContractchangesettlebillServiceImpl extends ServiceImpl<TConCon
         if (Util.isNotEmpty(id)) {
             settleVO = mapper.viewChangeSettle(vo);
             if (Util.isNotEmpty(settleVO)) {
+                //            附件信息
+                List<AttachmentsVO> attachmentsVOS = attachmentMapper.selectAttachMent(id);
+                if (attachmentsVOS!=null && attachmentsVOS.size()>0) {
+                    settleVO.setAttachmentsVOS(attachmentsVOS);
+                }
 //                提出部门、单位
                 String offer = settleVO.getOffer();
                 if (Util.isNotEmpty(offer)) {
@@ -181,11 +186,6 @@ public class TConContractchangesettlebillServiceImpl extends ServiceImpl<TConCon
                     settleVO.setLink(link);
                     settleVO.setOaId(oaId);
                 }
-            }
-            //            附件信息
-            List<AttachmentsVO> attachmentsVOS = attachmentMapper.selectAttachMent(id);
-            if (attachmentsVOS!=null && attachmentsVOS.size()>0) {
-                settleVO.setAttachmentsVOS(attachmentsVOS);
             }
         }
         return settleVO;

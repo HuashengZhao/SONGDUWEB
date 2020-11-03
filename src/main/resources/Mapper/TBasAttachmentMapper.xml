@@ -2,11 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.EAS.mapper.TBasAttachmentMapper">
     <update id="updateAttLink">
-    update T_BAS_ATTACHMENT att
-    left join T_BAS_BoAttchAsso ass on ass.FATTACHMENTID=att.FID
-    set att.FBEIZHU=#{attLink}
-     where ass.FBOID=#{id}
-     and att.FNAME_L2 like CONCAT(CONCAT('%',#{attName}),'%')
+    update T_BAS_ATTACHMENT att set att.FBEIZHU=#{attLink}
+    where exists(select fid from T_BAS_BoAttchAsso ass where ass.FATTACHMENTID=att.fid and ass.FBOID=#{id})
+    and att.FNAME_L2 like CONCAT(CONCAT('%',#{attName}),'%')
     </update>
 
     <select id="selectAttachMent" resultType="com.example.EAS.vo.AttachmentsVO">

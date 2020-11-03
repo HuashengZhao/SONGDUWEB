@@ -739,6 +739,9 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         vo.setFlag(true);
 
         NoTextContractVO noTextContractVO1 = saveNoTextBill(vo);
+        if (Util.isNotEmpty(noTextContractVO1)){
+            id=noTextContractVO1.getId();
+        }
         String saveResult = noTextContractVO1.getResult();
         if (Util.isNotEmpty(saveResult) && saveResult.contains("fault")) {
             throw new ServiceException(UtilMessage.SUBMIT_FAULT);
@@ -891,8 +894,9 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
                         throw new ServiceException(UtilMessage.PERSON_MISSING);
                     }
                     try {
+                        String s2 = "&MtFdLoinName=";
                         String mtLoginNum = OaUtil.encrypt(personNum);
-                        String attLink = new StringBuffer().append(atturl).append(mtLoginNum).toString();
+                        String attLink = new StringBuffer().append(atturl).append(s2).append(mtLoginNum).toString();
                         attachmentMapper.updateAttLink(id,attName,attLink);
                     } catch (Exception e) {
                         e.printStackTrace();

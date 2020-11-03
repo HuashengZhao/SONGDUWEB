@@ -150,10 +150,18 @@
         order by m.flongnumber
     </select>
     <select id="selectDataById" resultType="com.example.EAS.vo.OrgVO">
-         select m.fid as id,m.FPARENTID as parentId,m.FNAME_L2 as title,m.FNUMBER as num,m.FLONGNUMBER as longNumber,
-        m.FSIMPLENAME as simpleName,m.FISLEAF as isLeaf,m.FDESCRIPTION_L2 as description,m.FLEVEL
+        select fi.FISBIZUNIT as isCompany,m.fid as id,m.FPARENTID as parentId,m.FNAME_L2 as title,m.FNUMBER as
+        num,m.FLONGNUMBER as longNumber,
+        m.FSIMPLENAME as simpleName,m.FISLEAF as isLeaf,m.FDESCRIPTION_L2 as description,
+        m.FLEVEL
         from T_ORG_BASEUNIT m
-        where m.fid=#{parentId} and m.FISLEAF=0
+        left join T_ORG_OUPartFI fi on fi.FID=m.FPARTFIID
+        where
+            m.FIsOUSealUp=0
+            and m.FISLEAF=0
+            and m.fid=#{parentId}
+            and fi.FISBIZUNIT is not null
+        order by m.flongnumber
     </select>
     <select id="selectFlevels" resultType="java.lang.Long">
         select distinct FLEVEL from T_ORG_BASEUNIT where FLEVEL>0 order by FLEVEL
