@@ -108,7 +108,6 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
             }
 
         }
-
         return orgVOS;
     }
 
