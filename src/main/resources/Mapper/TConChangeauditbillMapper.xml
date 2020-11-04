@@ -19,8 +19,7 @@
         left join T_PM_User pu on pu.fid=bill.FAUDITORID
         left join T_pm_user u on u.fid=bill.FCREATORID
         <where>
-            and bill.FCONTROLUNITID=#{orgId}
-
+            and pro.FFULLORGUNIT=#{orgId}
             <if test="title!=null and title!=''">
                 and bill.fname like CONCAT(CONCAT('%',#{title}),'%')
             </if>

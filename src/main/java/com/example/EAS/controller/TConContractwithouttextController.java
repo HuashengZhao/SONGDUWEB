@@ -38,6 +38,7 @@ public class TConContractwithouttextController {
      * @return
      * @throws Exception
      */
+
     @RequestMapping(value = "/getNoTextBills", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public R getNoTextBills(@RequestBody String body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
@@ -138,5 +139,4 @@ public class TConContractwithouttextController {
         result.put("code", HttpStatus.SC_OK);
         return R.ok(result);
     }
-
 }

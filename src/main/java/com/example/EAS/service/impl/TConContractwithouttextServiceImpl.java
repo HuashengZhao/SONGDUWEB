@@ -155,7 +155,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         LocalDateTime bizDate = vo.getBizDate();
         if (Util.isNotEmpty(bizDate)) {
             LocalDateTime bornDate = bizDate.plusDays(1).minusSeconds(1);
-            LocalDateTime bookDate = bizDate.plusSeconds(1);
+            LocalDateTime bookDate = bizDate.minusSeconds(1);
             vo.setBizDate(bornDate);
             vo.setBookDate(bookDate);
         }
@@ -427,10 +427,20 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         if (Util.isNotEmpty(marketProjectId)) {
             easJson.put("marketProjectId", marketProjectId);
         }
-
+        BigDecimal oriAmount = vo.getOriAmount();
+        if (Util.isEmpty(oriAmount)) {
+            throw new ServiceException(UtilMessage.CONTRACT_AMOUNT_NOT_FOUND);
+        }
+        easJson.put("originalAmount", oriAmount.toString());
+        easJson.put("amount", oriAmount.toString());
+        String capitalAmount = vo.getBwbdx();
+        if (Util.isNotEmpty(capitalAmount)) {
+            easJson.put("capitalAmount", capitalAmount);
+        }
 //        立项金额控制 立项金额+负数金额-关联的无文本金额合计与金额相比
 //       2.2.4.3.营销类无文本合同申请金额受营销立项的控制，营销立项与营销类无文本是一对多的关系
-//       ，无文本累计申请金额必须小于等于营销立项可用余额（单据状态含已提交、审批中、已审批）
+//       ，无文本累计申请金额必须小于等于营销立项可用余额（单据状态含已提交、审批中、已审批
+
         BigDecimal useAmount = BigDecimal.ZERO;//       已用金额
         BigDecimal mkAmount = BigDecimal.ZERO;//        立项金额
         BigDecimal negAmount = BigDecimal.ZERO;//        负数金额
@@ -473,11 +483,14 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
                 }
             }
             BigDecimal divide = mkAmount.add(negAmount).divide(useAmount);
-            BigDecimal oriAmount = vo.getOriAmount();
             if (oriAmount.compareTo(divide) == 1) {
                 throw new ServiceException(UtilMessage.NOTEXT_AMOUNT_BEYOND_MARKET);
             }
         }
+//
+//2.2.4.1.1.申请金额受付款计划的控制，提交时需检测申请金额是否超过付款计划可用余额（状态含保存、已提交、审批中、已审批）
+//
+
 
         String costAccountId = vo.getCostAccountId();
         if (Util.isNotEmpty(costAccountId)) {
@@ -486,16 +499,6 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         String currencyId = vo.getCurrencyId();
         if (Util.isNotEmpty(currencyId)) {
             easJson.put("currencyId", currencyId);
-        }
-        BigDecimal oriAmount = vo.getOriAmount();
-        if (Util.isEmpty(oriAmount)) {
-            throw new ServiceException(UtilMessage.CONTRACT_AMOUNT_NOT_FOUND);
-        }
-        easJson.put("originalAmount", oriAmount.toString());
-        easJson.put("amount", oriAmount.toString());
-        String capitalAmount = vo.getBwbdx();
-        if (Util.isNotEmpty(capitalAmount)) {
-            easJson.put("capitalAmount", capitalAmount);
         }
         String payBillTypeId = vo.getPayBillTypeId();
         if (Util.isNotEmpty(payBillTypeId)) {
@@ -739,8 +742,8 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         vo.setFlag(true);
 
         NoTextContractVO noTextContractVO1 = saveNoTextBill(vo);
-        if (Util.isNotEmpty(noTextContractVO1)){
-            id=noTextContractVO1.getId();
+        if (Util.isNotEmpty(noTextContractVO1)) {
+            id = noTextContractVO1.getId();
         }
         String saveResult = noTextContractVO1.getResult();
         if (Util.isNotEmpty(saveResult) && saveResult.contains("fault")) {
@@ -883,9 +886,9 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             mapper.updateById(tConContractbill);
             //            获取返回的附件查看路径   预览
             JSONArray attUrlArray = str.getJSONArray("atturl");
-            if (attUrlArray!=null && attUrlArray.size()>0){
+            if (attUrlArray != null && attUrlArray.size() > 0) {
 ////               附件预览地址
-                for(int i=0;i<attUrlArray.size();i++){
+                for (int i = 0; i < attUrlArray.size(); i++) {
                     JSONObject atturlObj = attUrlArray.getJSONObject(i);
                     String attName = atturlObj.getString("name");
                     String atturl = atturlObj.getString("url");
@@ -897,7 +900,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
                         String s2 = "&MtFdLoinName=";
                         String mtLoginNum = OaUtil.encrypt(personNum);
                         String attLink = new StringBuffer().append(atturl).append(s2).append(mtLoginNum).toString();
-                        attachmentMapper.updateAttLink(id,attName,attLink);
+                        attachmentMapper.updateAttLink(id, attName, attLink);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
