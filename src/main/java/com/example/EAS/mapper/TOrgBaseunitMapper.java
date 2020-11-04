@@ -44,4 +44,9 @@ public interface TOrgBaseunitMapper extends BaseMapper<TOrgBaseunit> {
     OrgVO selectFirstLevel();
 
     List<OrgVO> selectDatasByParentID(String id);
+
+    List<OrgVO> selectALLCostEntities();
+
+
+    OrgVO selectCostById(String parentId);
 }

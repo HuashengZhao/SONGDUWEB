@@ -14,6 +14,8 @@ public class OrgVO {
     private String title;
     //    是否财务室体组织 0否1是
     private Integer isCompany;
+//    能否不被选 true false
+    private Boolean disabled;
     private String description;
     private Long flevel;
     //    成本中心组织单元扩展id
@@ -23,8 +25,6 @@ public class OrgVO {
     private Integer isCost;
     //    是否实体成本中心
     private Integer isSTCost;
-    //    节点是否可被选
-    private Boolean disabled;
 
     //    是否包含下级 0否1是
     private Integer hasNext;

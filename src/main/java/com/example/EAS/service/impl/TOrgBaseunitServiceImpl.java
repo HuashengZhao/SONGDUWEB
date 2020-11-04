@@ -33,32 +33,34 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
         long st = System.currentTimeMillis();
         OrgVO orgVO1 = new OrgVO();
         List<OrgVO> orgVOS = baseunitMapper.selectDatas(vo);
-        if (orgVOS.size() > 0) {
+        if (orgVOS != null && orgVOS.size() > 0) {
             orgVOS = getChildren(orgVOS);
             for (OrgVO orgVO : orgVOS) {
-//                是否成本实体中心
-                if (Util.isNotEmpty(vo.getIsSTCost())&&vo.getIsSTCost()==1) {
-                    Integer isSTCost = orgVO.getIsSTCost();
-                    if (Util.isEmpty(isSTCost) || isSTCost == 0) {
-                        orgVO.setIsSTCost(0);
-                        orgVO.setDisabled(false);
-                    } else if (isSTCost == 1) {
-                        orgVO.setIsSTCost(1);
-                        orgVO.setDisabled(true);
+                if (Util.isNotEmpty(orgVO)) {
+//                是否实体财务组织
+//                    Integer isCompany = orgVO.getIsCompany();
+//                    if (Util.isEmpty(isCompany)) {
+//                        orgVO.setIsCompany(0);
+//                    }
+////                是否成本实体中心
+//                    if (Util.isNotEmpty(vo.getIsSTCost()) && vo.getIsSTCost() == 1) {
+//                        Integer isSTCost = orgVO.getIsSTCost();
+//                        if (Util.isEmpty(isSTCost) || isSTCost == 0) {
+//                            orgVO.setIsSTCost(0);
+//                            orgVO.setDisabled(true);
+//                        } else if (isSTCost == 1) {
+//                            orgVO.setDisabled(false);
+//                        }
+//                    }
+                    String longNumber = orgVO.getLongNumber();
+                    if (Util.isNotEmpty(longNumber)) {
+                        orgVO.setLongNumber(longNumber
+                                .replace("-", ".")
+                                .replace("!", "."));
                     }
                 }
-//                是否实体财务组织
-                Integer isCompany = orgVO.getIsCompany();
-                if (Util.isEmpty(isCompany)) {
-                    orgVO.setIsCompany(0);
-                }
-                String longNumber = orgVO.getLongNumber();
-                if (Util.isNotEmpty(longNumber)) {
-                    orgVO.setLongNumber(longNumber
-                            .replace("-", ".")
-                            .replace("!", "."));
-                }
             }
+
         }
         orgVO1.setOrgVOList(orgVOS);
         long et = System.currentTimeMillis();
@@ -68,29 +70,42 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
 
     @Override
     public List<OrgVO> getCostEntitys(OrgVO vo) {
+        List<OrgVO> orgVOS = new ArrayList<>();
         String id = vo.getId();
-        List<String> counts = new ArrayList<>();
         if (Util.isNotEmpty(id)) {
+            List<String> counts = new ArrayList<>();
             counts.add(id);
             getChildIds(id, counts);
-        }
-        List<OrgVO> orgVOS = baseunitMapper.selectCostEntities(counts);
-        if (orgVOS != null && orgVOS.size() > 0) {
-            for (OrgVO orgVO : orgVOS) {
-                //                成本中心
-                String costCenterType = orgVO.getCostCenterType();
-                if (Util.isNotEmpty(costCenterType)) {
-                    if (costCenterType.contains("0")) {
-                        orgVO.setCostCenterType("直接生产部门");
-                    } else if (costCenterType.contains("1")) {
-                        orgVO.setCostCenterType("辅助生产部门");
-                    } else if (costCenterType.contains("2")) {
-                        orgVO.setCostCenterType("管理部门");
-                    } else if (costCenterType.contains("3")) {
-                        orgVO.setCostCenterType("销售部门");
+            orgVOS = baseunitMapper.selectCostEntities(counts);
+            if (orgVOS != null && orgVOS.size() > 0) {
+                for (OrgVO orgVO : orgVOS) {
+                    //                成本中心
+                    String costCenterType = orgVO.getCostCenterType();
+                    if (Util.isNotEmpty(costCenterType)) {
+                        if (costCenterType.contains("0")) {
+                            orgVO.setCostCenterType("直接生产部门");
+                        } else if (costCenterType.contains("1")) {
+                            orgVO.setCostCenterType("辅助生产部门");
+                        } else if (costCenterType.contains("2")) {
+                            orgVO.setCostCenterType("管理部门");
+                        } else if (costCenterType.contains("3")) {
+                            orgVO.setCostCenterType("销售部门");
+                        }
                     }
                 }
             }
+        } else {
+            List<OrgVO> orgs = baseunitMapper.selectALLCostEntities();
+            Map<String, OrgVO> map = Maps.newHashMap();
+            if (orgs != null && orgs.size() > 0) {
+                for (OrgVO org : orgs) {
+                    if (Util.isNotEmpty(org)) {
+                        org.setDisabled(false);
+                        getCostParents(map, org);
+                    }
+                }
+            }
+
         }
         return orgVOS;
     }
@@ -110,6 +125,7 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
         if (orgVOS != null && orgVOS.size() > 0) {
             for (OrgVO orgVO1 : orgVOS) {
                 if (Util.isNotEmpty(orgVO1)) {
+                    orgVO1.setDisabled(false);
                     getParents(map, orgVO1);
                 }
             }
@@ -134,18 +150,74 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
             OrgVO orgVO1 = map.get(parentId);
             if (Util.isEmpty(orgVO1)) {
                 orgVO1 = baseunitMapper.selectDataById(parentId);
-                List<OrgVO> os = new ArrayList<>();
-                os.add(orgVO);
-                orgVO1.setChildren(os);
-                if (Util.isEmpty(orgVO1.getParentId())) {
-                    map.put("topOrgVO", orgVO1);
-                    map.put(parentId, orgVO1);
-                } else {
-                    map.put(parentId, orgVO1);
+                if (Util.isNotEmpty(orgVO1)) {
+                    List<OrgVO> os = new ArrayList<>();
+                    os.add(orgVO);
+                    orgVO1.setChildren(os);
+                    if (Util.isEmpty(orgVO1.getParentId())) {
+                        map.put("topOrgVO", orgVO1);
+                        map.put(parentId, orgVO1);
+                    } else {
+                        map.put(parentId, orgVO1);
+                    }
+                    Integer isCompany = orgVO1.getIsCompany();
+                    if (Util.isEmpty(isCompany) || isCompany == 0) {
+                        orgVO1.setDisabled(true);
+                    } else if (isCompany == 1) {
+                        orgVO1.setDisabled(false);
+                    }
+                    getParents(map, orgVO1);
                 }
-                getParents(map, orgVO1);
             } else {
                 orgVO1.getChildren().add(orgVO);
+                Integer isCompany = orgVO1.getIsCompany();
+                if (Util.isEmpty(isCompany) || isCompany == 0) {
+                    orgVO1.setDisabled(true);
+                } else if (isCompany == 1) {
+                    orgVO1.setDisabled(false);
+                }
+            }
+        }
+    }
+
+    /**
+     * 实体成本中心获取上级 设置children
+     *
+     * @param
+     * @return
+     */
+    public void getCostParents(Map<String, OrgVO> map, OrgVO orgVO) {
+        String parentId = orgVO.getParentId();
+        if (Util.isNotEmpty(parentId)) {
+            OrgVO orgVO1 = map.get(parentId);
+            if (Util.isEmpty(orgVO1)) {
+                orgVO1 = baseunitMapper.selectCostById(parentId);
+                if (Util.isNotEmpty(orgVO1)) {
+                    List<OrgVO> os = new ArrayList<>();
+                    os.add(orgVO);
+                    orgVO1.setChildren(os);
+                    if (Util.isEmpty(orgVO1.getParentId())) {
+                        map.put("topOrgVO", orgVO1);
+                        map.put(parentId, orgVO1);
+                    } else {
+                        map.put(parentId, orgVO1);
+                    }
+                    Integer isSTCost = orgVO1.getIsSTCost();
+                    if (Util.isEmpty(isSTCost) || isSTCost == 0) {
+                        orgVO1.setDisabled(true);
+                    } else if (isSTCost == 1) {
+                        orgVO1.setDisabled(false);
+                    }
+                    getParents(map, orgVO1);
+                }
+            } else {
+                orgVO1.getChildren().add(orgVO);
+                Integer isSTCost = orgVO1.getIsSTCost();
+                if (Util.isEmpty(isSTCost) || isSTCost == 0) {
+                    orgVO1.setDisabled(true);
+                } else if (isSTCost == 1) {
+                    orgVO1.setDisabled(false);
+                }
             }
         }
     }
