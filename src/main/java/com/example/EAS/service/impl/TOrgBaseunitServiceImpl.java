@@ -97,7 +97,7 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
                 orgVOS.add(orgVO1);
             }
         } else {
-            List<OrgVO> orgs = baseunitMapper.selectALLCostEntities();
+            List<OrgVO> orgs = baseunitMapper.selectALLCostEntities(vo);
             Map<String, OrgVO> map = Maps.newHashMap();
             if (orgs != null && orgs.size() > 0) {
                 for (OrgVO org : orgs) {
