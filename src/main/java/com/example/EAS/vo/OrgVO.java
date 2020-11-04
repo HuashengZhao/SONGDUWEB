@@ -23,6 +23,8 @@ public class OrgVO {
     private Integer isCost;
     //    是否实体成本中心
     private Integer isSTCost;
+    //    节点是否可被选
+    private Boolean disabled;
 
     //    是否包含下级 0否1是
     private Integer hasNext;
