@@ -37,7 +37,7 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
             orgVOS = getChildren(orgVOS);
             for (OrgVO orgVO : orgVOS) {
 //                是否成本实体中心
-                if (Util.isNotEmpty(vo.getIsSTCost())) {
+                if (Util.isNotEmpty(vo.getIsSTCost())&&vo.getIsSTCost()==1) {
                     Integer isSTCost = orgVO.getIsSTCost();
                     if (Util.isEmpty(isSTCost) || isSTCost == 0) {
                         orgVO.setIsSTCost(0);
