@@ -495,6 +495,12 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         String costAccountId = vo.getCostAccountId();
         if (Util.isNotEmpty(costAccountId)) {
             easJson.put("costAccountId", costAccountId);
+        }else{
+//            默认传人民币
+           String currencyRMB =  mapper.selectRMBCurrencyId();
+           if (Util.isNotEmpty(currencyRMB)) {
+               easJson.put("costAccountId", currencyRMB);
+           }
         }
         String currencyId = vo.getCurrencyId();
         if (Util.isNotEmpty(currencyId)) {

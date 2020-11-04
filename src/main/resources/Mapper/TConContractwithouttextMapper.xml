@@ -136,4 +136,7 @@
     <select id="selectUnionBankId" resultType="java.lang.String">
         select fid from T_CON_BankNum where FNUMBER=#{unionBankNum}
     </select>
+    <select id="selectRMBCurrencyId" resultType="java.lang.String">
+        select fid from T_BD_CURRENCY where FNAME_L2 like '%人民币%'
+    </select>
 </mapper>

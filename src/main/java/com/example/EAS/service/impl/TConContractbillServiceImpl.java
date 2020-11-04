@@ -323,10 +323,10 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
 //            营销立项金额控制合同金额
             if (Util.isNotEmpty(contractmarketentry)) {
                 Double famount = contractmarketentry.getFamount();
-                String voAmount = vo.getAmount();
+                BigDecimal voAmount = vo.getAmount();
                 if (Util.isNotEmpty(famount) && Util.isNotEmpty(voAmount)) {
                     BigDecimal famountDe = new BigDecimal(famount);
-                    BigDecimal voAmountDe = new BigDecimal(voAmount);
+                    BigDecimal voAmountDe = voAmount;
                     if (voAmountDe.compareTo(famountDe) == 1) {
                         throw new ServiceException(UtilMessage.CONTRACT_AMOUNT_BEYOND);
                     }
@@ -343,31 +343,31 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         if (Util.isNotEmpty(currencyId)) {
             easJson.put("currencyId", currencyId);
         }
-        String originalAmount = vo.getOriginalAmount();
+        BigDecimal originalAmount = vo.getOriginalAmount();
         if (Util.isNotEmpty(originalAmount)) {
-            easJson.put("originalAmount", originalAmount);
+            easJson.put("originalAmount", originalAmount.toString());
         }
         String originalAmountBIG = vo.getOriginalAmountBIG();
-        String amount = vo.getAmount();
+        BigDecimal amount = vo.getAmount();
         if (Util.isNotEmpty(amount)) {
-            easJson.put("amount", amount);
+            easJson.put("amount", amount.toString());
         }
         String amountBIG = vo.getAmountBIG();
         BigDecimal exRate = vo.getExRate();
         if (Util.isNotEmpty(exRate)) {
-            easJson.put("exRate", exRate);
+            easJson.put("exRate", exRate.toString());
         }
         LocalDateTime bizDate = vo.getBizDate();
         if (Util.isNotEmpty(bizDate)) {
             easJson.put("bizDate", bizDate);
         }
-        String grtAmount = vo.getGrtAmount();
+        BigDecimal grtAmount = vo.getGrtAmount();
         if (Util.isNotEmpty(grtAmount)) {
-            easJson.put("grtAmount", grtAmount);
+            easJson.put("grtAmount", grtAmount.toString());
         }
-        String grtRate = vo.getGrtRate();
+        BigDecimal grtRate = vo.getGrtRate();
         if (Util.isNotEmpty(grtRate)) {
-            easJson.put("grtRate", grtRate);
+            easJson.put("grtRate", grtRate.toString());
         }
 //        是否进入动态成本
         Integer isCost = vo.getIsCost();
@@ -510,7 +510,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         }
 //        判断金额
         if (Util.isNotEmpty(originalAmount)) {
-            BigDecimal bigDecimal = new BigDecimal(originalAmount);
+            BigDecimal bigDecimal = originalAmount;
             if (allDetailAmount.compareTo(bigDecimal) == 1) {
                 throw new ServiceException(UtilMessage.DETAIL_AMOUNT_BEYOND);
             }
@@ -889,7 +889,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         }
 //        原币金额
         if (Util.isNotEmpty(vo.getOriginalAmount())) {
-            Double aDouble = new Double(vo.getOriginalAmount());
+            Double aDouble = Double.valueOf(String.valueOf(vo.getOriginalAmount()));
             data.put("fd_38cf1798043f94", aDouble);
             System.out.println(aDouble);
         }

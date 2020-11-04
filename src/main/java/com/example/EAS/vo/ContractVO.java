@@ -50,21 +50,26 @@ public class ContractVO {
     @JsonSerialize(using = CustomBigDecimalSerialize.class, nullsUsing = CustomBigDecimalSerialize.class)
     private BigDecimal exRate;
     //    原主合同金额
-    private String srcAmount;
+    @JsonSerialize(using = CustomBigDecimalSerialize.class, nullsUsing = CustomBigDecimalSerialize.class)
+    private BigDecimal srcAmount;
     //    原币金额
-    private String originalAmount;
+    @JsonSerialize(using = CustomBigDecimalSerialize.class, nullsUsing = CustomBigDecimalSerialize.class)
+    private BigDecimal originalAmount;
     //    附件数
     private Integer attNums;
     //    大写
     private String originalAmountBIG;
     //    本位币
-    private String amount;
+    @JsonSerialize(using = CustomBigDecimalSerialize.class, nullsUsing = CustomBigDecimalSerialize.class)
+    private BigDecimal amount;
     //    大写
     private String amountBIG;
     //    保修金比例
-    private String grtRate;
+    @JsonSerialize(using = CustomBigDecimalSerialize.class, nullsUsing = CustomBigDecimalSerialize.class)
+    private BigDecimal grtRate;
     //    保修金金额
-    private String grtAmount;
+    @JsonSerialize(using = CustomBigDecimalSerialize.class, nullsUsing = CustomBigDecimalSerialize.class)
+    private BigDecimal grtAmount;
     //    是否进入动态成本
     private Integer isCost;
     //    变更提示比例  张佳萍说这个字段没有用
