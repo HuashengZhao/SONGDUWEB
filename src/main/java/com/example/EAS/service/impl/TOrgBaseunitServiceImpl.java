@@ -74,11 +74,11 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
         String id = vo.getId();
         if (Util.isNotEmpty(id)) {
             List<String> counts = new ArrayList<>();
-            counts.add(id);
+            OrgVO orgVO1 = baseunitMapper.selectCostById(id);
             getChildIds(id, counts);
-            orgVOS = baseunitMapper.selectCostEntities(counts);
-            if (orgVOS != null && orgVOS.size() > 0) {
-                for (OrgVO orgVO : orgVOS) {
+            List<OrgVO> vos = baseunitMapper.selectCostEntities(counts);
+            if (vos != null && vos.size() > 0) {
+                for (OrgVO orgVO : vos) {
                     //                成本中心
                     String costCenterType = orgVO.getCostCenterType();
                     if (Util.isNotEmpty(costCenterType)) {
@@ -93,6 +93,8 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
                         }
                     }
                 }
+                orgVO1.setChildren(vos);
+                orgVOS.add(orgVO1);
             }
         } else {
             List<OrgVO> orgs = baseunitMapper.selectALLCostEntities();
@@ -105,7 +107,8 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
                     }
                 }
             }
-
+            OrgVO total = map.get("topOrgVO");
+            orgVOS.add(total);
         }
         return orgVOS;
     }
