@@ -219,6 +219,10 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         if (Util.isEmpty(returnVO)) {
             return null;
         }
+        Integer isMarket = returnVO.getIsMarket();
+        if (Util.isEmpty(isMarket)){
+            returnVO.setIsMarket(0);
+        }
         String state = returnVO.getState();
         if (Util.isNotEmpty(state)) {
             if (state.contains("2SUBMIT")) {

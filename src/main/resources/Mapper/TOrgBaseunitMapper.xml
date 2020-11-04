@@ -5,9 +5,10 @@
     <select id="selectDatas" resultType="com.example.EAS.vo.OrgVO">
         select m.fid as id,m.FNAME_L2 as title,m.FDESCRIPTION_L2 as description,m.fnumber as num,
         m.FLONGNUMBER as longNumber,m.flevel,m.FPartCostCenterID as costCenterId,m.FISLEAF as isLeaf,
-        m.FSIMPLENAME as simpleName,fi.FISBIZUNIT as isCompany
+        m.FSIMPLENAME as simpleName,fi.FISBIZUNIT as isCompany,c.FISBIZUNIT as isSTCost
         from T_ORG_BASEUNIT m
         left join T_ORG_OUPartFI fi on fi.FID=m.FPARTFIID
+        left join T_ORG_OUPartCostCenter c on c.fid=m.FPartCostCenterID
         <where>
             m.FISADMINORGUNIT=1 and m.FIsOUSealUp=0
             <if test="id!=null and id!=''">
@@ -32,16 +33,18 @@
         select fisbizunit as unit from T_ORG_CostCenter where fid=#{id,jdbcType=VARCHAR}
     </select>
     <select id="selectNexts" resultType="com.example.EAS.vo.OrgVO">
-        select fid as id,FNAME_L2 as title,FDESCRIPTION_L2 as description,fnumber as num,
-        FLONGNUMBER as longNumber,flevel,FPartCostCenterID as costCenterId,FDESCRIPTION_L2 as description,
-        FISLEAF as isLeaf,FSIMPLENAME as simpleName
-        from T_ORG_BASEUNIT
+        select m.fid as id,m.FNAME_L2 as title,m.FDESCRIPTION_L2 as description,m.fnumber as num,
+        m.FLONGNUMBER as longNumber,m.flevel,m.FPartCostCenterID as costCenterId,m.FDESCRIPTION_L2 as description,
+        m.FISLEAF as isLeaf,m.FSIMPLENAME as simpleName,fi.FISBIZUNIT as isCompany,c.FISBIZUNIT as isSTCost
+        from T_ORG_BASEUNIT m
+        left join T_ORG_OUPartFI fi on fi.FID=m.FPARTFIID
+        left join T_ORG_OUPartCostCenter c on c.fid=m.FPartCostCenterID
         <where>
-            FIsOUSealUp=0 and
-            FISADMINORGUNIT=1
-            and FParentID=#{id,jdbcType=VARCHAR}
+            m.FIsOUSealUp=0
+            and m.FISADMINORGUNIT=1
+            and m.FParentID=#{id,jdbcType=VARCHAR}
         </where>
-        order by flongnumber
+        order by m.flongnumber
     </select>
     <select id="selectNextIds" resultType="java.lang.String">
         select fid as id

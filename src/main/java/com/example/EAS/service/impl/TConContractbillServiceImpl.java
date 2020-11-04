@@ -622,6 +622,10 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         if (Util.isEmpty(contractVO)) {
             return null;
         }
+        Integer isMarket = contractVO.getIsMarket();
+        if (Util.isEmpty(isMarket)){
+            contractVO.setIsMarket(0);
+        }
         //获取登录信息
         JSONObject token = loginInfoUtil.getToken();
 

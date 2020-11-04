@@ -21,6 +21,9 @@ public class OrgVO {
     private String costCenterId;
     //    是否成本中心
     private Integer isCost;
+    //    是否实体成本中心
+    private Integer isSTCost;
+
     //    是否包含下级 0否1是
     private Integer hasNext;
     //    是否实体组织 0 否 1 是
