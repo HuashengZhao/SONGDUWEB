@@ -427,10 +427,20 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         if (Util.isNotEmpty(marketProjectId)) {
             easJson.put("marketProjectId", marketProjectId);
         }
-
+        BigDecimal oriAmount = vo.getOriAmount();
+        if (Util.isEmpty(oriAmount)) {
+            throw new ServiceException(UtilMessage.CONTRACT_AMOUNT_NOT_FOUND);
+        }
+        easJson.put("originalAmount", oriAmount.toString());
+        easJson.put("amount", oriAmount.toString());
+        String capitalAmount = vo.getBwbdx();
+        if (Util.isNotEmpty(capitalAmount)) {
+            easJson.put("capitalAmount", capitalAmount);
+        }
 //        立项金额控制 立项金额+负数金额-关联的无文本金额合计与金额相比
 //       2.2.4.3.营销类无文本合同申请金额受营销立项的控制，营销立项与营销类无文本是一对多的关系
-//       ，无文本累计申请金额必须小于等于营销立项可用余额（单据状态含已提交、审批中、已审批）
+//       ，无文本累计申请金额必须小于等于营销立项可用余额（单据状态含已提交、审批中、已审批
+
         BigDecimal useAmount = BigDecimal.ZERO;//       已用金额
         BigDecimal mkAmount = BigDecimal.ZERO;//        立项金额
         BigDecimal negAmount = BigDecimal.ZERO;//        负数金额
@@ -473,11 +483,14 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
                 }
             }
             BigDecimal divide = mkAmount.add(negAmount).divide(useAmount);
-            BigDecimal oriAmount = vo.getOriAmount();
             if (oriAmount.compareTo(divide) == 1) {
                 throw new ServiceException(UtilMessage.NOTEXT_AMOUNT_BEYOND_MARKET);
             }
         }
+//
+//2.2.4.1.1.申请金额受付款计划的控制，提交时需检测申请金额是否超过付款计划可用余额（状态含保存、已提交、审批中、已审批）
+//
+
 
         String costAccountId = vo.getCostAccountId();
         if (Util.isNotEmpty(costAccountId)) {
@@ -486,16 +499,6 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         String currencyId = vo.getCurrencyId();
         if (Util.isNotEmpty(currencyId)) {
             easJson.put("currencyId", currencyId);
-        }
-        BigDecimal oriAmount = vo.getOriAmount();
-        if (Util.isEmpty(oriAmount)) {
-            throw new ServiceException(UtilMessage.CONTRACT_AMOUNT_NOT_FOUND);
-        }
-        easJson.put("originalAmount", oriAmount.toString());
-        easJson.put("amount", oriAmount.toString());
-        String capitalAmount = vo.getBwbdx();
-        if (Util.isNotEmpty(capitalAmount)) {
-            easJson.put("capitalAmount", capitalAmount);
         }
         String payBillTypeId = vo.getPayBillTypeId();
         if (Util.isNotEmpty(payBillTypeId)) {
