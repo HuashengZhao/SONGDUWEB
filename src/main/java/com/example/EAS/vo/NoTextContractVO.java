@@ -14,6 +14,8 @@ import java.util.List;
 @Data
 public class NoTextContractVO {
 
+    //    是否必須錄入合同事项发生明细
+    private Integer isMarket;
     private String authorNum;
     //    基参
     private Boolean flag;

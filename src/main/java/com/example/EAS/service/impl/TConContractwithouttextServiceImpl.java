@@ -219,6 +219,10 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         if (Util.isEmpty(returnVO)) {
             return null;
         }
+        Integer isMarket = returnVO.getIsMarket();
+        if (Util.isEmpty(isMarket)){
+            returnVO.setIsMarket(0);
+        }
         String state = returnVO.getState();
         if (Util.isNotEmpty(state)) {
             if (state.contains("2SUBMIT")) {
@@ -495,6 +499,12 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         String costAccountId = vo.getCostAccountId();
         if (Util.isNotEmpty(costAccountId)) {
             easJson.put("costAccountId", costAccountId);
+        }else{
+//            默认传人民币
+           String currencyRMB =  mapper.selectRMBCurrencyId();
+           if (Util.isNotEmpty(currencyRMB)) {
+               easJson.put("costAccountId", currencyRMB);
+           }
         }
         String currencyId = vo.getCurrencyId();
         if (Util.isNotEmpty(currencyId)) {
