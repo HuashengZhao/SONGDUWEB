@@ -36,9 +36,20 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
         if (orgVOS.size() > 0) {
             orgVOS = getChildren(orgVOS);
             for (OrgVO orgVO : orgVOS) {
+//                是否成本实体中心
+                if (Util.isNotEmpty(vo.getIsSTCost())) {
+                    Integer isSTCost = orgVO.getIsSTCost();
+                    if (Util.isEmpty(isSTCost) || isSTCost == 0) {
+                        orgVO.setIsSTCost(0);
+                        orgVO.setDisabled(false);
+                    } else if (isSTCost == 1) {
+                        orgVO.setIsSTCost(1);
+                        orgVO.setDisabled(true);
+                    }
+                }
 //                是否实体财务组织
                 Integer isCompany = orgVO.getIsCompany();
-                if (Util.isEmpty(isCompany)){
+                if (Util.isEmpty(isCompany)) {
                     orgVO.setIsCompany(0);
                 }
                 String longNumber = orgVO.getLongNumber();
