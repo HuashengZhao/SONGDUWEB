@@ -517,6 +517,9 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             int year = bizDate.getYear();
             int month = bizDate.getMonthValue();
             BigDecimal payPlanAMT = baseunitMapper.selectPayPlanAMT(projectId, year, month);//当月总计划金额
+            if (Util.isEmpty(payPlanAMT)){
+                throw new ServiceException(UtilMessage.NOTEXT_AMOUNT_BEYOND_PLAN);
+            }
             LocalDateTime monthFirst = LocalDateTime.of(LocalDate.from(bizDate.with(TemporalAdjusters.firstDayOfMonth())), LocalTime.MIN);//业务月第一天0时0分
             LocalDateTime nextMonth = bizDate.plusMonths(1);
             LocalDateTime monthEnd = LocalDateTime.of(LocalDate.from(nextMonth.with(TemporalAdjusters.firstDayOfMonth())), LocalTime.MIN);//业务月下个月第一天0时0分
