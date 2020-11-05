@@ -337,11 +337,11 @@ public class TConPayrequestbillServiceImpl extends ServiceImpl<TConPayrequestbil
             BigDecimal allAMTRATE = BigDecimal.ZERO;
             if (Util.isNotEmpty(payRequestBillVO.getThisAMT()) && payRequestBillVO.getThisAMT().compareTo(BigDecimal.ZERO) == 1
                     && allAMT.compareTo(BigDecimal.ZERO) == 1) {
-                allAMTRATE = payRequestBillVO.getThisAMT().divide(allAMT).setScale(2, BigDecimal.ROUND_HALF_UP);
+                allAMTRATE = payRequestBillVO.getThisAMT().divide(allAMT,4,BigDecimal.ROUND_HALF_UP);
                 payRequestBillVO.setAllAMTRATE(allAMTRATE);
             }
 
-//            累计进度款付款比例  （张佳萍说不要了）
+//
 //            付款申请金额
 //            PaymentApplyVO paymentApplyVO = new PaymentApplyVO();
 //            BigDecimal requestAMT = payRequestBillVO.getRequestAMT();
