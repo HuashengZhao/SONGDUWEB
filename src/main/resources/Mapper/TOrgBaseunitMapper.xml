@@ -70,10 +70,8 @@
                     #{item}
                 </foreach>
             </if>
-            and m.FPARTCOSTCENTERID in (select fid from T_ORG_OUPartCostCenter)
-            and cc.FIsBizUnit=1
         </where>
-        order by m.fnumber
+        order by m.flongnumber
     </select>
     <select id="selectNextCostIds" resultType="java.lang.String">
         select fid as id
@@ -201,6 +199,7 @@ where
         m.FLONGNUMBER as longNumber,
         m.FLEVEL,
         m.FSIMPLENAME as simpleName,
+        m.FPARENTID as parentId,
         cc.FCOSTCENTERTYPE as costCenterType,
         cc.FISBIZUNIT as isSTCost
         from T_ORG_BASEUNIT m
@@ -223,6 +222,7 @@ where
         m.FNUMBER as num,
         m.FLONGNUMBER as longNumber,
         m.FLEVEL,
+        m.FPARENTID as parentId,
         m.FSIMPLENAME as simpleName,
         cc.FCOSTCENTERTYPE as costCenterType,
         cc.FISBIZUNIT as isSTCost
