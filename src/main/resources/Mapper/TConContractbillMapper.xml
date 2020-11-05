@@ -161,7 +161,7 @@
     FCONTENT as content
     from T_CON_CONTRACTBILLENTRY
     where FPARENTID=#{id}
-    order by fcontent desc
+    order by FDETAIL desc
     </select>
 
     <select id="selectMarketCons" resultType="com.example.EAS.vo.MarketContDetailVO">

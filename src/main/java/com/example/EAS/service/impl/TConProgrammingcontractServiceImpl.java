@@ -65,7 +65,11 @@ public class TConProgrammingcontractServiceImpl extends ServiceImpl<TConProgramm
         pageBean.setTotalCount(((Page) programConVOList).getTotal());
         pageBean.setPageData(programConVOList);
         long et = System.currentTimeMillis();
-        System.out.println("查询合约规划耗时：" + (et - st) + "ms");
+        if (vo.getOperationType()!=null && vo.getOperationType()==1) {
+            System.out.println("合同查询合约规划耗时：" + (et - st) + "ms");
+        }else if (vo.getOperationType()!=null && vo.getOperationType()==2){
+            System.out.println("无文本查询合约规划耗时：" + (et - st) + "ms");
+        }
         return pageBean;
     }
 }
