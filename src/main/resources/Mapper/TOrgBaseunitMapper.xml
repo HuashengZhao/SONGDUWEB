@@ -243,5 +243,22 @@ where
         where m.fid=#{id}
         order by m.FLONGNUMBER
     </select>
+    <select id="selectPayPlanAMT" resultType="java.math.BigDecimal">
+        select m.famount
+        from T_FNC_OrgUnitMonthPGDateEntry m
+        left join T_FNC_OrgUnitMonthPGEntry e
+        on e.fheadid=m.fid
+        where e.fcurprojectid=#{projectId}
+        and m.fmonth=#{month} and m.fyear=#{year}
+    </select>
+    <select id="selectUsedPayPlanAMT" resultType="java.math.BigDecimal">
+         select FAMOUNT
+        from T_CON_CONTRACTWITHOUTTEXT
+        where
+        <![CDATA[  #{monthFirst} <= ]]> FBOOKEDDATE
+        and FBOOKEDDATE <![CDATA[   < #{monthEnd}
+        ]]>
+        and FSTATE in('1SAVED','2SUBMITTED','3AUDITTING','4AUDITTED')
+    </select>
 
 </mapper>

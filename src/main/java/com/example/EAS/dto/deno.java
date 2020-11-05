@@ -1,16 +1,16 @@
 package com.example.EAS.dto;
 
+import java.time.LocalDateTime;
+import java.time.Month;
+
 public class deno {
 
     public static void main(String[] args) {
-//        for (int i = 0; i < 10; i++) {
-//                System.out.println(i+"============");
-//            try {
-//                Thread.currentThread().sleep(2000);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//        }
+        final LocalDateTime now = LocalDateTime.now();
+        final int month = now.getMonthValue();
+        final int year = now.getYear();
+        System.out.println(year+"   "+month);
+
     }
 
 }
