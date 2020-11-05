@@ -33,7 +33,6 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
         long st = System.currentTimeMillis();
         OrgVO orgVO1 = new OrgVO();
         List<OrgVO> orgVOS = baseunitMapper.selectDatas(vo);
-        Map<String, OrgVO> map = Maps.newHashMap();
         if (orgVOS != null && orgVOS.size() > 0) {
             orgVOS = getChildren(orgVOS);
             for (OrgVO orgVO : orgVOS) {
@@ -106,7 +105,6 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
                     }
                 }
             }
-
         }
         return orgVOS;
     }
