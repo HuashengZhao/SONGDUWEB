@@ -75,26 +75,29 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
         if (Util.isNotEmpty(id)) {
             List<String> counts = new ArrayList<>();
             OrgVO orgVO1 = baseunitMapper.selectCostById(id);
-            getChildIds(id, counts);
-            List<OrgVO> vos = baseunitMapper.selectCostEntities(counts);
-            if (vos != null && vos.size() > 0) {
-                for (OrgVO orgVO : vos) {
-                    //                成本中心
-                    String costCenterType = orgVO.getCostCenterType();
-                    if (Util.isNotEmpty(costCenterType)) {
-                        if (costCenterType.contains("0")) {
-                            orgVO.setCostCenterType("直接生产部门");
-                        } else if (costCenterType.contains("1")) {
-                            orgVO.setCostCenterType("辅助生产部门");
-                        } else if (costCenterType.contains("2")) {
-                            orgVO.setCostCenterType("管理部门");
-                        } else if (costCenterType.contains("3")) {
-                            orgVO.setCostCenterType("销售部门");
+            if (Util.isNotEmpty(orgVO1)) {
+                orgVO1.setDisabled(true);
+                getChildIds(id, counts);
+                List<OrgVO> vos = baseunitMapper.selectCostEntities(counts);
+                if (vos != null && vos.size() > 0) {
+                    for (OrgVO orgVO : vos) {
+                        //                成本中心
+                        String costCenterType = orgVO.getCostCenterType();
+                        if (Util.isNotEmpty(costCenterType)) {
+                            if (costCenterType.contains("0")) {
+                                orgVO.setCostCenterType("直接生产部门");
+                            } else if (costCenterType.contains("1")) {
+                                orgVO.setCostCenterType("辅助生产部门");
+                            } else if (costCenterType.contains("2")) {
+                                orgVO.setCostCenterType("管理部门");
+                            } else if (costCenterType.contains("3")) {
+                                orgVO.setCostCenterType("销售部门");
+                            }
                         }
                     }
+                    orgVO1.setChildren(vos);
+                    orgVOS.add(orgVO1);
                 }
-                orgVO1.setChildren(vos);
-                orgVOS.add(orgVO1);
             }
         } else {
             List<OrgVO> orgs = baseunitMapper.selectALLCostEntities(vo);
@@ -123,18 +126,25 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
     public OrgVO getEntityFinalOrg(OrgVO vo) {
         long st = System.currentTimeMillis();
         List<OrgVO> vos = new ArrayList<>();
-        List<OrgVO> orgVOS = baseunitMapper.selectALLCWSTS(vo);
-        Map<String, OrgVO> map = Maps.newHashMap();
-        if (orgVOS != null && orgVOS.size() > 0) {
-            for (OrgVO orgVO1 : orgVOS) {
-                if (Util.isNotEmpty(orgVO1)) {
-                    orgVO1.setDisabled(false);
-                    getParents(map, orgVO1);
+        if (Util.isNotEmpty(vo.getId())) {
+            OrgVO orgvo = baseunitMapper.selectDataById(vo.getId());
+            if (Util.isNotEmpty(orgvo)){
+                vos.add(orgvo);
+            }
+        }else{
+            List<OrgVO> orgVOS = baseunitMapper.selectALLCWSTS(vo);
+            Map<String, OrgVO> map = Maps.newHashMap();
+            if (orgVOS != null && orgVOS.size() > 0) {
+                for (OrgVO orgVO1 : orgVOS) {
+                    if (Util.isNotEmpty(orgVO1)) {
+                        orgVO1.setDisabled(false);
+                        getParents(map, orgVO1);
+                    }
                 }
             }
+            OrgVO total = map.get("topOrgVO");
+            vos.add(total);
         }
-        OrgVO total = map.get("topOrgVO");
-        vos.add(total);
         vo.setOrgVOList(vos);
         long et = System.currentTimeMillis();
         System.out.println("获取预算公司、财务组织耗时：" + (et - st) + "ms");
@@ -196,6 +206,9 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
             if (Util.isEmpty(orgVO1)) {
                 orgVO1 = baseunitMapper.selectCostById(parentId);
                 if (Util.isNotEmpty(orgVO1)) {
+                    if (orgVO1.getTitle().contains("杭州")) {
+                        int i = 0;
+                    }
                     List<OrgVO> os = new ArrayList<>();
                     os.add(orgVO);
                     orgVO1.setChildren(os);
@@ -205,22 +218,12 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
                     } else {
                         map.put(parentId, orgVO1);
                     }
-                    Integer isSTCost = orgVO1.getIsSTCost();
-                    if (Util.isEmpty(isSTCost) || isSTCost == 0) {
-                        orgVO1.setDisabled(true);
-                    } else if (isSTCost == 1) {
-                        orgVO1.setDisabled(false);
-                    }
+                    orgVO1.setDisabled(true);
                     getParents(map, orgVO1);
                 }
             } else {
                 orgVO1.getChildren().add(orgVO);
-                Integer isSTCost = orgVO1.getIsSTCost();
-                if (Util.isEmpty(isSTCost) || isSTCost == 0) {
-                    orgVO1.setDisabled(true);
-                } else if (isSTCost == 1) {
-                    orgVO1.setDisabled(false);
-                }
+                orgVO1.setDisabled(true);
             }
         }
     }

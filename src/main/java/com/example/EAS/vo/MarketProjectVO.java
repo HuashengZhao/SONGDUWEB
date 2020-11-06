@@ -37,5 +37,7 @@ public class MarketProjectVO {
     private String auditTime;
     private String createTime;
     private List<MarketProjectVO> marketProjectVOList;
+//操作類型 1 合同获取 2无文本获取
+    private Integer operationType;
 
 }

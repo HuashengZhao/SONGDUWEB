@@ -20,8 +20,11 @@ import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.rmi.RemoteException;
 import java.text.DecimalFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -220,7 +223,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             return null;
         }
         Integer isMarket = returnVO.getIsMarket();
-        if (Util.isEmpty(isMarket)){
+        if (Util.isEmpty(isMarket)) {
             returnVO.setIsMarket(0);
         }
         String state = returnVO.getState();
@@ -486,37 +489,10 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
                     }
                 }
             }
-            BigDecimal divide = mkAmount.add(negAmount).divide(useAmount);
+            BigDecimal divide = mkAmount.add(negAmount).subtract(useAmount);
             if (oriAmount.compareTo(divide) == 1) {
                 throw new ServiceException(UtilMessage.NOTEXT_AMOUNT_BEYOND_MARKET);
             }
-        }
-//
-//2.2.4.1.1.申请金额受付款计划的控制，提交时需检测申请金额是否超过付款计划可用余额（状态含保存、已提交、审批中、已审批）
-//
-
-
-        String costAccountId = vo.getCostAccountId();
-        if (Util.isNotEmpty(costAccountId)) {
-            easJson.put("costAccountId", costAccountId);
-        }else{
-//            默认传人民币
-           String currencyRMB =  mapper.selectRMBCurrencyId();
-           if (Util.isNotEmpty(currencyRMB)) {
-               easJson.put("costAccountId", currencyRMB);
-           }
-        }
-        String currencyId = vo.getCurrencyId();
-        if (Util.isNotEmpty(currencyId)) {
-            easJson.put("currencyId", currencyId);
-        }
-        String payBillTypeId = vo.getPayBillTypeId();
-        if (Util.isNotEmpty(payBillTypeId)) {
-            easJson.put("payBillTypeId", payBillTypeId);
-        }
-        String payContentId = vo.getPayContentId();
-        if (Util.isNotEmpty(payContentId)) {
-            easJson.put("payContentTypeId", payContentId);
         }
         LocalDateTime bizDate = vo.getBizDate();
         if (Util.isNotEmpty(bizDate)) {
@@ -533,6 +509,52 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             if (Util.isNotEmpty(periodId)) {
                 easJson.put("periodId", periodId);
             }
+        }
+//
+//2.2.4.1.1.申请金额受付款计划的控制，提交时需检测申请金额是否超过付款计划可用余额（状态含保存、已提交、审批中、已审批）
+//     项目+年月==>对应计划余额
+        if (Util.isNotEmpty(bizDate)) {
+            int year = bizDate.getYear();
+            int month = bizDate.getMonthValue();
+            BigDecimal payPlanAMT = baseunitMapper.selectPayPlanAMT(projectId, year, month);//当月总计划金额
+            if (Util.isEmpty(payPlanAMT)){
+                throw new ServiceException(UtilMessage.NOTEXT_AMOUNT_BEYOND_PLAN);
+            }
+            LocalDateTime monthFirst = LocalDateTime.of(LocalDate.from(bizDate.with(TemporalAdjusters.firstDayOfMonth())), LocalTime.MIN);//业务月第一天0时0分
+            LocalDateTime nextMonth = bizDate.plusMonths(1);
+            LocalDateTime monthEnd = LocalDateTime.of(LocalDate.from(nextMonth.with(TemporalAdjusters.firstDayOfMonth())), LocalTime.MIN);//业务月下个月第一天0时0分
+            vo.setMonthFirst(monthFirst);
+            vo.setMonthEnd(monthEnd);
+            BigDecimal usedAmt = baseunitMapper.selectUsedPayPlanAMT(vo);
+            if (Util.isNotEmpty(usedAmt)) {
+                BigDecimal subtract = payPlanAMT.subtract(usedAmt);
+                if (oriAmount.compareTo(subtract) == 1) {
+                    throw new ServiceException(UtilMessage.NOTEXT_AMOUNT_BEYOND_PLAN);
+                }
+            }
+        }
+
+        String costAccountId = vo.getCostAccountId();
+        if (Util.isNotEmpty(costAccountId)) {
+            easJson.put("costAccountId", costAccountId);
+        } else {
+//            默认传人民币
+            String currencyRMB = mapper.selectRMBCurrencyId();
+            if (Util.isNotEmpty(currencyRMB)) {
+                easJson.put("costAccountId", currencyRMB);
+            }
+        }
+        String currencyId = vo.getCurrencyId();
+        if (Util.isNotEmpty(currencyId)) {
+            easJson.put("currencyId", currencyId);
+        }
+        String payBillTypeId = vo.getPayBillTypeId();
+        if (Util.isNotEmpty(payBillTypeId)) {
+            easJson.put("payBillTypeId", payBillTypeId);
+        }
+        String payContentId = vo.getPayContentId();
+        if (Util.isNotEmpty(payContentId)) {
+            easJson.put("payContentTypeId", payContentId);
         }
         String unionBankId = vo.getUnionBankId();
 //        String unionBankId = mapper.selectUnionBankId(unionBankNum);

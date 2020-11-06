@@ -3,12 +3,9 @@
 <mapper namespace="com.example.EAS.mapper.TBdSupplierMapper">
 
     <select id="selectDatas" resultType="com.example.EAS.vo.SupplierVO">
-        select distinct m.fid as id, m.fname_l2 as title , m.fnumber as num,m.FOLDNUMBER as longNumber,
-        m.FTAXREGISTERNO as taxNum,m.FMnemonicCode as memNumber,m.FIsInternalCompany isInner,
-        ba.FBANKACCOUNT as bankAccount,ba.FBANK as bank
+        select distinct m.fid as id, m.fname_l2 as title, m.fnumber as num,m.FOLDNUMBER as longNumber,
+        m.FTAXREGISTERNO as taxNum,m.FMnemonicCode as memNumber,m.FIsInternalCompany isInner
         from T_BD_Supplier m
-        left join T_BD_SUPPLIERCOMPANYINFO ci on ci.FSUPPLIERID=m.FID
-        left join T_BD_SUPPLIERCOMPANYBANK ba on ba.FSUPPLIERCOMPANYINFOID=ci.fid
         <where>
             m.FUsedStatus=1
             <if test="title!=null and title!=''">
@@ -20,7 +17,5 @@
         </where>
         order by m.fnumber
     </select>
-
-
 
 </mapper>

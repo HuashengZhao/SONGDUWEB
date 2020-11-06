@@ -64,6 +64,7 @@
         left join T_ORG_OUPartCostCenter cc on cc.fid=m.FPARTCOSTCENTERID
         <where>
             m.FIsOUSealUp=0
+            and cc.FISBIZUNIT=1
             <if test="list != null and list.size > 0">
                 and m.FID in
                 <foreach item="item" collection="list" index="index" open="(" separator="," close=")">
@@ -232,6 +233,40 @@ where
            m.FIsOUSealUp = 0
             and cc.FISBIZUNIT is not null
             and m.fid=#{parentId}
+    </select>
+    <select id="selectEFById" resultType="com.example.EAS.vo.OrgVO">
+        select m.fid as id,m.FNAME_L2 as title,m.FNUMBER as num,m.FLONGNUMBER as longNumber,
+        m.FSIMPLENAME as simpleName,m.FISLEAF as isLeaf,m.FDESCRIPTION_L2 as description,
+        fi.FISBIZUNIT as isCompany,m.FLEVEL
+        from T_ORG_BASEUNIT m
+        left join T_ORG_OUPartFI fi on fi.FID=m.FPARTFIID
+        where m.fid=#{id}
+        order by m.FLONGNUMBER
+    </select>
+    <select id="selectPayPlanAMT" resultType="java.math.BigDecimal">
+        select m.famount
+        from T_FNC_projectMonthPGDateEntry m
+        left join T_FNC_ProjectMonthPlanGEntry e on e.fid=m.FHeadEntryId
+        left join T_FNC_ProjectMonthPlangather er on er.fid=e.fheadid
+        where
+        m.fyear=#{year}
+        and m.fmonth=#{month}
+        and er.FCurProjectId=#{projectId}
+        and e.contractBillId is null
+    </select>
+    <select id="selectUsedPayPlanAMT" resultType="java.math.BigDecimal">
+         select sum(famount)
+        from T_CON_CONTRACTWITHOUTTEXT
+        <where>
+        <![CDATA[  #{monthFirst} <= ]]> FBOOKEDDATE
+        and FBOOKEDDATE <![CDATA[   < #{monthEnd}
+        ]]>
+        and FSTATE in('1SAVED','2SUBMITTED','3AUDITTING','4AUDITTED')
+        and FCURPROJECTID=#{projectId}
+        <if test="id!=null and id!=''">
+        and fid !=#{id}
+        </if>
+        </where>
     </select>
 
 </mapper>

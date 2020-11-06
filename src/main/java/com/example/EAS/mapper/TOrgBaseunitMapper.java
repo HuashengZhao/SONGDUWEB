@@ -1,9 +1,11 @@
 package com.example.EAS.mapper;
 
-import com.example.EAS.model.TOrgBaseunit;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.example.EAS.model.TOrgBaseunit;
+import com.example.EAS.vo.NoTextContractVO;
 import com.example.EAS.vo.OrgVO;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -49,4 +51,10 @@ public interface TOrgBaseunitMapper extends BaseMapper<TOrgBaseunit> {
 
 
     OrgVO selectCostById(String parentId);
+
+    OrgVO selectEFById(String id);
+
+    BigDecimal selectPayPlanAMT(String projectId, int year, int month);
+
+    BigDecimal selectUsedPayPlanAMT(NoTextContractVO vo);
 }
