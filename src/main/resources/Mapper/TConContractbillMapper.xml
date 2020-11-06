@@ -56,7 +56,7 @@
         left join T_PM_User u on u.fid=cb.FAuditorID
         left join T_PM_USER uc on uc.fid=cb.FCreatorID
         <where>
-            cp.FFULLORGUNIT=#{orgId}
+            cp.FFULLORGUNIT=#{orgId,jdbcType=VARCHAR}
             <if test="num!=null and num!=''">
                 and cb.fnumber like CONCAT(CONCAT('%',#{num}),'%')
             </if>

@@ -245,7 +245,7 @@ where
     </select>
     <select id="selectPayPlanAMT" resultType="java.math.BigDecimal">
         select m.famount
-        from T_FNC_OrgUnitMonthPGDateEntry m
+        from T_FNC_projectMonthPGDateEntry m
         left join T_FNC_ProjectMonthPlanGEntry e on e.fid=m.FHeadEntryId
         left join T_FNC_ProjectMonthPlangather er on er.fid=e.fheadid
         where

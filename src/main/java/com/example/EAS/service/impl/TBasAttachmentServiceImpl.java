@@ -121,7 +121,7 @@ public class TBasAttachmentServiceImpl extends ServiceImpl<TBasAttachmentMapper,
             attachmentsVO.setNum(fileNum);
             attachmentsVO.setPersonName(personName1);
             attachmentsVO.setPerson(person);
-            attachmentsVO.setTitle(name);
+            attachmentsVO.setTitle(originalFilename);
             attachmentsVO.setFileSize(size1);
             attachmentsVO.setType(type);
 
