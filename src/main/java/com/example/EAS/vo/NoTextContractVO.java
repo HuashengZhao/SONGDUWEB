@@ -157,4 +157,8 @@ public class NoTextContractVO {
     //    link查看oa流程
     private String link;
     private String oaId;
+
+//    比较款选计划
+    private LocalDateTime monthFirst;
+    private LocalDateTime monthEnd;
 }

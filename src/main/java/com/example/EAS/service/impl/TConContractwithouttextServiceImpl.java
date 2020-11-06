@@ -523,7 +523,9 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             LocalDateTime monthFirst = LocalDateTime.of(LocalDate.from(bizDate.with(TemporalAdjusters.firstDayOfMonth())), LocalTime.MIN);//业务月第一天0时0分
             LocalDateTime nextMonth = bizDate.plusMonths(1);
             LocalDateTime monthEnd = LocalDateTime.of(LocalDate.from(nextMonth.with(TemporalAdjusters.firstDayOfMonth())), LocalTime.MIN);//业务月下个月第一天0时0分
-            BigDecimal usedAmt = baseunitMapper.selectUsedPayPlanAMT(monthFirst, monthEnd);
+            vo.setMonthFirst(monthFirst);
+            vo.setMonthEnd(monthEnd);
+            BigDecimal usedAmt = baseunitMapper.selectUsedPayPlanAMT(vo);
             if (Util.isNotEmpty(usedAmt)) {
                 BigDecimal subtract = payPlanAMT.subtract(usedAmt);
                 if (oriAmount.compareTo(subtract) == 1) {

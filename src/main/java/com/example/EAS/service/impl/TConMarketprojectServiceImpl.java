@@ -37,19 +37,19 @@ public class TConMarketprojectServiceImpl extends ServiceImpl<TConMarketprojectM
                     marketProjectVO.setState("保存");
                 }else if (state.contains("3AUD")){
                     marketProjectVO.setState("审批中");
-                }else if (state.contains("4")){
+                }else if (state.contains("4A")){
                     marketProjectVO.setState("已审批");
-                }else if (state.contains("5")){
+                }else if (state.contains("5C")){
                     marketProjectVO.setState("终止");
-                }else if (state.contains("7")){
+                }else if (state.contains("7A")){
                     marketProjectVO.setState("已下发");
-                }else if (state.contains("8")){
+                }else if (state.contains("8V")){
                     marketProjectVO.setState("已签证");
-                }else if (state.contains("9")){
+                }else if (state.contains("9I")){
                     marketProjectVO.setState("作废");
-                }else if (state.contains("10")){
+                }else if (state.contains("10P")){
                     marketProjectVO.setState("已上报");
-                }else if (state.contains("11")){
+                }else if (state.contains("11B   ")){
                     marketProjectVO.setState("被打回");
                 }else if (state.contains("12REVISING")){
                     marketProjectVO.setState("修订中");

@@ -15,10 +15,13 @@
           <where>
               m.FORGUNITID=#{orgId,jdbcType=VARCHAR}
               <if test="title!=null and title!=''">
-                  m.FNAME like CONCAT(CONCAT('%',${title}),'%')
+                 and m.FNAME like CONCAT(CONCAT('%',${title}),'%')
               </if>
               <if test="num!=null and num!=''">
-                  m.fnumber like CONCAT(CONCAT('%',${num}),'%')
+                 and m.fnumber like CONCAT(CONCAT('%',${num}),'%')
+              </if>
+              <if test="operationType!=null and operationType==2">
+                 and m.fstate='4AUDITTED'
               </if>
           </where>
           order by m.FBOOKEDDATE desc,m.fnumber desc

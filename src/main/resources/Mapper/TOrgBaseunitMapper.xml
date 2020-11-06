@@ -255,13 +255,18 @@ where
         and e.contractBillId is null
     </select>
     <select id="selectUsedPayPlanAMT" resultType="java.math.BigDecimal">
-         select FAMOUNT
+         select sum(famount)
         from T_CON_CONTRACTWITHOUTTEXT
-        where
+        <where>
         <![CDATA[  #{monthFirst} <= ]]> FBOOKEDDATE
         and FBOOKEDDATE <![CDATA[   < #{monthEnd}
         ]]>
         and FSTATE in('1SAVED','2SUBMITTED','3AUDITTING','4AUDITTED')
+        and FCURPROJECTID=#{projectId}
+        <if test="id!=null and id!=''">
+        and fid !=#{id}
+        </if>
+        </where>
     </select>
 
 </mapper>
