@@ -244,7 +244,7 @@ where
         order by m.FLONGNUMBER
     </select>
     <select id="selectPayPlanAMT" resultType="java.math.BigDecimal">
-        select m.famount
+        select sum(m.famount)
         from T_FNC_projectMonthPGDateEntry m
         left join T_FNC_ProjectMonthPlanGEntry e on e.fid=m.FHeadEntryId
         left join T_FNC_ProjectMonthPlangather er on er.fid=e.fheadid
@@ -253,9 +253,10 @@ where
         and m.fmonth=#{month}
         and er.FCurProjectId=#{projectId}
         and e.contractBillId is null
+        and er.FIsLatest=1
     </select>
     <select id="selectUsedPayPlanAMT" resultType="java.math.BigDecimal">
-         select sum(famount)
+         select sum(FORIGINALAMOUNT)
         from T_CON_CONTRACTWITHOUTTEXT
         <where>
         <![CDATA[  #{monthFirst} <= ]]> FBOOKEDDATE
