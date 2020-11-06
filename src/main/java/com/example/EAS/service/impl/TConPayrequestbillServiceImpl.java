@@ -333,11 +333,11 @@ public class TConPayrequestbillServiceImpl extends ServiceImpl<TConPayrequestbil
                 }
                 payRequestBillVO.setAllAMT(allAMT);
             }
-//            累计完工工程比例
+//            累计完工工程比例  累计完工工程量  / 合同最新造价
             BigDecimal allAMTRATE = BigDecimal.ZERO;
-            if (Util.isNotEmpty(payRequestBillVO.getThisAMT()) && payRequestBillVO.getThisAMT().compareTo(BigDecimal.ZERO) == 1
+            if (Util.isNotEmpty(payRequestBillVO.getLatestPrice()) && payRequestBillVO.getLatestPrice().compareTo(BigDecimal.ZERO) != 0
                     && allAMT.compareTo(BigDecimal.ZERO) == 1) {
-                allAMTRATE = payRequestBillVO.getThisAMT().divide(allAMT,4,BigDecimal.ROUND_HALF_UP);
+                allAMTRATE = allAMT.divide(payRequestBillVO.getLatestPrice(),4,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
                 payRequestBillVO.setAllAMTRATE(allAMTRATE);
             }
 

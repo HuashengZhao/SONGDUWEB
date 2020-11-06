@@ -219,7 +219,7 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
                         map.put(parentId, orgVO1);
                     }
                     orgVO1.setDisabled(true);
-                    getParents(map, orgVO1);
+                    getCostParents(map, orgVO1);
                 }
             } else {
                 orgVO1.getChildren().add(orgVO);
