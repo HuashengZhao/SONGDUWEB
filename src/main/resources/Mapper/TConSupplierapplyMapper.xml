@@ -112,10 +112,6 @@
     <select id="selectData" resultType="java.lang.Object">
         select * from OAIDRECORD where OAID=#{oaId} and billId=#{billId}
     </select>
-    <select id="selectAttachments" resultType="com.example.EAS.vo.AttachmentsVO">
-        select a.fileUUID,a.contentType,a.url as fileUrl,a.fileType,a.fileSize as fileSize,a.filenum as num,a.weburl as webUrl,a.createTime as createTime,a.personName,a.filename as title
-        from webattachment a where a.easid=#{easId,jdbcType=VARCHAR} and a.filenum is not null
-    </select>
     <select id="selectFileNumberRecord" resultType="java.lang.Integer">
         select value from oanumberrecord where type like '%fileNum%'
     </select>
@@ -133,12 +129,7 @@
     (select FORGID from T_PM_OrgRange where FUSERID in
     (select fid from t_pm_user where fnumber=#{person}))
     </select>
-    <select id="selectUUIDByOriName" resultType="java.lang.String">
-        select fileUUID from webAttachment where fileNum=#{fileNum}
-    </select>
-    <select id="selecWEBURLByOriName" resultType="java.lang.String">
-         select webUrl from webAttachment where fileNum=#{fileNum}
-    </select>
+
     <select id="selectOrgList" resultType="com.example.EAS.vo.OrgVO">
         select un.fid as id,un.flongnumber as longNumber,un.fname_l2 as title,un.fnumber as num from  t_org_baseunit un
        left join  T_ORG_OUPartFI fi on fi.fid=un.FPartFIID where fisbizunit=1  order by un.fnumber
@@ -159,11 +150,4 @@
          select oaid from oaidrecord where billId=#{id,jdbcType=VARCHAR} order by oaid desc
     </select>
 
-
-    <insert id="insertAttachMent" parameterType="com.example.EAS.vo.AttachmentsVO">
-        insert into webattachment(originalFilename,fileUUID,contentType,fileSize,easid,fileNum,url,webUrl,filetype,createtime,personName,fileName)
-        values(#{originalFilename,jdbcType=VARCHAR},#{fileUUID,jdbcType=VARCHAR},#{contentType,jdbcType=VARCHAR},
-        #{fileSize,jdbcType=VARCHAR},#{easId,jdbcType=VARCHAR},#{num,jdbcType=VARCHAR},#{fileUrl,jdbcType=VARCHAR},
-        #{webUrl,jdbcType=VARCHAR},#{fileType,jdbcType=VARCHAR},#{createTime},#{personName,jdbcType=VARCHAR},#{title,jdbcType=VARCHAR})
-    </insert>
 </mapper>
