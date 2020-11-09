@@ -34,8 +34,8 @@
         left join T_HR_BDEmployeeType t on t.FID=c.FEMPLOYEETYPEID
         <where>
             c.fname_l2 is not null
-            <if test="deleteStatus!=null and deleteStatus!=''">
-                and c.FDELETEDSTATUS = #{deleteStatus}
+            <if test="deleteStatus!=null and deleteStatus==1">
+                and c.FDeletedStatus=1
             </if>
             <if test="personName!=null and personName!=''">
                 and c.fname_l2 like CONCAT(CONCAT('%',#{personName}),'%')
@@ -43,6 +43,7 @@
             <if test="personNumber!=null and personNumber!=''">
                 and c.fnumber like CONCAT(CONCAT('%',#{personNumber}),'%')
             </if>
+
             <if test="orgidList != null and orgidList.size > 0">
                 and p.FAdminOrgUnitID in
                 <foreach item="item" collection="orgidList" index="index" open="(" separator="," close=")">

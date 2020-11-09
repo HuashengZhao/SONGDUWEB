@@ -37,7 +37,8 @@ public class ContractVO {
     private LocalDateTime bookDate;
     private String conTypeName;
     private String conTypeId;
-    //    合约规划
+    //    合约规划 0 1
+    private Integer needHygh;
     private String hygh;
     private String hyghId;
     private String mainNumber;

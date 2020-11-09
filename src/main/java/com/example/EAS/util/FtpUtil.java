@@ -162,7 +162,7 @@ public class FtpUtil {
             String newUrl = webUrl.replace(changeUrl, encode).replace("ftp/", "");
 
             //      存入对应信息到 eas database
-            mapper.insertAttachMent(attachmentsVO);
+//            mapper.insertAttachMent(attachmentsVO);
         }
     }
 
