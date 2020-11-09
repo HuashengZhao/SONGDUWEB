@@ -54,6 +54,7 @@ public class TConContractbillController {
         HashMap<String, Object> result = new HashMap<>(10);
         ContractVO vo = BodyDecodeUtil.decodeBody(body, ContractVO.class);
         ContractVO contractVO = service.saveContractBill(vo);
+        result.put("data", contractVO);
         result.put("msg", UtilMessage.SAVE_MSG_SUCCESS);
         result.put("code", HttpStatus.SC_OK);
         return R.ok(result);

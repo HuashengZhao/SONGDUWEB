@@ -517,7 +517,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             int year = bizDate.getYear();
             int month = bizDate.getMonthValue();
             BigDecimal payPlanAMT = baseunitMapper.selectPayPlanAMT(projectId, year, month);//当月总计划金额
-            if (Util.isEmpty(payPlanAMT)){
+            if (Util.isEmpty(payPlanAMT)) {
                 throw new ServiceException(UtilMessage.NOTEXT_AMOUNT_BEYOND_PLAN);
             }
             LocalDateTime monthFirst = LocalDateTime.of(LocalDate.from(bizDate.with(TemporalAdjusters.firstDayOfMonth())), LocalTime.MIN);//业务月第一天0时0分
@@ -541,7 +541,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         String currencyId = vo.getCurrencyId();
         if (Util.isNotEmpty(currencyId)) {
             easJson.put("currencyId", currencyId);
-        }else {
+        } else {
 //            默认传人民币
             String currencyRMB = mapper.selectRMBCurrencyId();
             if (Util.isNotEmpty(currencyRMB)) {
@@ -718,7 +718,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         if (Util.isEmpty(flag) || flag.compareTo(false) == 0) {
             call = getCall("EASURL", "saveContractwithouttext");
             try {
-                System.out.println("无文本保存信息：" + easJson.toString());
+                System.out.println(title + "无文本保存信息：" + easJson.toString());
                 result = (String) call.invoke(new Object[]{easJson.toString()});
             } catch (RemoteException e) {
                 e.printStackTrace();
@@ -728,7 +728,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             //            如果是驳回后重新提交 调用eas合同提交方法
             call = getCall("EASURL", "submitContractwithouttext");
             try {
-                System.out.println("无文本提交信息" + easJson.toJSONString());
+                System.out.println(title + "无文本提交信息" + easJson.toJSONString());
                 result = (String) call.invoke(new Object[]{easJson.toString()});
             } catch (RemoteException e) {
                 e.printStackTrace();
@@ -739,26 +739,27 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         System.out.println("无文本调用eas保存时间" + (easEnd - easStart) + "ms");
 //        接收返回eas信息
         JSONObject object = JSONObject.parseObject(result);
-        if (result != null && object.get("result").toString().contains("fault")) {
-            noTextContractVO.setResult("fault");
-            throw new ServiceException(object.getString("message"));
-        } else if (result != null && object.get("result").toString().contains("success")) {
-//            成功保存后更改创建人为当前登录人
-            id = object.getString("id");
-            noTextContractVO.setId(id);
-            noTextContractVO.setResult("success");
-            TConContractwithouttext tConContractwithouttext = mapper.selectById(id);
-
-            tConContractwithouttext.setFcreatorid(creatorId);
-            mapper.updateById(tConContractwithouttext);
+        if (result != null && object.get("result") != null) {
+            if (object.get("result").toString().contains("fault")) {
+//                noTextContractVO.setResult("fault");
+                throw new ServiceException(object.getString("message") == null ? "保存失败" : object.getString("message"));
+            } else if (object.get("result").toString().contains("success")) {
+                //            成功保存后更改创建人为当前登录人
+                id = object.getString("id");
+                noTextContractVO.setId(id);
+                noTextContractVO.setResult("success");
+                TConContractwithouttext tConContractwithouttext = mapper.selectById(id);
+                tConContractwithouttext.setFcreatorid(creatorId);
+                mapper.updateById(tConContractwithouttext);
+            }
         }
         //        保存附件到web表
-        if (Util.isNotEmpty(id) && vo.getAttachmentsVOS() != null && vo.getAttachmentsVOS().size() > 0) {
-            supplierapplyMapper.deletAttach(id);
-            ftpUtil.saveAttachMent(attachmentsVOS, id);
-        } else {
-            supplierapplyMapper.deletAttach(id);
-        }
+//        if (Util.isNotEmpty(id) && vo.getAttachmentsVOS() != null && vo.getAttachmentsVOS().size() > 0) {
+//            supplierapplyMapper.deletAttach(id);
+//            ftpUtil.saveAttachMent(attachmentsVOS, id);
+//        } else {
+//            supplierapplyMapper.deletAttach(id);
+//        }
         long saveEnd = System.currentTimeMillis();
         System.out.println("无文本保存方法耗时：" + (saveEnd - saveStart) + "ms");
         return noTextContractVO;

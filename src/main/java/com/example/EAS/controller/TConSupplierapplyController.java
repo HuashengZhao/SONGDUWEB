@@ -16,7 +16,7 @@ import java.util.HashMap;
 
 /**
  * <p>
- *  前端控制器
+ * 前端控制器
  * </p>
  *
  * @author watson
@@ -59,8 +59,9 @@ public class TConSupplierapplyController {
     public R addSupplierApply(@RequestBody String body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         SupplierApplyVO vo = BodyDecodeUtil.decodeBody(body, SupplierApplyVO.class);
-         JSONObject obj = service.addSupplierApply(vo);
-        result.put("msg",obj.get("message") );
+        JSONObject obj = service.addSupplierApply(vo);
+        result.put("data", obj);
+        result.put("msg", UtilMessage.SAVE_MSG_SUCCESS);
         result.put("code", HttpStatus.SC_OK);
         return R.ok(result);
     }
@@ -120,7 +121,7 @@ public class TConSupplierapplyController {
         SupplierApplyVO vo = BodyDecodeUtil.decodeBody(body, SupplierApplyVO.class);
         SupplierApplyVO supplierApplyVO = service.supplierSubmit(vo);
         String message = supplierApplyVO.getMessage();
-        if (message!=null){
+        if (message != null) {
             result.put("msg", message);
             result.put("code", HttpStatus.SC_NO_CONTENT);
             return R.ok(result);
@@ -129,7 +130,6 @@ public class TConSupplierapplyController {
         result.put("code", HttpStatus.SC_OK);
         return R.ok(result);
     }
-
 
     /**
      * update supplier Apply
@@ -143,8 +143,5 @@ public class TConSupplierapplyController {
         result.put("code", HttpStatus.SC_OK);
         return R.ok(result);
     }
-
-
-
 
 }
