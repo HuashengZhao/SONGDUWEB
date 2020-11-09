@@ -81,7 +81,7 @@ public class TConContractwithouttextController {
         NoTextContractVO vo = BodyDecodeUtil.decodeBody(body, NoTextContractVO.class);
         NoTextContractVO notext = service.saveNoTextBill(vo);
         result.put("data", notext);
-        result.put("msg", UtilMessage.GET_MSG_SUCCESS);
+        result.put("msg", UtilMessage.SAVE_MSG_SUCCESS);
         result.put("code", HttpStatus.SC_OK);
         return R.ok(result);
     }

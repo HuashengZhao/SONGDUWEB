@@ -240,7 +240,6 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
     /**
      * 保存合同单据
      */
-
     @Override
     public ContractVO saveContractBill(ContractVO vo) {
         long startTime = System.currentTimeMillis();
@@ -573,7 +572,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         if (Util.isEmpty(flag) || flag.compareTo(false) == 0) {
             call = getCall("EASURL", "saveContractBill");
             try {
-                System.out.println(easJson.toJSONString());
+                System.out.println(conName + " 合同提交参数：" + easJson.toJSONString());
                 result = (String) call.invoke(new Object[]{easJson.toString()});
             } catch (RemoteException e) {
                 e.printStackTrace();
@@ -583,7 +582,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             //            如果是驳回后重新提交 调用eas合同提交方法
             call = getCall("EASURL", "submitContractBill");
             try {
-                System.out.println(easJson.toJSONString());
+                System.out.println(conName + " 合同重新提交参数：" + easJson.toJSONString());
                 result = (String) call.invoke(new Object[]{easJson.toString()});
             } catch (RemoteException e) {
                 e.printStackTrace();
@@ -594,17 +593,19 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         System.out.println("调用EAS合同保存时间:" + (saveEnd - saveStart) + "ms");
 //        接收返回eas信息
         JSONObject object = JSONObject.parseObject(result);
-        if (result != null && object.get("result").toString().contains("fault")) {
-            contractVO.setResult("fault");
-            throw new ServiceException(object.getString("message"));
-        } else if (result != null && object.get("result").toString().contains("success")) {
-            String id = object.getString("id");
-            contractBillId = id;
-            contractVO.setId(id);
-            contractVO.setResult("success");
-            TConContractbill tConContractbill = mapper.selectById(id);
-            tConContractbill.setFcreatorid(creatorId);
-            mapper.updateById(tConContractbill);
+        if (result != null && object.get("result") != null) {
+            if (object.get("result").toString().contains("fault")) {
+                //            contractVO.setResult("fault");
+                throw new ServiceException(object.getString("message") == null ? "保存失败" : object.getString("message"));
+            } else if (object.get("result").toString().contains("success")) {
+                String id = object.getString("id");
+                contractBillId = id;
+                contractVO.setId(id);
+//            contractVO.setResult("success");
+                TConContractbill tConContractbill = mapper.selectById(id);
+                tConContractbill.setFcreatorid(creatorId);
+                mapper.updateById(tConContractbill);
+            }
         }
         long endTime = System.currentTimeMillis();
         System.out.println("合同列表运行时间：" + (endTime - startTime) + "ms");
@@ -623,7 +624,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             return null;
         }
         Integer isMarket = contractVO.getIsMarket();
-        if (Util.isEmpty(isMarket)){
+        if (Util.isEmpty(isMarket)) {
             contractVO.setIsMarket(0);
         }
         //获取登录信息
@@ -1016,9 +1017,9 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             mapper.updateById(tConContractbill);
 //            获取返回的附件查看路径   预览
             JSONArray attUrlArray = str.getJSONArray("atturl");
-            if (attUrlArray!=null && attUrlArray.size()>0){
+            if (attUrlArray != null && attUrlArray.size() > 0) {
 ////               附件预览地址
-                for(int i=0;i<attUrlArray.size();i++){
+                for (int i = 0; i < attUrlArray.size(); i++) {
                     JSONObject atturlObj = attUrlArray.getJSONObject(i);
                     String attName = atturlObj.getString("name");
                     String atturl = atturlObj.getString("url");
@@ -1030,7 +1031,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                         String s2 = "&MtFdLoinName=";
                         String mtLoginNum = OaUtil.encrypt(personNum);
                         String attLink = new StringBuffer().append(atturl).append(s2).append(mtLoginNum).toString();
-                        attachmentMapper.updateAttLink(id,attName,attLink);
+                        attachmentMapper.updateAttLink(id, attName, attLink);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

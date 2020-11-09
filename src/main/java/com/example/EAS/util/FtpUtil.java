@@ -162,11 +162,9 @@ public class FtpUtil {
             String newUrl = webUrl.replace(changeUrl, encode).replace("ftp/", "");
 
             //      存入对应信息到 eas database
-            mapper.insertAttachMent(attachmentsVO);
-
+//            mapper.insertAttachMent(attachmentsVO);
         }
     }
-
 
     /**
      * 实现文件的移动，这里做的是一个文件夹下的所有内容移动到新的文件，
@@ -178,6 +176,7 @@ public class FtpUtil {
      * @param newPath
      * @return
      */
+
     public boolean moveFile(String oldPath, String newPath) {
         boolean flag = false;
         FTPClient ftp = new FTPClient();

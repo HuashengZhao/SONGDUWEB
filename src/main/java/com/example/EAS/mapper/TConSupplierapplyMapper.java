@@ -58,12 +58,7 @@ public interface TConSupplierapplyMapper extends BaseMapper<TConSupplierapply> {
 
     List<Object> selectData(String billId,String oaId);
 
-    void insertAttachMent(AttachmentsVO attachmentsVO);
-
-    List<AttachmentsVO> selectAttachments(String easId);
-
     Integer selectFileNumberRecord();
-
 
     void updateFileNumrecord(Integer numberRecord);
 
@@ -71,23 +66,13 @@ public interface TConSupplierapplyMapper extends BaseMapper<TConSupplierapply> {
 
     void deleteData(String billId, String oaId);
 
-    void deletAttach(String id);
-
     List<String> selectNumFromWebAttachment(String id);
-
-    void deletNumList(List<String> existList);
-
-    void updateWebUrl(String newUrl, String billId);
 
     List<AttachmentsVO> selectAttachmentsByNum(String num);
 
     void updateCreatorId(String creatorId,String id);
 
     List<String> selectOrgInfoByPerson(String person);
-
-    String selectUUIDByOriName(String fileNum);
-
-    String selecWEBURLByOriName(String fileNum);
 
     List<OrgVO> selectOrgList();
 
