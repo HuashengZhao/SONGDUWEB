@@ -31,7 +31,7 @@
                 and bill.FNAME like CONCAT(CONCAT('%',#{title}),'%')
             </if>
             <if test="num!=null and num!=''">
-                and bill.fnumber like CONCAT(CONCAT('%',#{num}),'%')
+                and bill.FNUMBER like CONCAT(CONCAT('%',#{num}),'%')
             </if>
             <if test="contractNumber!=null and contractNumber!=''">
                 and con.FNUMBER like CONCAT(CONCAT('%',#{contractNumber}),'%')
@@ -73,12 +73,12 @@
         bill.FCREATORID as creatorId,u.FNAME_L2 as creatorName,bill.FCURPROJECTID as projectId,
         bill.FCONTRACTID as contractId,bill.FSOURCEFUNCTION as sourceFunction,
         cp.FNAME_L2 as projectName,con.FNUMBER as contractNumber,con.FNAME as contractName,
-        bill.FSUPPLIERID as supplierId,sup.FNAME_L2 as supplierName,bill.FCURRENCYID as currencyId,
+        bill.FSUPPLIERID as realSupplierId,sup.FNAME_L2 as realSupplierName,bill.FCURRENCYID as currencyId,
         cur.FNAME_L2 as currencyName,bill.FAMOUNT as amount,bill.FORIGINALAMOUNT as oriAmount,
         bill.FRECBANK as recBank,bill.FRECACCOUNT as recAccount,bill.FUSAGE as remark,
         pt.FNAME_L2 as paymentTypeName,bill.FAUDITORID as auditorId,u1.FNAME_L2 as auditorName,
-        bill.FAUDITTIME auditTime,bill.FCREATETIME creatTime,bill.FRealSupplierID as realSupplierId,
-        sup1.FNAME_L2 as realSupplierName, st.FNAME_L2 as settleMentTypeName,
+        bill.FAUDITTIME auditTime,bill.FCREATETIME creatTime,bill.FRealSupplierID as supplierId,
+        sup1.FNAME_L2 as supplierName, st.FNAME_L2 as settleMentTypeName,
         bill.FPAYCONTENTTYPEID as payContentTypeId,pc.FNAME_L2 as payContentTypeName,
         bill.FPAYDATE as payDate,con.FSTARTDATE as startDate,con.FENDDATE as endDate,
         con.FTAXERQUA as taxerQua,con.FTAXERNUM as taxerNum,bank.FNUMBER as unionBankNum,
@@ -106,7 +106,7 @@
         left join T_FDC_CurProject cp on cp.fid=bill.FCURPROJECTID
         left join T_CON_CONTRACTBILL con on con.fid=bill.FCONTRACTID
         left join T_BD_Supplier sup on sup.fid=bill.FSUPPLIERID
-        left join T_BD_Supplier sup1 on sup1.fid=bill.FSUPPLIERID
+        left join T_BD_Supplier sup1 on sup1.fid=bill.FRealSupplierID
         left join T_BD_CURRENCY cur on cur.fid=bill.FCURRENCYID
         left join T_CON_PayContentType pc on pc.fid=bill.FPAYCONTENTTYPEID
         left join T_CON_BankNum bank on bank.fid=bill.FLXNUMID
