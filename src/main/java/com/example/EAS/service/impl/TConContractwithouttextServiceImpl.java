@@ -545,7 +545,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
 //            默认传人民币
             String currencyRMB = mapper.selectRMBCurrencyId();
             if (Util.isNotEmpty(currencyRMB)) {
-                easJson.put("costAccountId", currencyRMB);
+                easJson.put("currencyId", currencyRMB);
             }
         }
         String payBillTypeId = vo.getPayBillTypeId();
