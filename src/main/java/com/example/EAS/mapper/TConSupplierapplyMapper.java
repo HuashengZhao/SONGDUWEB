@@ -71,13 +71,7 @@ public interface TConSupplierapplyMapper extends BaseMapper<TConSupplierapply> {
 
     void deleteData(String billId, String oaId);
 
-    void deletAttach(String id);
-
     List<String> selectNumFromWebAttachment(String id);
-
-    void deletNumList(List<String> existList);
-
-    void updateWebUrl(String newUrl, String billId);
 
     List<AttachmentsVO> selectAttachmentsByNum(String num);
 

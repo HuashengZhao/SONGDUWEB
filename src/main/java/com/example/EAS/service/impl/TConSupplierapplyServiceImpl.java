@@ -555,14 +555,6 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         //获取登录信息
         String personNum = token.getString("person");
         PersonsVO person = mapper.selectCreator(personNum);
-//        提交之前保存附件与单据关联
-//        if (vo.getAttachmentsVOS() != null && vo.getAttachmentsVOS().size() > 0) {
-//            List<AttachmentsVO> attachmentsVOS = vo.getAttachmentsVOS();
-//            mapper.deletAttach(id);
-//            ftpUtil.saveAttachMent(attachmentsVOS, id);
-//        } else {
-//            mapper.deletAttach(id);
-//        }
         //        http://172.17.4.125:8082/easWeb/#/
         //        http://172.17.4.125:8082/easApp/#/
         String sendUrl = null;
