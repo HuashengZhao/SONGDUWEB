@@ -320,7 +320,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         JSONObject str = JSONObject.parseObject(result);
         String state = str.getString("result");
         if (Util.isNotEmpty(state) && state.contains("fault")) {
-            throw new ServiceException("保存失败：" + str.getString("message"));
+            throw new ServiceException(str.getString("message")==null?"保存失败":str.getString("message"));
         }
         String id = str.getString("id");
 //更新eas创建人为当前登录人
@@ -329,7 +329,6 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
                 mapper.updateCreatorId(creatorId, id);
             }
         }
-
         return str;
     }
 
@@ -421,7 +420,6 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
             }
         }
         obj.put("attach", attach);
-
         Call call = getCall("EASURL", "saveSupplierApply");
         String result = null;
         try {
@@ -434,7 +432,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         JSONObject str = JSONObject.parseObject(result);
         String state = str.getString("result");
         if (Util.isNotEmpty(state) && state.contains("fault")) {
-            throw new ServiceException("保存失败：" + str.getString("message"));
+            throw new ServiceException(str.getString("message")==null?"保存失败":str.getString("message"));
         }
 //更新eas创建人为当前登录人
         if (Util.isNotEmpty(vo.getPerson()) && Util.isNotEmpty(id)) {
@@ -442,7 +440,6 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
                 mapper.updateCreatorId(creatorId, id);
             }
         }
-
         return str;
     }
 
@@ -556,18 +553,16 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         obj.put("docSubject", vo.getTitle());
         StringBuffer sb = new StringBuffer();
         //获取登录信息
-
         String personNum = token.getString("person");
         PersonsVO person = mapper.selectCreator(personNum);
 //        提交之前保存附件与单据关联
-        if (vo.getAttachmentsVOS() != null && vo.getAttachmentsVOS().size() > 0) {
-            List<AttachmentsVO> attachmentsVOS = vo.getAttachmentsVOS();
-            mapper.deletAttach(id);
-            ftpUtil.saveAttachMent(attachmentsVOS, id);
-        } else {
-            mapper.deletAttach(id);
-        }
-
+//        if (vo.getAttachmentsVOS() != null && vo.getAttachmentsVOS().size() > 0) {
+//            List<AttachmentsVO> attachmentsVOS = vo.getAttachmentsVOS();
+//            mapper.deletAttach(id);
+//            ftpUtil.saveAttachMent(attachmentsVOS, id);
+//        } else {
+//            mapper.deletAttach(id);
+//        }
         //        http://172.17.4.125:8082/easWeb/#/
         //        http://172.17.4.125:8082/easApp/#/
         String sendUrl = null;
@@ -663,9 +658,9 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
             mapper.updateById(tConSupplierapply);
             //            获取返回的附件查看路径   预览
             JSONArray attUrlArray = str.getJSONArray("atturl");
-            if (attUrlArray!=null && attUrlArray.size()>0){
+            if (attUrlArray != null && attUrlArray.size() > 0) {
 ////               附件预览地址
-                for(int i=0;i<attUrlArray.size();i++){
+                for (int i = 0; i < attUrlArray.size(); i++) {
                     JSONObject atturlObj = attUrlArray.getJSONObject(i);
                     String attName = atturlObj.getString("name");
                     String atturl = atturlObj.getString("url");
@@ -677,7 +672,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
                         String s2 = "&MtFdLoinName=";
                         String mtLoginNum = OaUtil.encrypt(personNum);
                         String attLink = new StringBuffer().append(atturl).append(s2).append(mtLoginNum).toString();
-                        attachmentMapper.updateAttLink(id,attName,attLink);
+                        attachmentMapper.updateAttLink(id, attName, attLink);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
