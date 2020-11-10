@@ -89,7 +89,9 @@ public class TFdcCostaccountServiceImpl extends ServiceImpl<TFdcCostaccountMappe
                     }
                 }
                 balance =mkAmount.add(negAmount).subtract(usedAmount);
-                costAccountVO.setBalance(balance);
+                if (balance.compareTo(BigDecimal.ZERO)!=1){
+                    costAccountVOList.remove(costAccountVO);
+                }
             }
             vo.setCostAccountVOList(costAccountVOList);
         }
