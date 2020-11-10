@@ -140,4 +140,10 @@
     <select id="selectRMBCurrencyId" resultType="java.lang.String">
         select fid from T_BD_CURRENCY where FNAME_L2 like '%人民币%'
     </select>
+    <select id="selectNTMarketCons" resultType="com.example.EAS.vo.MarketContDetailVO">
+         select FID as id,FAMOUNT as amount,FCONTENT as content,frate as rate,
+    FDATE as fsdate,fremark as remark
+    from T_CON_ContractWTMarketEntry
+    where fheadid=#{id}
+    </select>
 </mapper>
