@@ -54,7 +54,9 @@ public class TFdcCostaccountServiceImpl extends ServiceImpl<TFdcCostaccountMappe
         } else {
             costAccountVOList = mapper.selectDatas(vo);
         }
+        List<CostAccountVO> vos = new ArrayList<>();
         if (costAccountVOList != null && costAccountVOList.size() > 0) {
+            vos.addAll(costAccountVOList);
             for (CostAccountVO costAccountVO : costAccountVOList) {
                 String longNumber = costAccountVO.getLongNumber();
                 if (longNumber != null) {
@@ -93,10 +95,10 @@ public class TFdcCostaccountServiceImpl extends ServiceImpl<TFdcCostaccountMappe
                 }
                 balance =mkAmount.add(negAmount).subtract(usedAmount);
                 if (balance.compareTo(BigDecimal.ZERO)!=1){
-                    costAccountVOList.remove(costAccountVO);
+                    vos.remove(costAccountVO);
                 }
             }
-            vo.setCostAccountVOList(costAccountVOList);
+            vo.setCostAccountVOList(vos);
         }
         return vo;
     }
