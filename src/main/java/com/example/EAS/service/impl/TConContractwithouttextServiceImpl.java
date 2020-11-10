@@ -365,17 +365,15 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
                     returnVO.setIsjt(Math.toIntExact(mp.getFisjt()));
                 }
             }
-            //        营销合同分摊明细
-            List<MarketContDetailVO> marketContDetailVOS = contractbillMapper.selectMarketCons(vo.getId());
             TConContractwithouttext tConContractwithouttext = mapper.selectById(id);
             Long fisjt = tConContractwithouttext.getFisjt();
+            returnVO.setIsjt(0);
+            if (Util.isNotEmpty(fisjt) && fisjt == 1) {
+                returnVO.setIsjt(1);
+            }
+            //        营销合同分摊明细
+            List<MarketContDetailVO> marketContDetailVOS = mapper.selectNTMarketCons(vo.getId());
             if (marketContDetailVOS != null && marketContDetailVOS.size() > 0) {
-                for (MarketContDetailVO marketContDetailVO : marketContDetailVOS) {
-                    returnVO.setIsjt(0);
-                    if (Util.isNotEmpty(fisjt) && fisjt == 1) {
-                        returnVO.setIsjt(1);
-                    }
-                }
                 returnVO.setMarketContDetailVOS(marketContDetailVOS);
             }
         }
