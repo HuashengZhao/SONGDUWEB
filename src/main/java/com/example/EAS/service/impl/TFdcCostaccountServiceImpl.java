@@ -9,6 +9,7 @@ import com.example.EAS.vo.CostAccountVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,7 +52,15 @@ public class TFdcCostaccountServiceImpl extends ServiceImpl<TFdcCostaccountMappe
                             .replace("-", "."));
                 }
 //                计算费用归属可用余额
+                Integer isSub = costAccountVO.getIsSub();
+                if (Util.isNotEmpty(isSub)){
+                    if (isSub==1){  //是负数立项
+                        BigDecimal mpAmount = costAccountVO.getMpAmount();
+                        if (Util.isNotEmpty(mpAmount)){
 
+                        }
+                    }
+                }
             }
             vo.setCostAccountVOList(costAccountVOList);
         }

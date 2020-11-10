@@ -36,4 +36,9 @@ public class CostAccountVO {
     //  费用归属余额
     @JsonSerialize(using = CustomBigDecimalSerialize.class, nullsUsing = CustomBigDecimalSerialize.class)
     private BigDecimal balance;
+    //    营销立项是否负数立项
+    private Integer isSub;
+    //    立项金额
+    @JsonSerialize(using = CustomBigDecimalSerialize.class, nullsUsing = CustomBigDecimalSerialize.class)
+    private BigDecimal mpAmount;
 }
