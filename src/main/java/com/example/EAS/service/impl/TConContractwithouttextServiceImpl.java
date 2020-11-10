@@ -477,8 +477,16 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
                     }
                 }
             }
-            List<TConContractwithouttext> mps = mapper.selectList(new QueryWrapper<TConContractwithouttext>()
-                    .eq("FMarketProjectId", marketProjectId));
+            List<TConContractwithouttext> mps = new ArrayList<>();
+            if (Util.isNotEmpty(id)) {
+                mps = mapper.selectList(new QueryWrapper<TConContractwithouttext>()
+                        .eq("FMarketProjectId", marketProjectId)
+                        .ne("FID", id));
+            } else {
+                mps = mapper.selectList(new QueryWrapper<TConContractwithouttext>()
+                        .eq("FMarketProjectId", marketProjectId));
+            }
+
             if (mps != null && mps.size() > 0) {
                 for (TConContractwithouttext mp : mps) {
                     Double famount = mp.getFamount();
