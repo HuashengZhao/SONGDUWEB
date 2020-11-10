@@ -69,8 +69,11 @@ public class TFdcCostaccountServiceImpl extends ServiceImpl<TFdcCostaccountMappe
                 BigDecimal balance = BigDecimal.ZERO;  //余额
                 mkAmount = costAccountVO.getMpAmount();
                 usedAmount = mapper.selectUsedNTAmount(costAccountVO.getId());
+                if (Util.isEmpty(usedAmount)){
+                    usedAmount = BigDecimal.ZERO;
+                }
                 List<String> mpIds = marketProjectMapper.selectList(new QueryWrapper<TConMarketproject>()
-                        .eq("FMPID", costAccountVO.getMarketId())
+                        .eq("FMPID", vo.getMarketId())
                         .eq("FISSUB", 1)
                         .lambda())
                         .stream().map(TConMarketproject::getFid)
