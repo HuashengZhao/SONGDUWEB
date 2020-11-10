@@ -22,5 +22,5 @@ public interface TFdcCostaccountMapper extends BaseMapper<TFdcCostaccount> {
 
     List<String> selectCostAccountId(CostAccountVO vo);
 
-    List<String> selectNTCostAccountId(CostAccountVO vo);
+    List<CostAccountVO> selectCostAccountHasBalance(CostAccountVO vo);
 }

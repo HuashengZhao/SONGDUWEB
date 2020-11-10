@@ -1,7 +1,10 @@
 package com.example.EAS.vo;
 
+import com.example.EAS.util.CustomBigDecimalSerialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -28,7 +31,9 @@ public class CostAccountVO {
     private String description;
     private List<CostAccountVO> costAccountVOList;
     private List<String> costIDs;
-//    控制单据  CONTRACT  NOTEXTCONTRACT
+    //    控制单据  CONTRACT  NOTEXTCONTRACT
     private String controlType;
-
+    //  费用归属余额
+    @JsonSerialize(using = CustomBigDecimalSerialize.class, nullsUsing = CustomBigDecimalSerialize.class)
+    private BigDecimal balance;
 }
