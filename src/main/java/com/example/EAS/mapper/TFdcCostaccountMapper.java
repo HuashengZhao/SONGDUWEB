@@ -4,6 +4,7 @@ import com.example.EAS.model.TFdcCostaccount;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.example.EAS.vo.CostAccountVO;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -23,4 +24,6 @@ public interface TFdcCostaccountMapper extends BaseMapper<TFdcCostaccount> {
     List<String> selectCostAccountId(CostAccountVO vo);
 
     List<CostAccountVO> selectCostAccountHasBalance(CostAccountVO vo);
+
+    BigDecimal selectUsedNTAmount(String id);
 }

@@ -7,7 +7,7 @@
         c.fnumber as num,c.flongnumber as longNumber,c.fname_l2 as title,
         c.FAssigned as assigned,c.FLevel,c.FDescription_l2 as description,
         c.FCurProject as projectName,c.FFullOrgUnit as fullOrgUnit,
-        b.FNAME_L2 as orgName,e.ftype as controlType
+        b.FNAME_L2 as orgName,e.ftype as controlType,e.FHEADID as marketId
         from T_FDC_CostAccount c
         left join T_ORG_BaseUnit b on b.fid=c.FFULLORGUNIT
         left join T_CON_MarketProjectCostEntry e on e.FCOSTACCOUNTID=c.FID
@@ -31,7 +31,7 @@
         c.fnumber as num,c.flongnumber as longNumber,c.fname_l2 as title,
         c.FAssigned as assigned,c.FLevel,c.FDescription_l2 as description,
         c.FCurProject as projectName,c.FFullOrgUnit as fullOrgUnit,
-        b.FNAME_L2 as orgName,e.ftype as controlType
+        b.FNAME_L2 as orgName,e.ftype as controlType,e.FHEADID as marketId
         from T_FDC_CostAccount c
         left join T_ORG_BaseUnit b on b.fid=c.FFULLORGUNIT
         left join T_CON_MarketProjectCostEntry e on e.FCOSTACCOUNTID=c.FID
@@ -53,11 +53,11 @@
     </select>
 
     <select id="selectCostAccountHasBalance" resultType="com.example.EAS.vo.CostAccountVO">
-         select c.fid as id,
-         c.fnumber as num,c.flongnumber as longNumber,c.fname_l2 as title,
+        select c.fid as id,
+        c.fnumber as num,c.flongnumber as longNumber,c.fname_l2 as title,
         c.FAssigned as assigned,c.FLevel,c.FDescription_l2 as description,
         c.FCurProject as projectName,c.FFullOrgUnit as fullOrgUnit,mp.FISSUB as isSub,
-        b.FNAME_L2 as orgName,e.ftype as controlType,e.FAMOUNT as mpAmount
+        b.FNAME_L2 as orgName,e.ftype as controlType,e.FAMOUNT as mpAmount,e.FHEADID as marketId
         from T_FDC_CostAccount c
         left join T_ORG_BaseUnit b on b.fid=c.FFULLORGUNIT
         left join T_CON_MarketProjectCostEntry e on e.FCOSTACCOUNTID=c.FID
@@ -68,5 +68,9 @@
                 and e.ftype=#{controlType}
             </if>
         </where>
+    </select>
+    <select id="selectUsedNTAmount" resultType="java.math.BigDecimal">
+        select sum(FORIGINALAMOUNT) from T_CON_CONTRACTWITHOUTTEXT where FMpCostAccountId=#{id}
+        and  fstate in('2SUBMITTED','3AUDITTING','4AUDITTED')
     </select>
 </mapper>

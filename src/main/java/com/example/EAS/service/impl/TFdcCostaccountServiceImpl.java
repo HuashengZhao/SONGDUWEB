@@ -1,7 +1,12 @@
 package com.example.EAS.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.EAS.mapper.TConMarketprojectMapper;
+import com.example.EAS.mapper.TConMarketprojectcostentryMapper;
 import com.example.EAS.mapper.TFdcCostaccountMapper;
+import com.example.EAS.model.TConMarketproject;
+import com.example.EAS.model.TConMarketprojectcostentry;
 import com.example.EAS.model.TFdcCostaccount;
 import com.example.EAS.service.ITFdcCostaccountService;
 import com.example.EAS.util.Util;
@@ -12,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -26,6 +32,11 @@ public class TFdcCostaccountServiceImpl extends ServiceImpl<TFdcCostaccountMappe
 
     @Autowired
     private TFdcCostaccountMapper mapper;
+    @Autowired
+    private TConMarketprojectMapper marketProjectMapper;
+
+    @Autowired
+    private TConMarketprojectcostentryMapper tConMarketprojectcostentryMapper;
 
     @Override
     public CostAccountVO getCostAccount(CostAccountVO vo) {
@@ -52,15 +63,33 @@ public class TFdcCostaccountServiceImpl extends ServiceImpl<TFdcCostaccountMappe
                             .replace("-", "."));
                 }
 //                计算费用归属可用余额
-                Integer isSub = costAccountVO.getIsSub();
-                if (Util.isNotEmpty(isSub)){
-                    if (isSub==1){  //是负数立项
-                        BigDecimal mpAmount = costAccountVO.getMpAmount();
-                        if (Util.isNotEmpty(mpAmount)){
-
+                BigDecimal mkAmount = BigDecimal.ZERO;//        立项金额
+                BigDecimal negAmount = BigDecimal.ZERO;//        负数金额
+                BigDecimal usedAmount = BigDecimal.ZERO;//已关联改科目的无文本所用金额
+                BigDecimal balance = BigDecimal.ZERO;  //余额
+                mkAmount = costAccountVO.getMpAmount();
+                usedAmount = mapper.selectUsedNTAmount(costAccountVO.getId());
+                List<String> mpIds = marketProjectMapper.selectList(new QueryWrapper<TConMarketproject>()
+                        .eq("FMPID", costAccountVO.getMarketId())
+                        .eq("FISSUB", 1)
+                        .lambda())
+                        .stream().map(TConMarketproject::getFid)
+                        .collect(Collectors.toList());
+                if (mpIds != null && mpIds.size() > 0) {
+                    List<Double> collect = tConMarketprojectcostentryMapper.selectList(new QueryWrapper<TConMarketprojectcostentry>()
+                            .lambda()
+                            .in(TConMarketprojectcostentry::getFheadid, mpIds))
+                            .stream()
+                            .map(TConMarketprojectcostentry::getFamount)
+                            .collect(Collectors.toList());
+                    if (collect != null && collect.size() > 0) {
+                        for (Double aDouble : collect) {
+                            negAmount = negAmount.add(new BigDecimal(aDouble));
                         }
                     }
                 }
+                balance =mkAmount.add(negAmount).subtract(usedAmount);
+                costAccountVO.setBalance(balance);
             }
             vo.setCostAccountVOList(costAccountVOList);
         }
