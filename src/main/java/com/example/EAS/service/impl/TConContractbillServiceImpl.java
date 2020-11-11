@@ -240,7 +240,6 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
     /**
      * 保存合同单据
      */
-
     @Override
     public ContractVO saveContractBill(ContractVO vo) {
         long startTime = System.currentTimeMillis();
@@ -813,13 +812,10 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         List<MarketContDetailVO> marketContDetailVOS = mapper.selectMarketCons(vo.getId());
         TConContractbill tConContractbill = mapper.selectById(vo.getId());
         Long fisjt = tConContractbill.getFisjt();
+        if (Util.isNotEmpty(fisjt) && fisjt == 1) {
+            contractVO.setIsjt(1);
+        }
         if (marketContDetailVOS != null && marketContDetailVOS.size() > 0) {
-            for (MarketContDetailVO marketContDetailVO : marketContDetailVOS) {
-
-                if (Util.isNotEmpty(fisjt) && fisjt == 1) {
-                    contractVO.setIsjt(1);
-                }
-            }
             contractVO.setMarketContDetailVOS(marketContDetailVOS);
         }
         long endTime = System.currentTimeMillis();

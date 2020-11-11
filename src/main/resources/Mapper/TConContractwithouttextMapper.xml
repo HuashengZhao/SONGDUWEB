@@ -14,7 +14,7 @@
         bill.FAMOUNT as amount,bill.FORIGINALAMOUNT as oriAmount,
         sup.FNAME_L2 as receiverName,bill.FSIGNDATE as signDate,
         u.FNAME_L2 as creatorName,bill.FCREATETIME as createTime,
-        bill.FPERSONID as personId,p.FNAME_L2 as personName,
+        bill.FPERSONID as personId,p.FNAME_L2 as personName,ct.FISWEBPC as needHygh,
         pb.FREALSUPPLIERID as receiveUnitId,sup2.FNAME_L2 as realReceiveUnitName
         from T_CON_CONTRACTWITHOUTTEXT bill
         left join T_FDC_ContractType ct on ct.fid=bill.FCONTRACTTYPEID
@@ -87,7 +87,7 @@
         org.FNAME_L2 as useDeptName,bill.FCostedDeptId as costDeptId,bill.FCOSTEDCOMPANYID as costCompanyId,
         cc.FNAME_L2 as costDeptName,cp.FNAME_L2 as costCompanyName,bill.FMarketProjectId as marketProjectId,
         mar.FNAME as marketProjectName,cost.FNAME_L2 as costAccountName,bill.FMpCostAccountId as costAccountId,
-        bill.FInvoiceAmt as invoiceAMT,bill.FRATEAMOUNT as rateAmount,pb.FMoneyDesc as description,
+        bill.FInvoiceAmt as invoiceAMT,bill.FRATEAMOUNT as rateAmount,pb.FMoneyDesc as description,ct.FISWEBPC as needHygh,
         pb.FREALSUPPLIERID as receiveUnitId,sup2.FNAME_L2 as realReceiveUnitName,bill.FISJT as isjt,
         ct.FISMARKET as isMarket
         from T_CON_CONTRACTWITHOUTTEXT bill
@@ -139,5 +139,11 @@
     </select>
     <select id="selectRMBCurrencyId" resultType="java.lang.String">
         select fid from T_BD_CURRENCY where FNAME_L2 like '%人民币%'
+    </select>
+    <select id="selectNTMarketCons" resultType="com.example.EAS.vo.MarketContDetailVO">
+         select FID as id,FAMOUNT as amount,FCONTENT as content,frate as rate,
+    FDATE as fsdate,fremark as remark
+    from T_CON_ContractWTMarketEntry
+    where fheadid=#{id}
     </select>
 </mapper>

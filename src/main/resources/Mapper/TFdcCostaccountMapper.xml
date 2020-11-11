@@ -7,7 +7,7 @@
         c.fnumber as num,c.flongnumber as longNumber,c.fname_l2 as title,
         c.FAssigned as assigned,c.FLevel,c.FDescription_l2 as description,
         c.FCurProject as projectName,c.FFullOrgUnit as fullOrgUnit,
-        b.FNAME_L2 as orgName,e.ftype as controlType
+        b.FNAME_L2 as orgName,e.ftype as controlType,e.FHEADID as marketId
         from T_FDC_CostAccount c
         left join T_ORG_BaseUnit b on b.fid=c.FFULLORGUNIT
         left join T_CON_MarketProjectCostEntry e on e.FCOSTACCOUNTID=c.FID
@@ -27,30 +27,50 @@
     </select>
 
     <select id="selectUnUseCostAccount" resultType="com.example.EAS.vo.CostAccountVO">
-         select c.fid as id,
-         c.fnumber as num,c.flongnumber as longNumber,c.fname_l2 as title,
+        select c.fid as id,
+        c.fnumber as num,c.flongnumber as longNumber,c.fname_l2 as title,
         c.FAssigned as assigned,c.FLevel,c.FDescription_l2 as description,
         c.FCurProject as projectName,c.FFullOrgUnit as fullOrgUnit,
-        b.FNAME_L2 as orgName,e.ftype as controlType
+        b.FNAME_L2 as orgName,e.ftype as controlType,e.FHEADID as marketId
         from T_FDC_CostAccount c
         left join T_ORG_BaseUnit b on b.fid=c.FFULLORGUNIT
         left join T_CON_MarketProjectCostEntry e on e.FCOSTACCOUNTID=c.FID
-         where e.FHEADID=#{marketId}
-         <if test="costIDs!=null and costIDs.size>0">
-            and  c.fid not in
-             <foreach item="item" collection="costIDs" index="index" open="(" separator="," close=")">
-                 #{item}
-             </foreach>
-         </if>
-         <if test="controlType!=null and controlType!=''">
-             and e.ftype=#{controlType}
-         </if>
-
+        <where>
+            e.FHEADID=#{marketId}
+            <if test="costIDs!=null and costIDs.size>0">
+                and c.fid not in
+                <foreach item="item" collection="costIDs" index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="controlType!=null and controlType!=''">
+                and e.ftype=#{controlType}
+            </if>
+        </where>
     </select>
     <select id="selectCostAccountId" resultType="java.lang.String">
         select distinct fmpcostaccountid from T_CON_ContractBill where FMARKETPROJECTID=#{marketId}
     </select>
-    <select id="selectNTCostAccountId" resultType="java.lang.String">
-         select distinct fmpcostaccountid from T_CON_CONTRACTWITHOUTTEXT where FMARKETPROJECTID=#{marketId}
+
+    <select id="selectCostAccountHasBalance" resultType="com.example.EAS.vo.CostAccountVO">
+        select c.fid as id,
+        c.fnumber as num,c.flongnumber as longNumber,c.fname_l2 as title,
+        c.FAssigned as assigned,c.FLevel,c.FDescription_l2 as description,
+        c.FCurProject as projectName,c.FFullOrgUnit as fullOrgUnit,mp.FISSUB as isSub,
+        b.FNAME_L2 as orgName,e.ftype as controlType,e.FAMOUNT as mpAmount,e.FHEADID as marketId
+        from T_FDC_CostAccount c
+        left join T_ORG_BaseUnit b on b.fid=c.FFULLORGUNIT
+        left join T_CON_MarketProjectCostEntry e on e.FCOSTACCOUNTID=c.FID
+        left join T_CON_MarketProject mp on mp.fid=e.FHEADID
+        <where>
+            e.FHEADID=#{marketId}
+            <if test="controlType!=null and controlType!=''">
+                and e.ftype=#{controlType}
+            </if>
+        </where>
+    </select>
+    <select id="selectUsedNTAmount" resultType="java.math.BigDecimal">
+        select sum(FORIGINALAMOUNT)  from T_CON_CONTRACTWITHOUTTEXT where FMpCostAccountId=#{id}
+        and  fstate in('2SUBMITTED','3AUDITTING','4AUDITTED')
     </select>
 </mapper>

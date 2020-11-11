@@ -57,6 +57,7 @@ public class NoTextContractVO {
     private String contractTypeId;
     private String contractTypeName;
     //框架合约
+    private Integer needHygh;
     private String programContractId;
     private String programContractName;
     //    规划余额

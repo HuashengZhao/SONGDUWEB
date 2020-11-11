@@ -2,6 +2,7 @@ package com.example.EAS.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.example.EAS.model.TConContractwithouttext;
+import com.example.EAS.vo.MarketContDetailVO;
 import com.example.EAS.vo.NoTextContractVO;
 
 import java.util.List;
@@ -39,5 +40,7 @@ public interface TConContractwithouttextMapper extends BaseMapper<TConContractwi
 
     String selectRMBCurrencyId();
 
+
+    List<MarketContDetailVO> selectNTMarketCons(String id);
 
 }

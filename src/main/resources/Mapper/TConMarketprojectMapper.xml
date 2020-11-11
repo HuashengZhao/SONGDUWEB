@@ -20,7 +20,7 @@
               <if test="num!=null and num!=''">
                  and m.fnumber like CONCAT(CONCAT('%',${num}),'%')
               </if>
-              <if test="operationType!=null and operationType==2">
+              <if test="operationType!=null">
                  and m.fstate='4AUDITTED'
               </if>
           </where>
