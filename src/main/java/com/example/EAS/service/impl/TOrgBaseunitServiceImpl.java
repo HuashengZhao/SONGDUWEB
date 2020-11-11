@@ -30,37 +30,27 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
 
     @Override
     public OrgVO getData(OrgVO vo) {
-        long st = System.currentTimeMillis();
         OrgVO orgVO1 = new OrgVO();
-        List<OrgVO> orgVOS = baseunitMapper.selectDatas(vo);
-        if (orgVOS != null && orgVOS.size() > 0) {
-            orgVOS = getChildren(orgVOS);
-            for (OrgVO orgVO : orgVOS) {
-                if (Util.isNotEmpty(orgVO)) {
-//                是否实体财务组织
-//                    Integer isCompany = orgVO.getIsCompany();
-//                    if (Util.isEmpty(isCompany)) {
-//                        orgVO.setIsCompany(0);
-//                    }
-////                是否成本实体中心
-//                    if (Util.isNotEmpty(vo.getIsSTCost()) && vo.getIsSTCost() == 1) {
-//                        Integer isSTCost = orgVO.getIsSTCost();
-//                        if (Util.isEmpty(isSTCost) || isSTCost == 0) {
-//                            orgVO.setIsSTCost(0);
-//                            orgVO.setDisabled(true);
-//                        } else if (isSTCost == 1) {
-//                            orgVO.setDisabled(false);
-//                        }
-//                    }
-                    String longNumber = orgVO.getLongNumber();
-                    if (Util.isNotEmpty(longNumber)) {
-                        orgVO.setLongNumber(longNumber
-                                .replace("-", ".")
-                                .replace("!", "."));
+        List<OrgVO> orgVOS = new ArrayList<>();
+        long st = System.currentTimeMillis();
+        String id = vo.getId();
+        if (Util.isNotEmpty(id)) {
+            OrgVO orgVO = baseunitMapper.selectDatas(vo);
+            if (Util.isNotEmpty(orgVO)) {
+                orgVOS.add(orgVO);
+            }
+        } else {
+            List<OrgVO> vos = baseunitMapper.selectALLLeafOrgs(vo);
+            Map<String, OrgVO> map = Maps.newHashMap();
+            if (vos != null && vos.size() > 0) {
+                for (OrgVO orgVO : vos) {
+                    if (Util.isNotEmpty(orgVO)) {
+                        getOrgs(map, orgVO);
                     }
                 }
             }
-
+            OrgVO total = map.get("topOrgVO");
+            orgVOS.add(total);
         }
         orgVO1.setOrgVOList(orgVOS);
         long et = System.currentTimeMillis();
@@ -128,10 +118,10 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
         List<OrgVO> vos = new ArrayList<>();
         if (Util.isNotEmpty(vo.getId())) {
             OrgVO orgvo = baseunitMapper.selectDataById(vo.getId());
-            if (Util.isNotEmpty(orgvo)){
+            if (Util.isNotEmpty(orgvo)) {
                 vos.add(orgvo);
             }
-        }else{
+        } else {
             List<OrgVO> orgVOS = baseunitMapper.selectALLCWSTS(vo);
             Map<String, OrgVO> map = Maps.newHashMap();
             if (orgVOS != null && orgVOS.size() > 0) {
@@ -206,9 +196,6 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
             if (Util.isEmpty(orgVO1)) {
                 orgVO1 = baseunitMapper.selectCostById(parentId);
                 if (Util.isNotEmpty(orgVO1)) {
-                    if (orgVO1.getTitle().contains("杭州")) {
-                        int i = 0;
-                    }
                     List<OrgVO> os = new ArrayList<>();
                     os.add(orgVO);
                     orgVO1.setChildren(os);
@@ -228,18 +215,34 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
         }
     }
 
-
-    //    获取children
-    public List<OrgVO> getChildren(List<OrgVO> list) {//参数为数据库的（原数据，一级id）
-        for (OrgVO orgVO : list) {
-            String id = orgVO.getId();
-            List<OrgVO> orgVOS = baseunitMapper.selectNexts(id);
-            if (orgVOS != null && orgVOS.size() > 0) {
-                orgVO.setChildren(orgVOS);
-                getChildren(orgVOS);
+    /**
+     * 获取组织children
+     *
+     * @param map
+     * @param orgVO
+     */
+    public void getOrgs(Map<String, OrgVO> map, OrgVO orgVO) {
+        String parentId = orgVO.getParentId();
+        if (Util.isNotEmpty(parentId)) {
+            OrgVO orgVO1 = map.get(parentId);
+            if (Util.isEmpty(orgVO1)) {
+                orgVO1 = baseunitMapper.selectByOId(parentId);
+                if (Util.isNotEmpty(orgVO1)) {
+                    List<OrgVO> os = new ArrayList<>();
+                    os.add(orgVO);
+                    orgVO1.setChildren(os);
+                    if (Util.isEmpty(orgVO1.getParentId())) {
+                        map.put("topOrgVO", orgVO1);
+                        map.put(parentId, orgVO1);
+                    } else {
+                        map.put(parentId, orgVO1);
+                    }
+                    getOrgs(map, orgVO1);
+                }
+            } else {
+                orgVO1.getChildren().add(orgVO);
             }
         }
-        return list;
     }
 
     //           获取下级组织是成本中心的id集合counts
@@ -256,18 +259,5 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
         return counts;
     }
 
-    //    财务实体组织children
-    public OrgVO getEFChildren(OrgVO orgVO, String id) {
-        List<OrgVO> orgVOS = baseunitMapper.selectDatasByParentID(id);
-        if (orgVOS != null && orgVOS.size() > 0) {
-            orgVO.setChildren(orgVOS);
-            for (OrgVO vo : orgVOS) {
-                String id1 = vo.getId();
-                if (Util.isNotEmpty(id1)) {
-                    getEFChildren(vo, id1);
-                }
-            }
-        }
-        return orgVO;
-    }
+
 }
