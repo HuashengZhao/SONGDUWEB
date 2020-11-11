@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.rmi.RemoteException;
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -32,6 +33,8 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
     private TConSupplierapplyMapper supplierapplyMapper;
     @Autowired
     private TConContractbillMapper contractbillMapper;
+    @Autowired
+    private TConPayrequestbillMapper payrequestbillMapper;
     @Autowired
     private TConChangeauditbillMapper auditMapper;
     @Autowired
@@ -71,12 +74,17 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
      * oa审批驳回，eas改为已提交 此时可以修改并二次提交 二次提交时 携带oa原有id提交,
      * oa废弃流程，eas改为保存 此时为新流程
      * acceptinfo 日志表(billId varchar(255),accepttime varchar(255),billtype varchar(255)
-     *  ,optype varchar(255),state int,message varchar(555))
+     * ,optype varchar(255),state int,message varchar(555))
+     *
      * @param body
      */
 
     @Override
     public JSONObject acceptHandle(JSONObject body) {
+//        回调接口调用时间
+        String acceptTime = LocalDateTime.now().toString();
+//        单据类型
+        String billType = null;
 //      接口返回参数
         JSONObject obj = new JSONObject();
         obj.put("code", "1");
@@ -88,6 +96,21 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
         String result = body.get("result").toString();
 //      type 01:合同、02:合同付款申请单、03:无合同付款;04：供应商申请，05变更审批单，06变更确认单
         String type = body.get("type").toString();
+        if (Util.isNotEmpty(type)) {
+            if (type.contains("01")) {
+                billType = "合同";
+            } else if (type.contains("02")) {
+                billType = "合同付款申请单";
+            } else if (type.contains("03")) {
+                billType = "无文本合同";
+            } else if (type.contains("04")) {
+                billType = "供应商新增申请单";
+            } else if (type.contains("05")) {
+                billType = "变更审批单";
+            } else if (type.contains("06")) {
+                billType = "变更确认单";
+            }
+        }
         String easid = body.get("easid").toString();
         if (oaid == null || type == null || easid == null) {
             obj.put("code", "2");
@@ -106,27 +129,33 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
             return object;
         }
         JSONObject jsonObject = new JSONObject();
-//        开线程调用eas audit
-//        供应商的状态修改逻辑较为简易 直接mybatis修改fstate
         jsonObject.put("id", easid);
+        String finalBillType = billType;
         AsyncExecutor.executeTask(t -> {
+            String back = null;
+            String acceptType=null;
             //       如果审核成功 调用eas审核方法
             if (result.contains("01")) {
-                System.out.println("type为"+type+"流程调用回调审批啦！");
+                acceptType= "审核";
+                System.out.println("type为" + type + "流程调用了回调审批！");
                 if (oaid != null && easid != null) {
                     oaIdUtil.getString(easid, oaid);
                 }
                 Call call = getCall("EASURL", auditOperation);
-                String back = null;
+
                 try {
                     back = (String) call.invoke(new Object[]{jsonObject.toString()});
                 } catch (RemoteException e) {
                     e.printStackTrace();
+                    String message = e.getMessage();
+                    supplierapplyMapper.insertAcceptInfo(easid, acceptTime, finalBillType, acceptType, 2, message);
                 }
             }
             try {
 //        如果oa作废 修改状态为保存 删除easid 跟oaid的关联
                 if (result.contains("02")) {
+                    acceptType = "作废";
+                    System.out.println("type为" + type + "流程调用了回调作废！");
                     if (oaid != null && easid != null) {
                         oaIdUtil.deleteId(easid, oaid);
                     }
@@ -135,7 +164,9 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
                         tConContractbill.setFstate("1SAVED");
                         contractbillMapper.updateById(tConContractbill);
                     } else if (type.contains("02")) {
-
+                        TConPayrequestbill tConPayrequestbill = payrequestbillMapper.selectById(easid);
+                        tConPayrequestbill.setFstate("1SAVED");
+                        payrequestbillMapper.updateById(tConPayrequestbill);
                     } else if (type.contains("03")) {
                         TConContractwithouttext tConContractwithouttext = noTextMapper.selectById(easid);
                         tConContractwithouttext.setFstate("1SAVED");
@@ -154,10 +185,14 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+                String message = e.getMessage();
+                supplierapplyMapper.insertAcceptInfo(easid, acceptTime, finalBillType, acceptType, 2, message);
             }
 
 //        如果驳回 修改状态为已提交 并保留oaid
             if (result.contains("03")) {
+                acceptType = "驳回";
+                System.out.println("type为" + type + "流程调用了回调驳回！");
                 if (type.contains("01")) {
                     if (oaid != null && easid != null) {
                         oaIdUtil.getString(easid, oaid);
@@ -166,7 +201,12 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
                     tConContractbill.setFstate("2SUBMITTED");
                     contractbillMapper.updateById(tConContractbill);
                 } else if (type.contains("02")) {
-
+                    if (oaid != null && easid != null) {
+                        oaIdUtil.getString(easid, oaid);
+                    }
+                    TConPayrequestbill tConPayrequestbill = payrequestbillMapper.selectById(easid);
+                    tConPayrequestbill.setFstate("2SUBMITTED");
+                    payrequestbillMapper.updateById(tConPayrequestbill);
                 } else if (type.contains("03")) {
                     if (oaid != null && easid != null) {
                         oaIdUtil.getString(easid, oaid);
@@ -192,10 +232,21 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
                     settleMapper.updateById(tConContractchangesettlebill);
                 }
             }
+            if (Util.isNotEmpty(back)) {
+                JSONObject backObj = JSONObject.parseObject(back);
+                String resultBack = backObj.getString("result");
+                if (Util.isNotEmpty(resultBack) && resultBack.contains("fault")) {
+                    String message = backObj.getString("message");
+                    supplierapplyMapper.insertAcceptInfo(easid, acceptTime, finalBillType, acceptType, 2, message == null ? "eas审批报错" : message);
+                }else if (Util.isNotEmpty(resultBack) && resultBack.contains("success")){
+                    supplierapplyMapper.insertAcceptInfo(easid, acceptTime, finalBillType, acceptType, 1, "success");
+                }
+            }else{
+                supplierapplyMapper.insertAcceptInfo(easid, acceptTime, finalBillType, acceptType, 1, "success");
+            }
             try {
                 Thread.sleep(5000);
             } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
             return true;
