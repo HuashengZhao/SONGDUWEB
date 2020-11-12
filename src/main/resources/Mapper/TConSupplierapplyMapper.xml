@@ -20,6 +20,9 @@
     <update id="updateCreatorId">
         update T_CON_SUPPLIERAPPLY set FCREATORID = #{creatorId} where fid=#{id}
     </update>
+    <update id="updateData">
+        update T_CON_SUPPLIERAPPLY set fstate='1SAVED' where fid=#{easid}
+    </update>
 
     <delete id="deleteData">
         delete from OAIDRECORD where billid=#{billId}

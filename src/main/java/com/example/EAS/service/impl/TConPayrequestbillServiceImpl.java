@@ -159,7 +159,7 @@ public class TConPayrequestbillServiceImpl extends ServiceImpl<TConPayrequestbil
                     }
                     List<TConDeductofpayreqbill> billList = deductofpayreqbillMapper.selectList
                             (new QueryWrapper<TConDeductofpayreqbill>()
-                                    .eq("FPAYMENTBILLID", id));
+                                    .eq("FPAYREQUESTBILLID", id));
                     if (billList != null && billList.size() > 0) {
                         for (TConDeductofpayreqbill tConDeductofpayreqbill : billList) {
                             Double famount = tConDeductofpayreqbill.getFamount();
@@ -260,7 +260,7 @@ public class TConPayrequestbillServiceImpl extends ServiceImpl<TConPayrequestbil
             BigDecimal deductAmt = BigDecimal.ZERO;
             List<TConDeductofpayreqbill> billList = deductofpayreqbillMapper.selectList
                     (new QueryWrapper<TConDeductofpayreqbill>()
-                            .eq("FPAYMENTBILLID", id));
+                            .eq("FPAYREQUESTBILLID", id));
             if (billList != null && billList.size() > 0) {
                 for (TConDeductofpayreqbill tConDeductofpayreqbill : billList) {
                     Double famount = tConDeductofpayreqbill.getFamount();

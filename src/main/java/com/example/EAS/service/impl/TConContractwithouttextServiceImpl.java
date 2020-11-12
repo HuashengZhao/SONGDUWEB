@@ -887,7 +887,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             Call call = getCall("OAURL", "addtestEkpReview");
             try {
                 result = (String) call.invoke(new Object[]{obj.toString()});
-                System.out.println(vo.getTitle() + "oa流程传参：" + obj.toString());
+                System.out.println(vo.getTitle() + "oa新增流程传参：" + obj.toString());
                 str = JSONObject.parseObject(result);
             } catch (RemoteException e) {
                 e.printStackTrace();
@@ -897,7 +897,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             try {
                 obj.put("id", oaId);
                 result = (String) call.invoke(new Object[]{obj.toString()});
-                System.out.println(vo.getTitle() + "oa流程传参：" + obj.toString());
+                System.out.println(vo.getTitle() + "oa修改流程传参：" + obj.toString());
                 str = JSONObject.parseObject(result);
             } catch (RemoteException e) {
                 e.printStackTrace();

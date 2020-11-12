@@ -4,6 +4,9 @@
     <update id="updateNumRecord">
         update oaNumberRecord set value=#{value} where type='notext'
     </update>
+    <update id="updateData">
+        update T_CON_CONTRACTWITHOUTTEXT set fstate='1SAVED',FSOURCEFUNCTION=null where fid=#{easid}
+    </update>
 
     <select id="selectDatas" resultType="com.example.EAS.vo.NoTextContractVO">
         select bill.fid as id,bill.FNUMBER as num,bill.FNAME as title,
@@ -77,7 +80,7 @@
         bill.FCONTRACTTYPEID as contractTypeId,ct.FNAME_L2 as contractTypeName,bill.FLXNUMID as unionBankId,
         bill.FProgrammingContract as programContractId,pc.FNAME_L2 as programContractName, bill.FPAYBILLTYPEID as payBillTypeId,
         bill.FCURRENCYID as currencyId,cur.FNAME_L2 as currencyName,bill.FAMOUNT as amount,bill.FORIGINALAMOUNT as oriAmount,
-        sup.FNAME_L2 as receiverName,bill.FRECEIVEUNITID as supplierId,bill.FSIGNDATE as signDate,u.FNAME_L2 as creatorName,bill.FCREATETIME as createTime,
+        sup.FNAME_L2 as realReceiveUnitName,bill.FRECEIVEUNITID as supplierId,bill.FSIGNDATE as signDate,u.FNAME_L2 as creatorName,bill.FCREATETIME as createTime,
         bill.FAUDITTIME as auditTime,bill.FAUDITORID as auditorId,u1.FNAME_L2 as auditorName,bill.FPAYCONTENTTYPEID as payContentId,
         bill.FPERSONID as personId,p.FNAME_L2 as personName,unit.FNAME_L2 as orgName,pro.FNAME_L2 as projectName,pc.FAMOUNT as balance,
         pbt.FNAME_L2 as payBillTypeName,pro.FFULLORGUNIT as orgId,pct.FNAME_L2 as payContentName,bill.FPERIODID as periodId,
@@ -88,7 +91,7 @@
         cc.FNAME_L2 as costDeptName,cp.FNAME_L2 as costCompanyName,bill.FMarketProjectId as marketProjectId,
         mar.FNAME as marketProjectName,cost.FNAME_L2 as costAccountName,bill.FMpCostAccountId as costAccountId,
         bill.FInvoiceAmt as invoiceAMT,bill.FRATEAMOUNT as rateAmount,pb.FMoneyDesc as description,ct.FISWEBPC as needHygh,
-        pb.FREALSUPPLIERID as receiveUnitId,sup2.FNAME_L2 as realReceiveUnitName,bill.FISJT as isjt,
+        pb.FREALSUPPLIERID as receiveUnitId,sup2.FNAME_L2 as receiverName,bill.FISJT as isjt,
         ct.FISMARKET as isMarket
         from T_CON_CONTRACTWITHOUTTEXT bill
         left join T_FDC_ContractType ct on ct.fid=bill.FCONTRACTTYPEID

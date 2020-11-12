@@ -4,6 +4,9 @@
     <insert id="insertAddContract">
         insert into T_CON_CONTRACTBILL()
     </insert>
+    <update id="updateData">
+        update T_CON_CONTRACTBILL set FSOURCEFUNCTION=null , FSTATE='1SAVED' where fid=#{easid,jdbcType=VARCHAR}
+    </update>
 
     <select id="selectContractAdds" parameterType="com.example.EAS.vo.ContractVO"
             resultType="com.example.EAS.vo.ContractAddVO">

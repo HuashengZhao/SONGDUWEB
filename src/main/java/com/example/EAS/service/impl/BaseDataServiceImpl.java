@@ -160,21 +160,13 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
                         oaIdUtil.deleteId(easid, oaid);
                     }
                     if (type.contains("01")) {
-                        TConContractbill tConContractbill = contractbillMapper.selectById(easid);
-                        tConContractbill.setFstate("1SAVED");
-                        contractbillMapper.updateById(tConContractbill);
+                        contractbillMapper.updateData(easid);
                     } else if (type.contains("02")) {
-                        TConPayrequestbill tConPayrequestbill = payrequestbillMapper.selectById(easid);
-                        tConPayrequestbill.setFstate("1SAVED");
-                        payrequestbillMapper.updateById(tConPayrequestbill);
+                        payrequestbillMapper.updateData(easid);
                     } else if (type.contains("03")) {
-                        TConContractwithouttext tConContractwithouttext = noTextMapper.selectById(easid);
-                        tConContractwithouttext.setFstate("1SAVED");
-                        noTextMapper.updateById(tConContractwithouttext);
+                        noTextMapper.updateData(easid);
                     } else if (type.contains("04")) {
-                        TConSupplierapply tConSupplierapply = supplierapplyMapper.selectById(easid);
-                        tConSupplierapply.setFstate("1SAVED");
-                        supplierapplyMapper.updateById(tConSupplierapply);
+                        supplierapplyMapper.updateData(easid);
                     } else if (type.contains("05")) {
 //                       删除单据里fsourcefunction存储的oaid
                         auditMapper.updateData(easid);
