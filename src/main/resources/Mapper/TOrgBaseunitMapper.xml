@@ -10,11 +10,7 @@
         left join T_ORG_OUPartFI fi on fi.FID=m.FPARTFIID
         left join T_ORG_OUPartCostCenter c on c.fid=m.FPartCostCenterID
         <where>
-            m.FISADMINORGUNIT=1
-            and m.FIsOUSealUp=0
-            <if test="id!=null and id!=''">
-                and m.fid=#{id}
-            </if>
+            and m.fid=#{id}
             <if test="title!=null and title!=''">
                 and m.FNAME_L2 like CONCAT(CONCAT('%',#{title}),'%')
             </if>
@@ -256,18 +252,50 @@ where
         and er.FIsLatest=1
     </select>
     <select id="selectUsedPayPlanAMT" resultType="java.math.BigDecimal">
-         select sum(FORIGINALAMOUNT)
+        select sum(FORIGINALAMOUNT)
         from T_CON_CONTRACTWITHOUTTEXT
         <where>
-        <![CDATA[  #{monthFirst} <= ]]> FBOOKEDDATE
-        and FBOOKEDDATE <![CDATA[   < #{monthEnd}
+            <![CDATA[  #{monthFirst} <= ]]> FBOOKEDDATE
+            and FBOOKEDDATE <![CDATA[   < #{monthEnd}
         ]]>
-        and FSTATE in('1SAVED','2SUBMITTED','3AUDITTING','4AUDITTED')
-        and FCURPROJECTID=#{projectId}
-        <if test="id!=null and id!=''">
-        and fid !=#{id}
-        </if>
+            and FSTATE in('1SAVED','2SUBMITTED','3AUDITTING','4AUDITTED')
+            and FCURPROJECTID=#{projectId}
+            <if test="id!=null and id!=''">
+                and fid !=#{id}
+            </if>
         </where>
+    </select>
+    <select id="selectByOId" resultType="com.example.EAS.vo.OrgVO">
+        select m.fid as id,m.FNAME_L2 as title,m.FDESCRIPTION_L2 as description,m.fnumber as num,
+        m.FLONGNUMBER as longNumber,m.flevel,m.FPartCostCenterID as costCenterId,m.FISLEAF as isLeaf,
+        m.FSIMPLENAME as simpleName,fi.FISBIZUNIT as isCompany,c.FISBIZUNIT as isSTCost,m.FPARENTID as parentId
+        from T_ORG_BASEUNIT m
+        left join T_ORG_OUPartFI fi on fi.FID=m.FPARTFIID
+        left join T_ORG_OUPartCostCenter c on c.fid=m.FPartCostCenterID
+        <where>
+            m.FIsOUSealUp = 0
+            and m.fid=#{id}
+        </where>
+        order by m.FLONGNUMBER
+    </select>
+    <select id="selectALLLeafOrgs" resultType="com.example.EAS.vo.OrgVO">
+        select m.fid as id,m.FNAME_L2 as title,m.FDESCRIPTION_L2 as description,m.fnumber as num,
+        m.FLONGNUMBER as longNumber,m.flevel,m.FPartCostCenterID as costCenterId,m.FISLEAF as isLeaf,
+        m.FSIMPLENAME as simpleName,fi.FISBIZUNIT as isCompany,c.FISBIZUNIT as isSTCost,m.FPARENTID as parentId
+        from T_ORG_BASEUNIT m
+        left join T_ORG_OUPartFI fi on fi.FID=m.FPARTFIID
+        left join T_ORG_OUPartCostCenter c on c.fid=m.FPartCostCenterID
+        <where>
+            m.FISLEAF=1
+            and m.FIsOUSealUp = 0
+            <if test="title!=null and title!=''">
+                and m.FNAME_L2 like CONCAT(CONCAT('%',#{title}),'%')
+            </if>
+            <if test="num!=null and num!=''">
+                and m.fnumber like CONCAT(CONCAT('%',#{num}),'%')
+            </if>
+        </where>
+        order by m.FLONGNUMBER
     </select>
 
 </mapper>

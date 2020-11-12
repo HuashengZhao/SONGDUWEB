@@ -18,7 +18,7 @@ import java.util.List;
  */
 public interface TOrgBaseunitMapper extends BaseMapper<TOrgBaseunit> {
 
-    List<OrgVO> selectDatas(OrgVO vo);
+    OrgVO selectDatas(OrgVO vo);
 
     Integer selectByOrgId(String id);
 
@@ -27,7 +27,6 @@ public interface TOrgBaseunitMapper extends BaseMapper<TOrgBaseunit> {
     List<OrgVO> selectNexts(String id);
 
     List<String> selectNextIds(String orgId);
-
 
     List<OrgVO> selectCostEntities(List<String> list);
 
@@ -57,4 +56,8 @@ public interface TOrgBaseunitMapper extends BaseMapper<TOrgBaseunit> {
     BigDecimal selectPayPlanAMT(String projectId, int year, int month);
 
     BigDecimal selectUsedPayPlanAMT(NoTextContractVO vo);
+
+    OrgVO selectByOId(String id);
+
+    List<OrgVO> selectALLLeafOrgs(OrgVO orgVO);
 }
