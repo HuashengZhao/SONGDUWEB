@@ -32,26 +32,28 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
     public OrgVO getData(OrgVO vo) {
         long st = System.currentTimeMillis();
         OrgVO orgVO1 = new OrgVO();
-        List<OrgVO> orgVOS = baseunitMapper.selectDatas(vo);
+        List<OrgVO> orgVOS = new ArrayList<>();
+        if (Util.isNotEmpty(vo.getId())) {
+            orgVOS = baseunitMapper.selectDatas(vo);
+            if (orgVOS != null && orgVOS.size() > 0) {
+                orgVOS = getChildren(orgVOS);
+            }
+        }else{
+           orgVOS = baseunitMapper.selectALLLeafOrgs(vo);
+            Map<String, OrgVO> map = Maps.newHashMap();
+           if (orgVOS != null && orgVOS.size() > 0){
+               for (OrgVO orgVO : orgVOS) {
+                   if (Util.isNotEmpty(orgVO)) {
+                       getUpOrgs(map, orgVO);
+                   }
+               }
+           }
+            OrgVO total = map.get("topOrgVO");
+            orgVOS.add(total);
+        }
         if (orgVOS != null && orgVOS.size() > 0) {
-            orgVOS = getChildren(orgVOS);
             for (OrgVO orgVO : orgVOS) {
                 if (Util.isNotEmpty(orgVO)) {
-//                是否实体财务组织
-//                    Integer isCompany = orgVO.getIsCompany();
-//                    if (Util.isEmpty(isCompany)) {
-//                        orgVO.setIsCompany(0);
-//                    }
-////                是否成本实体中心
-//                    if (Util.isNotEmpty(vo.getIsSTCost()) && vo.getIsSTCost() == 1) {
-//                        Integer isSTCost = orgVO.getIsSTCost();
-//                        if (Util.isEmpty(isSTCost) || isSTCost == 0) {
-//                            orgVO.setIsSTCost(0);
-//                            orgVO.setDisabled(true);
-//                        } else if (isSTCost == 1) {
-//                            orgVO.setDisabled(false);
-//                        }
-//                    }
                     String longNumber = orgVO.getLongNumber();
                     if (Util.isNotEmpty(longNumber)) {
                         orgVO.setLongNumber(longNumber
@@ -60,8 +62,8 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
                     }
                 }
             }
-
         }
+
         orgVO1.setOrgVOList(orgVOS);
         long et = System.currentTimeMillis();
         System.out.println("组织查询耗时：" + (et - st) + "ms");
@@ -149,6 +151,45 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
         long et = System.currentTimeMillis();
         System.out.println("获取预算公司、财务组织耗时：" + (et - st) + "ms");
         return vo;
+    }
+
+    /**
+     * 财务组织获取上级 设置children
+     */
+    public void getUpOrgs(Map<String, OrgVO> map, OrgVO orgVO) {
+        String parentId = orgVO.getParentId();
+        if (Util.isNotEmpty(parentId)) {
+            OrgVO orgVO1 = map.get(parentId);
+            if (Util.isEmpty(orgVO1)) {
+                orgVO1 = baseunitMapper.selectDataById(parentId);
+                if (Util.isNotEmpty(orgVO1)) {
+                    List<OrgVO> os = new ArrayList<>();
+                    os.add(orgVO);
+                    orgVO1.setChildren(os);
+                    if (Util.isEmpty(orgVO1.getParentId())) {
+                        map.put("topOrgVO", orgVO1);
+                        map.put(parentId, orgVO1);
+                    } else {
+                        map.put(parentId, orgVO1);
+                    }
+                    Integer isCompany = orgVO1.getIsCompany();
+                    if (Util.isEmpty(isCompany) || isCompany == 0) {
+                        orgVO1.setDisabled(true);
+                    } else if (isCompany == 1) {
+                        orgVO1.setDisabled(false);
+                    }
+                    getUpOrgs(map, orgVO1);
+                }
+            } else {
+                orgVO1.getChildren().add(orgVO);
+                Integer isCompany = orgVO1.getIsCompany();
+                if (Util.isEmpty(isCompany) || isCompany == 0) {
+                    orgVO1.setDisabled(true);
+                } else if (isCompany == 1) {
+                    orgVO1.setDisabled(false);
+                }
+            }
+        }
     }
 
     /**

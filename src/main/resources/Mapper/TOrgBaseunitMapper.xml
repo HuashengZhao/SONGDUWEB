@@ -284,14 +284,14 @@ where
     </select>
     <select id="selectALLLeafOrgs" resultType="com.example.EAS.vo.OrgVO">
         select m.fid as id,m.FNAME_L2 as title,m.FDESCRIPTION_L2 as description,m.fnumber as num,
-        m.FLONGNUMBER as longNumber,m.flevel,m.FPartCostCenterID as costCenterId,m.FISLEAF as isLeaf,
-        m.FSIMPLENAME as simpleName,fi.FISBIZUNIT as isCompany,c.FISBIZUNIT as isSTCost,m.fparentid as parentId
+        m.FLONGNUMBER as longNumber,m.flevel,m.FPartCostCenterID as costCenterId,m.FDESCRIPTION_L2 as description,
+        m.FISLEAF as isLeaf,m.FSIMPLENAME as simpleName,fi.FISBIZUNIT as isCompany,c.FISBIZUNIT as isSTCost
         from T_ORG_BASEUNIT m
         left join T_ORG_OUPartFI fi on fi.FID=m.FPARTFIID
         left join T_ORG_OUPartCostCenter c on c.fid=m.FPartCostCenterID
         <where>
-            m.FISLEAF=1
-            and m.FIsOUSealUp = 0
+            m.FIsOUSealUp=0
+            and m.FISADMINORGUNIT=1
             <if test="title!=null and title!=''">
                 and m.FNAME_L2 like CONCAT(CONCAT('%',#{title}),'%')
             </if>
