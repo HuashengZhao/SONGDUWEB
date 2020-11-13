@@ -34,7 +34,6 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
         long st = System.currentTimeMillis();
         OrgVO orgVO1 = new OrgVO();
         List<OrgVO> orgVOS = new ArrayList<>();
-        List<OrgVO> vos = new ArrayList<>();
         if (Util.isNotEmpty(vo.getId())) {
             orgVOS = baseunitMapper.selectDatas(vo);
             if (orgVOS != null && orgVOS.size() > 0) {
