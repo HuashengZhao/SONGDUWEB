@@ -638,9 +638,6 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         String oaid = str.getString("oaid");
         if (oaid != null && id != null) {
             oaIdUtil.getString(id, oaid);
-            TConSupplierapply tConSupplierapply = mapper.selectById(id);
-            tConSupplierapply.setFsourcefunction(oaid);
-            mapper.updateById(tConSupplierapply);
         }
 //       成功提交后，修改eas当前状态为审批中0
         if (code != null && code.contains("1")) {
