@@ -9,6 +9,7 @@ import com.example.EAS.vo.OrgVO;
 import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.reactive.AbstractReactiveTransactionManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,24 +34,24 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
         long st = System.currentTimeMillis();
         OrgVO orgVO1 = new OrgVO();
         List<OrgVO> orgVOS = new ArrayList<>();
+        List<OrgVO> vos = new ArrayList<>();
         if (Util.isNotEmpty(vo.getId())) {
             orgVOS = baseunitMapper.selectDatas(vo);
             if (orgVOS != null && orgVOS.size() > 0) {
                 orgVOS = getChildren(orgVOS);
             }
-        }
-
-        if (orgVOS != null && orgVOS.size() > 0) {
-            for (OrgVO orgVO : orgVOS) {
-                if (Util.isNotEmpty(orgVO)) {
-                    String longNumber = orgVO.getLongNumber();
-                    if (Util.isNotEmpty(longNumber)) {
-                        orgVO.setLongNumber(longNumber
-                                .replace("-", ".")
-                                .replace("!", "."));
-                    }
-                }
-            }
+        }else{
+           orgVOS = baseunitMapper.selectALLLeafOrgs(vo);
+            Map<String, OrgVO> map = Maps.newHashMap();
+           if (orgVOS != null && orgVOS.size() > 0){
+               for (OrgVO orgVO : orgVOS) {
+                   if (Util.isNotEmpty(orgVO)) {
+                       getUpOrgs(map, orgVO);
+                   }
+               }
+           }
+            OrgVO total = map.get("topOrgVO");
+            orgVOS.add(total);
         }
         orgVO1.setOrgVOList(orgVOS);
         long et = System.currentTimeMillis();
@@ -139,6 +140,45 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
         long et = System.currentTimeMillis();
         System.out.println("获取预算公司、财务组织耗时：" + (et - st) + "ms");
         return vo;
+    }
+
+    /**
+     * 财务组织获取上级 设置children
+     */
+    public void getUpOrgs(Map<String, OrgVO> map, OrgVO orgVO) {
+        String parentId = orgVO.getParentId();
+        if (Util.isNotEmpty(parentId)) {
+            OrgVO orgVO1 = map.get(parentId);
+            if (Util.isEmpty(orgVO1)) {
+                orgVO1 = baseunitMapper.selectByOId(parentId);
+                if (Util.isNotEmpty(orgVO1)) {
+                    List<OrgVO> os = new ArrayList<>();
+                    os.add(orgVO);
+                    orgVO1.setChildren(os);
+                    if (Util.isEmpty(orgVO1.getParentId())) {
+                        map.put("topOrgVO", orgVO1);
+                        map.put(parentId, orgVO1);
+                    } else {
+                        map.put(parentId, orgVO1);
+                    }
+                    Integer isCompany = orgVO1.getIsCompany();
+                    if (Util.isEmpty(isCompany) || isCompany == 0) {
+                        orgVO1.setDisabled(true);
+                    } else if (isCompany == 1) {
+                        orgVO1.setDisabled(false);
+                    }
+                    getUpOrgs(map, orgVO1);
+                }
+            } else {
+                orgVO1.getChildren().add(orgVO);
+                Integer isCompany = orgVO1.getIsCompany();
+                if (Util.isEmpty(isCompany) || isCompany == 0) {
+                    orgVO1.setDisabled(true);
+                } else if (isCompany == 1) {
+                    orgVO1.setDisabled(false);
+                }
+            }
+        }
     }
 
     /**
