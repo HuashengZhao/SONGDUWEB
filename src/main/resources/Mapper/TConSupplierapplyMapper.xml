@@ -4,6 +4,10 @@
     <insert id="insertOaid">
         insert into oaidrecord(billId,oaid) values(#{easid},#{oaid})
     </insert>
+    <insert id="insertAcceptInfo">
+        insert into acceptinfo(billId,accepttime,billtype,optype,state,message)
+         values(#{easid},#{acceptTime},#{finalBillType},#{acceptType},#{i},#{message})
+    </insert>
     <update id="updateNumberRecord">
         update OANUMBERRECORD set value =#{numberRecord} where type like '%supplier%'
     </update>
@@ -16,6 +20,10 @@
     <update id="updateCreatorId">
         update T_CON_SUPPLIERAPPLY set FCREATORID = #{creatorId} where fid=#{id}
     </update>
+    <update id="updateData">
+        update T_CON_SUPPLIERAPPLY set fstate='1SAVED' where fid=#{easid}
+    </update>
+
     <delete id="deleteData">
         delete from OAIDRECORD where billid=#{billId}
     </delete>

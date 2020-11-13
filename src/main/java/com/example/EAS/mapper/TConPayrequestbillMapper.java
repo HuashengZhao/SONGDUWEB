@@ -19,4 +19,5 @@ public interface TConPayrequestbillMapper extends BaseMapper<TConPayrequestbill>
 
     PayRequestBillVO selectDataById(PayRequestBillVO vo);
 
+    void updateData(String easid);
 }

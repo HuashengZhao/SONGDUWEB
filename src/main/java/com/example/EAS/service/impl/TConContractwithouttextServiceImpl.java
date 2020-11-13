@@ -365,12 +365,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
                     returnVO.setIsjt(Math.toIntExact(mp.getFisjt()));
                 }
             }
-            TConContractwithouttext tConContractwithouttext = mapper.selectById(id);
-            Long fisjt = tConContractwithouttext.getFisjt();
-            returnVO.setIsjt(0);
-            if (Util.isNotEmpty(fisjt) && fisjt == 1) {
-                returnVO.setIsjt(1);
-            }
+
             //        营销合同分摊明细
             List<MarketContDetailVO> marketContDetailVOS = mapper.selectNTMarketCons(vo.getId());
             if (marketContDetailVOS != null && marketContDetailVOS.size() > 0) {
@@ -892,7 +887,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             Call call = getCall("OAURL", "addtestEkpReview");
             try {
                 result = (String) call.invoke(new Object[]{obj.toString()});
-                System.out.println(vo.getTitle() + "oa流程传参：" + obj.toString());
+                System.out.println(vo.getTitle() + "oa新增流程传参：" + obj.toString());
                 str = JSONObject.parseObject(result);
             } catch (RemoteException e) {
                 e.printStackTrace();
@@ -902,7 +897,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             try {
                 obj.put("id", oaId);
                 result = (String) call.invoke(new Object[]{obj.toString()});
-                System.out.println(vo.getTitle() + "oa流程传参：" + obj.toString());
+                System.out.println(vo.getTitle() + "oa修改流程传参：" + obj.toString());
                 str = JSONObject.parseObject(result);
             } catch (RemoteException e) {
                 e.printStackTrace();
