@@ -32,26 +32,17 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
     public OrgVO getData(OrgVO vo) {
         long st = System.currentTimeMillis();
         OrgVO orgVO1 = new OrgVO();
-        List<OrgVO> orgVOS = baseunitMapper.selectDatas(vo);
+        List<OrgVO> orgVOS = new ArrayList<>();
+        if (Util.isNotEmpty(vo.getId())) {
+            orgVOS = baseunitMapper.selectDatas(vo);
+            if (orgVOS != null && orgVOS.size() > 0) {
+                orgVOS = getChildren(orgVOS);
+            }
+        }
+
         if (orgVOS != null && orgVOS.size() > 0) {
-            orgVOS = getChildren(orgVOS);
             for (OrgVO orgVO : orgVOS) {
                 if (Util.isNotEmpty(orgVO)) {
-//                是否实体财务组织
-//                    Integer isCompany = orgVO.getIsCompany();
-//                    if (Util.isEmpty(isCompany)) {
-//                        orgVO.setIsCompany(0);
-//                    }
-////                是否成本实体中心
-//                    if (Util.isNotEmpty(vo.getIsSTCost()) && vo.getIsSTCost() == 1) {
-//                        Integer isSTCost = orgVO.getIsSTCost();
-//                        if (Util.isEmpty(isSTCost) || isSTCost == 0) {
-//                            orgVO.setIsSTCost(0);
-//                            orgVO.setDisabled(true);
-//                        } else if (isSTCost == 1) {
-//                            orgVO.setDisabled(false);
-//                        }
-//                    }
                     String longNumber = orgVO.getLongNumber();
                     if (Util.isNotEmpty(longNumber)) {
                         orgVO.setLongNumber(longNumber
@@ -60,7 +51,6 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
                     }
                 }
             }
-
         }
         orgVO1.setOrgVOList(orgVOS);
         long et = System.currentTimeMillis();
@@ -128,10 +118,10 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
         List<OrgVO> vos = new ArrayList<>();
         if (Util.isNotEmpty(vo.getId())) {
             OrgVO orgvo = baseunitMapper.selectDataById(vo.getId());
-            if (Util.isNotEmpty(orgvo)){
+            if (Util.isNotEmpty(orgvo)) {
                 vos.add(orgvo);
             }
-        }else{
+        } else {
             List<OrgVO> orgVOS = baseunitMapper.selectALLCWSTS(vo);
             Map<String, OrgVO> map = Maps.newHashMap();
             if (orgVOS != null && orgVOS.size() > 0) {
