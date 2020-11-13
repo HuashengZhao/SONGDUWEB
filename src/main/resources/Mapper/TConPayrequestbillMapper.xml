@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.EAS.mapper.TConPayrequestbillMapper">
+    <update id="updateData">
+        update T_CON_PAYREQUESTBILL set FSOURCEFUNCTION=null, fstate='1SAVED' where fid=#{easid}
+    </update>
 
 
     <select id="selectDatas" resultType="com.example.EAS.vo.PayRequestBillVO">
@@ -56,7 +59,7 @@
             </if>
             <if test="authorNum!=null and authorNum!=''">
                 and u.fnumber =#{authorNum}
-                or p.fnumber  =#{authorNum}
+                or p.fnumber =#{authorNum}
             </if>
             <if test="projectIds != null and projectIds.size > 0">
                 and bill.FCURPROJECTID in
@@ -75,7 +78,7 @@
         cp.FNAME_L2 as projectName,con.FNUMBER as contractNumber,con.FNAME as contractName,
         bill.FSUPPLIERID as realSupplierId,sup.FNAME_L2 as realSupplierName,bill.FCURRENCYID as currencyId,
         cur.FNAME_L2 as currencyName,bill.FAMOUNT as amount,bill.FORIGINALAMOUNT as oriAmount,
-        bill.FRECBANK as recBank,bill.FRECACCOUNT as recAccount,bill.FUSAGE as remark,
+        bill.FRECBANK as recBank,bill.FRECACCOUNT as recAccount,bill.FMONEYDESC as remark,
         pt.FNAME_L2 as paymentTypeName,bill.FAUDITORID as auditorId,u1.FNAME_L2 as auditorName,
         bill.FAUDITTIME auditTime,bill.FCREATETIME creatTime,bill.FRealSupplierID as supplierId,
         sup1.FNAME_L2 as supplierName, st.FNAME_L2 as settleMentTypeName,

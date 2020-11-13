@@ -18,7 +18,7 @@ import java.util.List;
  */
 public interface TOrgBaseunitMapper extends BaseMapper<TOrgBaseunit> {
 
-    OrgVO selectDatas(OrgVO vo);
+    List<OrgVO> selectDatas(OrgVO vo);
 
     Integer selectByOrgId(String id);
 

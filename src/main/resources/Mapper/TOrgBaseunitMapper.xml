@@ -10,7 +10,11 @@
         left join T_ORG_OUPartFI fi on fi.FID=m.FPARTFIID
         left join T_ORG_OUPartCostCenter c on c.fid=m.FPartCostCenterID
         <where>
-            and m.fid=#{id}
+            m.FISADMINORGUNIT=1
+            and m.FIsOUSealUp=0
+            <if test="id!=null and id!=''">
+                and m.fid=#{id}
+            </if>
             <if test="title!=null and title!=''">
                 and m.FNAME_L2 like CONCAT(CONCAT('%',#{title}),'%')
             </if>
