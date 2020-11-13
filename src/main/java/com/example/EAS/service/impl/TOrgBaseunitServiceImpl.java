@@ -160,22 +160,10 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
                     } else {
                         map.put(parentId, orgVO1);
                     }
-                    Integer isCompany = orgVO1.getIsCompany();
-                    if (Util.isEmpty(isCompany) || isCompany == 0) {
-                        orgVO1.setDisabled(true);
-                    } else if (isCompany == 1) {
-                        orgVO1.setDisabled(false);
-                    }
                     getUpOrgs(map, orgVO1);
                 }
             } else {
                 orgVO1.getChildren().add(orgVO);
-                Integer isCompany = orgVO1.getIsCompany();
-                if (Util.isEmpty(isCompany) || isCompany == 0) {
-                    orgVO1.setDisabled(true);
-                } else if (isCompany == 1) {
-                    orgVO1.setDisabled(false);
-                }
             }
         }
     }
