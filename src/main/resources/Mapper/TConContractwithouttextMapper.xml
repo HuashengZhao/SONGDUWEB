@@ -87,7 +87,7 @@
         per.FPERIODYEAR as periodYear,per.FPERIODNUMBER as periodNumber,bill.FTAXERQUA as taxerQua,bill.FTAXERNUM as taxerNumber,
         bank.fnumber as unionBankNum,bill.FBANKACCT as bankAccount,bill.fbank as bank,bill.FSETTLEMENTTYPEID as settlementTypeId,
         st.FNAME_L2 as settlementTypeName,bill.FApplierId as applierId,p1.FNAME_L2 as applierName,bill.FUseDepartmentID as useDeptId,
-        org.FNAME_L2 as useDeptName,bill.FCostedDeptId as costDeptId,bill.FCOSTEDCOMPANYID as costCompanyId,
+        org.FNAME_L2 as useDeptName,bill.FCostedDeptId as costDeptId,bill.FCOSTEDCOMPANYID as costCompanyId,bill.FCURPROJECTID as projectId,
         cc.FNAME_L2 as costDeptName,cp.FNAME_L2 as costCompanyName,bill.FMarketProjectId as marketProjectId,
         mar.FNAME as marketProjectName,cost.FNAME_L2 as costAccountName,bill.FMpCostAccountId as costAccountId,
         bill.FInvoiceAmt as invoiceAMT,bill.FRATEAMOUNT as rateAmount,pb.FMoneyDesc as description,ct.FISWEBPC as needHygh,

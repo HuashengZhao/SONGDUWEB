@@ -9,7 +9,6 @@ import com.example.EAS.vo.OrgVO;
 import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.reactive.AbstractReactiveTransactionManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +49,7 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
                }
            }
             OrgVO total = map.get("topOrgVO");
+            orgVOS.clear();
             orgVOS.add(total);
         }
         orgVO1.setOrgVOList(orgVOS);

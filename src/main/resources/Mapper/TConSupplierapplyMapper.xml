@@ -63,7 +63,7 @@
                 and u.fnumber =#{authorNum}
             </if>
         </where>
-        order by sa.fcreatetime desc,sa.fnumber desc
+        order by sa.FBOOKEDDATE desc,sa.fnumber desc
     </select>
     <select id="selectNumberRecord" resultType="java.lang.Integer">
         select value from OANUMBERRECORD where type like '%supplier%'

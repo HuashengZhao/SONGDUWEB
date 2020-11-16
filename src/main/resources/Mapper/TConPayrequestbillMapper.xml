@@ -13,7 +13,7 @@
         cp.FNAME_L2 as projectName,con.FNUMBER as contractNumber,con.FNAME as contractName,
         bill.FSUPPLIERID as supplierId,sup.FNAME_L2 as supplierName,bill.FCURRENCYID as currencyId,
         cur.FNAME_L2 as currencyName,bill.FAMOUNT as amount,bill.FORIGINALAMOUNT as oriAmount,
-        bill.FRECBANK as recBank,bill.FRECACCOUNT as recAccount,bill.FUSAGE as remark,
+        bill.FRECBANK as recBank,bill.FRECACCOUNT as recAccount,bill.FMONEYDESC as remark,
         pt.FNAME_L2 as paymentTypeName,bill.FAUDITORID as auditorId,u1.FNAME_L2 as auditorName,
         bill.FAUDITTIME auditTime,bill.FCREATETIME createTime,
         (select count(ass.fid) from T_BAS_BoAttchAsso ass where ass.FBOID=bill.fid) as attNums
