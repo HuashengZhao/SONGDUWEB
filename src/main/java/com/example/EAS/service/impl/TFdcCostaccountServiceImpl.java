@@ -69,7 +69,9 @@ public class TFdcCostaccountServiceImpl extends ServiceImpl<TFdcCostaccountMappe
                 BigDecimal negAmount = BigDecimal.ZERO;//        负数金额
                 BigDecimal usedAmount = BigDecimal.ZERO;//已关联改科目的无文本所用金额
                 BigDecimal balance = BigDecimal.ZERO;  //余额
-                mkAmount = costAccountVO.getMpAmount();
+                if (Util.isNotEmpty(costAccountVO.getMpAmount())){
+                    mkAmount = costAccountVO.getMpAmount();
+                }
                 usedAmount = mapper.selectUsedNTAmount(costAccountVO.getId());
                 if (Util.isEmpty(usedAmount)){
                     usedAmount = BigDecimal.ZERO;
