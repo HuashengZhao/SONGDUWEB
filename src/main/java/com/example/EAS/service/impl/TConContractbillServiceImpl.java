@@ -608,7 +608,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             }
         }
         long endTime = System.currentTimeMillis();
-        System.out.println("合同列表运行时间：" + (endTime - startTime) + "ms");
+        System.out.println("合同保存时间：" + (endTime - startTime) + "ms");
         return contractVO;
     }
 
