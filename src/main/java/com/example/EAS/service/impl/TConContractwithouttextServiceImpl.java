@@ -804,17 +804,14 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         if (Util.isNotEmpty(vo.getOriAmount())) {
             Double aDouble = vo.getOriAmount().doubleValue();
             data.put("fd_38cf1871775004", aDouble);
-            System.out.println("oa新增流程新家字段：" + aDouble);
         }
         if (Util.isNotEmpty(vo.getMarketProjectId())) {
             TConMarketproject tConMarketproject = marketProjectMapper.selectById(vo.getMarketProjectId());
             Long fisjt = tConMarketproject.getFisjt();
             if (Util.isEmpty(fisjt) || fisjt == 0) {
                 data.put("fd_38f672e9da3dda", "否");
-                System.out.println("是否后评估审核：否");
             } else {
                 data.put("fd_38f672e9da3dda", "是");
-                System.out.println("是否后评估审核：是");
             }
         }
         if (Util.isNotEmpty(vo.getContractTypeId())) {
