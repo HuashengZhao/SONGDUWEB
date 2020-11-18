@@ -804,17 +804,14 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         if (Util.isNotEmpty(vo.getOriAmount())) {
             Double aDouble = vo.getOriAmount().doubleValue();
             data.put("fd_38cf1871775004", aDouble);
-            System.out.println("oa新增流程新家字段：" + aDouble);
         }
         if (Util.isNotEmpty(vo.getMarketProjectId())) {
             TConMarketproject tConMarketproject = marketProjectMapper.selectById(vo.getMarketProjectId());
             Long fisjt = tConMarketproject.getFisjt();
             if (Util.isEmpty(fisjt) || fisjt == 0) {
                 data.put("fd_38f672e9da3dda", "否");
-                System.out.println("是否后评估审核：否");
             } else {
                 data.put("fd_38f672e9da3dda", "是");
-                System.out.println("是否后评估审核：是");
             }
         }
         if (Util.isNotEmpty(vo.getContractTypeId())) {
@@ -862,7 +859,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
 //        sb.append("http://172.17.4.125:8082/easWeb/#/supplier").append("?token=").append(token);
         System.out.println("合同单据web端详情查看地址：" + sendUrl);
         System.out.println(" 合同单据app端详情查看地址：" + sendAppUrl);
-        obj.put("loginName", "00561");
+        obj.put("loginName", personNum);
         data.put("fd_link", sendUrl);
         data.put("fd_mobile_link", sendAppUrl);
         obj.put("data", data.toString());
@@ -926,6 +923,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
                     JSONObject atturlObj = attUrlArray.getJSONObject(i);
                     String attName = atturlObj.getString("name");
                     String atturl = atturlObj.getString("url");
+                    System.out.println("附件返回地址"+attName+":"+atturl);
 //                 取用户账号用作oa流程查看登录
                     if (Util.isEmpty(personNum)) {
                         throw new ServiceException(UtilMessage.PERSON_MISSING);
