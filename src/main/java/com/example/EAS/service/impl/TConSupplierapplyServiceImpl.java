@@ -592,7 +592,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
 //        sb.append("http://172.17.4.125:8082/easWeb/#/supplier").append("?token=").append(token);
         System.out.println("合同单据web端详情查看地址：" + sendUrl);
         System.out.println(" 合同单据app端详情查看地址：" + sendAppUrl);
-        obj.put("loginName", "00561");
+        obj.put("loginName", personNum);
         JSONObject data = new JSONObject();
         data.put("fd_link", sendUrl);
         data.put("fd_mobile_link", sendAppUrl);
