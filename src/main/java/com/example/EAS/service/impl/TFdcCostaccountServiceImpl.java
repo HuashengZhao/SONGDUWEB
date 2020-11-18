@@ -54,53 +54,57 @@ public class TFdcCostaccountServiceImpl extends ServiceImpl<TFdcCostaccountMappe
         } else {
             costAccountVOList = mapper.selectDatas(vo);
         }
-        List<CostAccountVO> vos = new ArrayList<>();
-        if (costAccountVOList != null && costAccountVOList.size() > 0) {
-            vos.addAll(costAccountVOList);
-            for (CostAccountVO costAccountVO : costAccountVOList) {
-                String longNumber = costAccountVO.getLongNumber();
-                if (longNumber != null) {
-                    costAccountVO.setLongNumber(longNumber
-                            .replace("!", ".")
-                            .replace("-", "."));
-                }
+        if (Util.isNotEmpty(controlType) && controlType.equals("NOTEXTCONTRACT")){
+            List<CostAccountVO> vos = new ArrayList<>();
+            if (costAccountVOList != null && costAccountVOList.size() > 0) {
+                vos.addAll(costAccountVOList);
+                for (CostAccountVO costAccountVO : costAccountVOList) {
+                    String longNumber = costAccountVO.getLongNumber();
+                    if (longNumber != null) {
+                        costAccountVO.setLongNumber(longNumber
+                                .replace("!", ".")
+                                .replace("-", "."));
+                    }
 //                计算费用归属可用余额
-                BigDecimal mkAmount = BigDecimal.ZERO;//        立项金额
-                BigDecimal negAmount = BigDecimal.ZERO;//        负数金额
-                BigDecimal usedAmount = BigDecimal.ZERO;//已关联改科目的无文本所用金额
-                BigDecimal balance = BigDecimal.ZERO;  //余额
-                if (Util.isNotEmpty(costAccountVO.getMpAmount())){
-                    mkAmount = costAccountVO.getMpAmount();
-                }
-                usedAmount = mapper.selectUsedNTAmount(costAccountVO.getId());
-                if (Util.isEmpty(usedAmount)){
-                    usedAmount = BigDecimal.ZERO;
-                }
-                List<String> mpIds = marketProjectMapper.selectList(new QueryWrapper<TConMarketproject>()
-                        .eq("FMPID", vo.getMarketId())
-                        .eq("FISSUB", 1)
-                        .lambda())
-                        .stream().map(TConMarketproject::getFid)
-                        .collect(Collectors.toList());
-                if (mpIds != null && mpIds.size() > 0) {
-                    List<Double> collect = tConMarketprojectcostentryMapper.selectList(new QueryWrapper<TConMarketprojectcostentry>()
-                            .lambda()
-                            .in(TConMarketprojectcostentry::getFheadid, mpIds))
-                            .stream()
-                            .map(TConMarketprojectcostentry::getFamount)
+                    BigDecimal mkAmount = BigDecimal.ZERO;//        立项金额
+                    BigDecimal negAmount = BigDecimal.ZERO;//        负数金额
+                    BigDecimal usedAmount = BigDecimal.ZERO;//已关联改科目的无文本所用金额
+                    BigDecimal balance = BigDecimal.ZERO;  //余额
+                    if (Util.isNotEmpty(costAccountVO.getMpAmount())){
+                        mkAmount = costAccountVO.getMpAmount();
+                    }
+                    usedAmount = mapper.selectUsedNTAmount(costAccountVO.getId());
+                    if (Util.isEmpty(usedAmount)){
+                        usedAmount = BigDecimal.ZERO;
+                    }
+                    List<String> mpIds = marketProjectMapper.selectList(new QueryWrapper<TConMarketproject>()
+                            .eq("FMPID", vo.getMarketId())
+                            .eq("FISSUB", 1)
+                            .lambda())
+                            .stream().map(TConMarketproject::getFid)
                             .collect(Collectors.toList());
-                    if (collect != null && collect.size() > 0) {
-                        for (Double aDouble : collect) {
-                            negAmount = negAmount.add(new BigDecimal(aDouble));
+                    if (mpIds != null && mpIds.size() > 0) {
+                        List<Double> collect = tConMarketprojectcostentryMapper.selectList(new QueryWrapper<TConMarketprojectcostentry>()
+                                .lambda()
+                                .in(TConMarketprojectcostentry::getFheadid, mpIds))
+                                .stream()
+                                .map(TConMarketprojectcostentry::getFamount)
+                                .collect(Collectors.toList());
+                        if (collect != null && collect.size() > 0) {
+                            for (Double aDouble : collect) {
+                                negAmount = negAmount.add(new BigDecimal(aDouble));
+                            }
                         }
                     }
+                    balance =mkAmount.add(negAmount).subtract(usedAmount);
+                    if (balance.compareTo(BigDecimal.ZERO)!=1){
+                        vos.remove(costAccountVO);
+                    }
                 }
-                balance =mkAmount.add(negAmount).subtract(usedAmount);
-                if (balance.compareTo(BigDecimal.ZERO)!=1){
-                    vos.remove(costAccountVO);
-                }
+                vo.setCostAccountVOList(vos);
             }
-            vo.setCostAccountVOList(vos);
+        }else {
+            vo.setCostAccountVOList(costAccountVOList);
         }
         return vo;
     }

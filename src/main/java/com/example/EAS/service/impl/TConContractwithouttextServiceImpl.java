@@ -923,6 +923,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
                     JSONObject atturlObj = attUrlArray.getJSONObject(i);
                     String attName = atturlObj.getString("name");
                     String atturl = atturlObj.getString("url");
+                    System.out.println("附件返回地址"+attName+":"+atturl);
 //                 取用户账号用作oa流程查看登录
                     if (Util.isEmpty(personNum)) {
                         throw new ServiceException(UtilMessage.PERSON_MISSING);
