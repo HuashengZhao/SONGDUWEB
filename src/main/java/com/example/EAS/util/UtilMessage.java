@@ -76,6 +76,7 @@ public class UtilMessage {
     public static final String PARAM_MISSING = "缺少登录员工编码或部门！";
     public static final String PERSON_MISSING = "缺少登录员工编码！";
     public static final String BACK_ONLOAD = "身份验证已过期，请重新登录！";
+    public static final String DES_LOGININFO_ERROR= "身份信息验证错误！";
 
     //    EAS
     public static final String SUPPLIER_NAME_REPEAT = "供应商名称重复！";

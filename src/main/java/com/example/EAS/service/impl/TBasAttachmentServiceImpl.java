@@ -151,8 +151,9 @@ public class TBasAttachmentServiceImpl extends ServiceImpl<TBasAttachmentMapper,
 //          来自web ftp服务器
             ftpUtil.exportOutputStream(request, response, replace, fileName);
         } else if (Util.isNotEmpty(storgeType) && storgeType.equals("1")) {
+            String replace = webUrl.replace(fileName, "");
 //             天联云
-            ftpUtil.exportTLYOS(request, response, webUrl, fileName);
+            ftpUtil.exportTLYOS(request, response, replace, fileName);
         } else if (Util.isNotEmpty(storgeType) && storgeType.equals("2")) {
 //             eas附件
             easFileDownLoadUtil.login();

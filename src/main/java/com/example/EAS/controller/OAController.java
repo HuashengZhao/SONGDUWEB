@@ -143,6 +143,18 @@ public class OAController {
     }
 
     /**
+     * 登陆用户取oa身份列表
+     */
+    public R getPersons(@RequestBody String  body) throws Exception {
+        HashMap<String, Object> result = new HashMap<>(10);
+        PersonsVO vo = BodyDecodeUtil.decodeBody(body, PersonsVO.class);
+
+        result.put("msg", UtilMessage.GET_MSG_SUCCESS);
+        result.put("code", HttpStatus.SC_OK);
+        return R.ok(result);
+    }
+
+    /**
      * 通过密文转为实体
      *
      * @param body

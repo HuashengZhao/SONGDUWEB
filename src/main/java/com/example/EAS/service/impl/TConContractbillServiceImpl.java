@@ -447,6 +447,9 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                 String attachNum = attachmentsVO.getNum();
                 String webUrl = attachmentsVO.getWebUrl();
                 String title = attachmentsVO.getTitle();
+                if (title.contains(".")) {
+                    title = title.replace("." + title.split("\\.")[title.split("\\.").length - 1], "");
+                }
                 String fileSize = attachmentsVO.getFileSize();
                 String descp = attachmentsVO.getDescription();
                 String originalFilename = attachmentsVO.getOriginalFilename() == null ? attachmentsVO.getTitle() : attachmentsVO.getOriginalFilename();
@@ -455,7 +458,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                 object.put("FNumber", attachNum == null ? "upLoadFromEas" : attachNum);//附件编码
                 object.put("FRemotePath", webUrl == null ? null : webUrl);//文件相对路径
                 object.put("FSize", fileSize == null ? null : fileSize);// 附件大小
-                object.put("FDescription", descp == null ? null : descp);//附件来源类型
+                object.put("FDescription", descp == null ? "EAS" : descp);//附件来源类型
                 object.put("FCreatorId", creatorId == null ? null : creatorId); //创建人id
                 attach.add(object);
             }
@@ -602,9 +605,11 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                 contractBillId = id;
                 contractVO.setId(id);
 //            contractVO.setResult("success");
-                TConContractbill tConContractbill = mapper.selectById(id);
-                tConContractbill.setFcreatorid(creatorId);
-                mapper.updateById(tConContractbill);
+                if (Util.isEmpty(vo.getId())) {
+                    TConContractbill tConContractbill = mapper.selectById(id);
+                    tConContractbill.setFcreatorid(creatorId);
+                    mapper.updateById(tConContractbill);
+                }
             }
         }
         long endTime = System.currentTimeMillis();
@@ -965,8 +970,18 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         if (easFiles != null && easFiles.size() > 0) {
             for (AttachmentsVO easFile : easFiles) {
                 JSONObject attObj = new JSONObject();
-                attObj.put("filename", easFile.getTitle());
-                attObj.put("filepath", easFile.getWebUrl());
+                String title = easFile.getTitle();
+                String webUrl = easFile.getWebUrl();
+                String fileType = easFile.getFileType();
+                if (Util.isNotEmpty(title) && title.contains(".")) {//oa预览需要后缀名文件名，拼接
+                    String hz = title.split("\\.")[title.split("\\.").length - 1];
+                    title = title.replace("." + hz, "");
+                }
+                if (Util.isNotEmpty(fileType)) {
+                    title = new StringBuffer().append(title).append("." + fileType).toString();
+                }
+                attObj.put("filename", title);
+                attObj.put("filepath", webUrl);
                 attObj.put("fileType", "01");
                 attFile.add(attObj);
             }
@@ -1019,8 +1034,12 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                 for (int i = 0; i < attUrlArray.size(); i++) {
                     JSONObject atturlObj = attUrlArray.getJSONObject(i);
                     String attName = atturlObj.getString("name");
+                    if (Util.isNotEmpty(attName) && attName.contains(".")) {
+                        String hz = attName.split("\\.")[attName.split("\\.").length - 1];
+                        attName = attName.replace("." + hz, "");
+                    }
                     String atturl = atturlObj.getString("url");
-                    System.out.println("附件返回地址"+attName+":"+atturl);
+                    System.out.println("附件返回地址" + attName + ":" + atturl);
 //                 取用户账号用作oa流程查看登录
                     if (Util.isEmpty(personNum)) {
                         throw new ServiceException(UtilMessage.PERSON_MISSING);
