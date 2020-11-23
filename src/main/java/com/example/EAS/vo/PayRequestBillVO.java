@@ -175,4 +175,9 @@ public class PayRequestBillVO {
     private BigDecimal applyAMT;
 
     private String sourceFunction;
+
+    //OA岗位职位信息
+    private String identityId;
+    private String identityName;
+    private String foaposition;
 }

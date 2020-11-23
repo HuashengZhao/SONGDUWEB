@@ -62,7 +62,7 @@
         res.FNAME_L2 as changeReason,type.FNAME_L2 as changeTypeName,cb.FCOSTUNIT as costUnit,
         cb.FOFFER as offer,cb.FCONDUCTDEPTID,ad.FNAME_L2 as conductDeptName,sup1.FNAME_L2 as conductUnitName,
         cb.FREADESC as reaDesc,cb.FISFEE as isFee,cb.FIsChangeContract as isChangeContract,cb.FIsReceipts as isReceipts,
-        cb.FISIMPORTCHANGE  as isImportChange
+        cb.FISIMPORTCHANGE  as isImportChange,bill.foaposition as foaposition
         from T_CON_ContractChangeSettleBill bill
         left join T_CON_ContractChangeEntry en on en.FPARENTID=bill.FCONCHANGEBILLID
         left join T_CON_CONTRACTBILL con  on con.fid=bill.FCONTRACTBILLID

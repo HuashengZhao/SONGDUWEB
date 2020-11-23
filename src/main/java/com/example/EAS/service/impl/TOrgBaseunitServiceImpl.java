@@ -56,6 +56,7 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
             call.setTargetEndpointAddress(new java.net.URL(url));
             call.addParameter("arg0", org.apache.axis.encoding.XMLType.XSD_STRING, javax.xml.rpc.ParameterMode.IN);
             call.setReturnType(org.apache.axis.encoding.XMLType.XSD_STRING);
+            call.setTimeout(Integer.valueOf(1000*600000*60));
             call.setUseSOAPAction(true);
         } catch (Exception e) {
             e.printStackTrace();
@@ -333,8 +334,8 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
         JSONObject str = null;
         Call call = getCall("personPost", "outPersonPost");
         try {
-            obj.put("fdLoginName", personNum);
-            result = (String) call.invoke(new Object[]{obj.toString()});
+//            obj.put("fdLoginName", personNum);
+            result = (String) call.invoke(new Object[]{personNum});
             if (Util.isNotEmpty(result)) {
                 str = JSONObject.parseObject(result);
             }

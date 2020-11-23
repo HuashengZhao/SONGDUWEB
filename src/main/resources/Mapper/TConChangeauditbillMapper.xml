@@ -68,7 +68,7 @@
         bill.FIsReceipts as isReceipts,bill.FIsImportChange as isImportChange,bill.FIsAlreadyExecuted as isAlreadyDo,
         bill.FDESCRIPTION as description,un.FNAME_L2 as orgName,con.FNUMBER as contractNumber,con.FNAME as contractName,
         en.FOriCostAmount as  oriCostAmount,sup1.FNAME_L2 as mainSupplierName,sup2.FNAME_L2 as copySupplierName,
-        sup3.FNAME_L2 as generalSupplierName
+        sup3.FNAME_L2 as generalSupplierName,bill.FOAPOSITION as foaposition
         from T_CON_ChangeAuditBill bill
         left join T_FDC_CurProject pro on pro.fid=bill.FCURPROJECTID
         left join T_FDC_ChangeType ct on ct.fid=bill.FAUDITTYPEID

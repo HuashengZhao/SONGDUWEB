@@ -128,4 +128,8 @@ public class ChangeSettleVO {
 //    查看返回的oa流程link
     private String oaId;
     private String link;
+    //OA岗位职位信息
+    private String identityId;
+    private String identityName;
+    private String foaposition;
 }

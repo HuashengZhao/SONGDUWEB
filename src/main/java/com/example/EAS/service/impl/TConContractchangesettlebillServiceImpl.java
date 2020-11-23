@@ -145,6 +145,13 @@ public class TConContractchangesettlebillServiceImpl extends ServiceImpl<TConCon
         if (Util.isNotEmpty(id)) {
             settleVO = mapper.viewChangeSettle(vo);
             if (Util.isNotEmpty(settleVO)) {
+                String foaposition = settleVO.getFoaposition();
+                if (Util.isNotEmpty(foaposition)){
+                    String identityId = foaposition.split("\\.")[0];
+                    String identityName = foaposition.split("\\.")[1];
+                    settleVO.setIdentityId(identityId);
+                    settleVO.setIdentityName(identityName);
+                }
                 //            附件信息
                 List<AttachmentsVO> attachmentsVOS = attachmentMapper.selectAttachMent(id);
                 if (attachmentsVOS!=null && attachmentsVOS.size()>0) {

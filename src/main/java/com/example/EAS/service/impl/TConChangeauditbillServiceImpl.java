@@ -117,6 +117,13 @@ public class TConChangeauditbillServiceImpl extends ServiceImpl<TConChangeauditb
             List<ChangeAuditVO> vos = mapper.selectDataById(id);
             if (vos!=null && vos.size()>0) {
                 auditVO = vos.get(0);
+                String foaposition = auditVO.getFoaposition();
+                if (Util.isNotEmpty(foaposition)){
+                    String identityId = foaposition.split("\\.")[0];
+                    String identityName = foaposition.split("\\.")[1];
+                    auditVO.setIdentityId(identityId);
+                    auditVO.setIdentityName(identityName);
+                }
                 //                查看oa流程link
                 String oaId = auditVO.getSourceFunction();
                 if (Util.isNotEmpty(oaId)){

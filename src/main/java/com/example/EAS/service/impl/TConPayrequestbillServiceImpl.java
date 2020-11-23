@@ -189,7 +189,13 @@ public class TConPayrequestbillServiceImpl extends ServiceImpl<TConPayrequestbil
         }
         PayRequestBillVO payRequestBillVO = mapper.selectDataById(vo);
         if (Util.isNotEmpty(payRequestBillVO)) {
-
+            String foaposition = payRequestBillVO.getFoaposition();
+            if (Util.isNotEmpty(foaposition)) {
+                String identityId = foaposition.split("\\.")[0];
+                String identityName = foaposition.split("\\.")[1];
+                payRequestBillVO.setIdentityId(identityId);
+                payRequestBillVO.setIdentityName(identityName);
+            }
             //                    获取对应的oaid
             String oaid = payRequestBillVO.getSourceFunction();
             if (Util.isNotEmpty(oaid)) {
@@ -337,7 +343,7 @@ public class TConPayrequestbillServiceImpl extends ServiceImpl<TConPayrequestbil
             BigDecimal allAMTRATE = BigDecimal.ZERO;
             if (Util.isNotEmpty(payRequestBillVO.getLatestPrice()) && payRequestBillVO.getLatestPrice().compareTo(BigDecimal.ZERO) != 0
                     && allAMT.compareTo(BigDecimal.ZERO) == 1) {
-                allAMTRATE = allAMT.divide(payRequestBillVO.getLatestPrice(),4,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
+                allAMTRATE = allAMT.divide(payRequestBillVO.getLatestPrice(), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
                 payRequestBillVO.setAllAMTRATE(allAMTRATE);
             }
 

@@ -99,6 +99,7 @@
         case when bill.FUrentDegree=1 then '普通'
         when bill.FUrentDegree=2 then '加急'
         end urtDegree,
+        bill.foaposition as foaposition,
         en.FREQUESTAMOUNT as applyAMT,et.FNAME_L2 as costType,bill.FISPAY as isPay
         from T_CON_PayRequestBill bill
         left join T_CON_PayRequestBillBgEntry en on en.FHEADID=bill.fid
