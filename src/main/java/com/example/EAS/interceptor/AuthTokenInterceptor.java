@@ -65,6 +65,10 @@ public class AuthTokenInterceptor implements HandlerInterceptor {
             R result = R.error(10004, "登录信息从错误，请核验后重新登录");
             write2Response(response, result);
             return false;
+        }else if (!s.equals(token)){
+            R result = R.error(10005, "该账号已被异地登陆！");
+            write2Response(response, result);
+            return false;
         }
         long expire = redisUtil.getExpire(redisUtil.generateKey(CacheKeyConstant.WEB_LOGIN_TOKEN,person));
         if (expire<=0){
