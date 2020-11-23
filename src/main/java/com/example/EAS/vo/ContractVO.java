@@ -180,5 +180,8 @@ public class ContractVO {
     private Boolean flag;
     //   附件预览地址
     private String attLink;
-
+    //OA岗位职位信息
+    private String identityId;
+    private String identityName;
+    private String foaposition;
 }

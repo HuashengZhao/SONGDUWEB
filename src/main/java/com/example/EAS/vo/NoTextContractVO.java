@@ -162,4 +162,8 @@ public class NoTextContractVO {
 //    比较款选计划
     private LocalDateTime monthFirst;
     private LocalDateTime monthEnd;
+    //OA岗位职位信息
+    private String identityId;
+    private String identityName;
+    private String foaposition;
 }

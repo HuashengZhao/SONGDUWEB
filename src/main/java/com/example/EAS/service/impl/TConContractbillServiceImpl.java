@@ -628,6 +628,13 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         if (Util.isEmpty(contractVO)) {
             return null;
         }
+        String foaposition = contractVO.getFoaposition();
+        if (Util.isNotEmpty(foaposition)){
+            String identityId = foaposition.split("\\.")[0];
+            String identityName = foaposition.split("\\.")[1];
+            contractVO.setIdentityId(identityId);
+            contractVO.setIdentityName(identityName);
+        }
         Integer isMarket = contractVO.getIsMarket();
         if (Util.isEmpty(isMarket)) {
             contractVO.setIsMarket(0);
@@ -876,6 +883,14 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         obj.put("docSubject", vo.getConName());
         //        表单参数
         JSONObject data = new JSONObject();
+        String identityId = vo.getIdentityId();
+        String identityName = vo.getIdentityName();
+//        data.put("fd_application", identityId);
+        if (Util.isNotEmpty(identityId) && Util.isNotEmpty(identityName) && Util.isNotEmpty(id)) {
+            StringBuffer stringBuffer = new StringBuffer();
+            String foaposition = stringBuffer.append(identityId).append(";" + identityName).toString();
+            mapper.updatePersonPost(id, foaposition);
+        }
 //       合同流程类型id
         if (Util.isNotEmpty(vo.getContractWFTypeId())) {
             String contractWFTypeName = mapper.selectContractType(vo.getContractWFTypeId());

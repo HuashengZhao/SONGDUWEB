@@ -129,6 +129,13 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         if (supplierApplyVOS != null && supplierApplyVOS.size() > 0) {
             for (SupplierApplyVO supplierApplyVO : supplierApplyVOS) {
                 if (Util.isNotEmpty(vo.getId())) {
+                    String foaposition = supplierApplyVO.getFoaposition();
+                    if (Util.isNotEmpty(foaposition)){
+                        String identityId = foaposition.split("\\.")[0];
+                        String identityName = foaposition.split("\\.")[1];
+                        supplierApplyVO.setIdentityId(identityId);
+                        supplierApplyVO.setIdentityName(identityName);
+                    }
                     String easId = vo.getId();
                     //                    获取对应的oaid
                     String oaid = null;
@@ -595,6 +602,14 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         System.out.println(" 合同单据app端详情查看地址：" + sendAppUrl);
         obj.put("loginName", personNum);
         JSONObject data = new JSONObject();
+        String identityId = vo.getIdentityId();
+        String identityName = vo.getIdentityName();
+//        data.put("fd_application", identityId);
+        if (Util.isNotEmpty(identityId) && Util.isNotEmpty(identityName) && Util.isNotEmpty(id)) {
+            StringBuffer stringBuffer = new StringBuffer();
+            String foaposition = stringBuffer.append(identityId).append(";" + identityName).toString();
+            mapper.updatePersonPost(id, foaposition);
+        }
         data.put("fd_link", sendUrl);
         data.put("fd_mobile_link", sendAppUrl);
         obj.put("data", data.toString());
@@ -630,7 +645,9 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
             Call call = getCall("OAURL", "addtestEkpReview");
             try {
                 result = (String) call.invoke(new Object[]{obj.toString()});
-                str = JSONObject.parseObject(result);
+                if (Util.isNotEmpty(result)){
+                    str = JSONObject.parseObject(result);
+                }
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -639,7 +656,9 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
             try {
                 obj.put("id", oaId);
                 result = (String) call.invoke(new Object[]{obj.toString()});
-                str = JSONObject.parseObject(result);
+                if (Util.isNotEmpty(result)){
+                    str = JSONObject.parseObject(result);
+                }
             } catch (RemoteException e) {
                 e.printStackTrace();
             }

@@ -44,4 +44,7 @@ public interface TConContractwithouttextMapper extends BaseMapper<TConContractwi
     List<MarketContDetailVO> selectNTMarketCons(String id);
 
     void updateData(String easid);
+
+    void updatePersonPost(String id, String foaposition);
+
 }

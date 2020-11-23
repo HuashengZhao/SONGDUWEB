@@ -5,9 +5,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.example.EAS.constant.CacheKeyConstant;
 import com.example.EAS.mapper.TConSupplierapplyMapper;
 import com.example.EAS.service.impl.TConSupplierapplyServiceImpl;
+import com.example.EAS.service.impl.TOrgBaseunitServiceImpl;
 import com.example.EAS.util.*;
 import com.example.EAS.vo.LoginVO;
 import com.example.EAS.vo.OrgVO;
+import com.example.EAS.vo.PersonIdentityVO;
 import com.example.EAS.vo.PersonsVO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpStatus;
@@ -38,7 +40,9 @@ public class OAController {
     @Autowired
     private TConSupplierapplyMapper mapper;
     @Autowired
-    private TConSupplierapplyServiceImpl service;
+    private TOrgBaseunitServiceImpl service;
+    @Autowired
+    private TConSupplierapplyServiceImpl supplierapplyService;
     @Autowired
     private RedisUtil redisUtil;
 
@@ -146,11 +150,14 @@ public class OAController {
     }
 
     /**
-     * 登陆用户取oa身份列表
+     * 登陆用户取oa身份/岗位列表
      */
-    public R getPersonIdentity(@RequestBody String  body) throws Exception {
+    @RequestMapping(value = "/getPersonIdentity", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public R getPersonIdentity(@RequestBody String body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
-        PersonsVO vo = BodyDecodeUtil.decodeBody(body, PersonsVO.class);
+        PersonIdentityVO vo = BodyDecodeUtil.decodeBody(body, PersonIdentityVO.class);
+        List<PersonIdentityVO> vos = service.getPersonIdentities(vo);
+        result.put("data", vos);
         result.put("msg", UtilMessage.GET_MSG_SUCCESS);
         result.put("code", HttpStatus.SC_OK);
         return R.ok(result);

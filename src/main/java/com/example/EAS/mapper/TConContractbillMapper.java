@@ -62,4 +62,7 @@ public interface TConContractbillMapper extends BaseMapper<TConContractbill> {
 
     void updateData(String easid);
 
+    void updatePersonPost(String id, String foaposition);
+
+
 }

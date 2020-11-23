@@ -23,6 +23,9 @@
     <update id="updateData">
         update T_CON_SUPPLIERAPPLY set fstate='1SAVED' where fid=#{easid}
     </update>
+    <update id="updatePersonPost">
+        update T_CON_SUPPLIERAPPLY set  foaposition= #{foaposition} where fid= #{id}
+    </update>
 
     <delete id="deleteData">
         delete from OAIDRECORD where billid=#{billId}
@@ -30,7 +33,7 @@
 
     <select id="selectDatas" resultType="com.example.EAS.vo.SupplierApplyVO">
         select sa.fid id,sa.fnumber num,sa.fname title,sa.fstate state,sa.fdescription description,
-        sa.fcreatorid,sa.fcreatetime createTime,sa.fauditorid,sa.faudittime auditTime,
+        sa.fcreatorid,sa.fcreatetime createTime,sa.fauditorid,sa.faudittime auditTime,sa.foaposition as foaposition,
         sa.FBANKACCOUNT bankAccount,sa.FBANK bank,sa.FTAXERQUA taxerQua,sa.FTaxerNum taxerNum,
         u.fname_l2 as creator,u1.fname_l2 as auditor,sa.FSOURCEFUNCTION as sourceFunction,o.OAID as oaid
         from T_CON_SupplierApply sa
@@ -156,6 +159,9 @@
     </select>
     <select id="selectOaid" resultType="java.lang.String">
          select oaid from oaidrecord where billId=#{id,jdbcType=VARCHAR} order by oaid desc
+    </select>
+    <select id="selectPersonPost" resultType="java.lang.String">
+         select url from webUrl where type ='personPost'
     </select>
 
 </mapper>

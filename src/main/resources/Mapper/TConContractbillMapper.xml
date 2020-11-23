@@ -7,6 +7,9 @@
     <update id="updateData">
         update T_CON_CONTRACTBILL set FSOURCEFUNCTION=null , FSTATE='1SAVED' where fid=#{easid,jdbcType=VARCHAR}
     </update>
+    <update id="updatePersonPost">
+        update T_CON_CONTRACTBILL set foaposition= #{foaposition} where fid= #{id}
+    </update>
 
     <select id="selectContractAdds" parameterType="com.example.EAS.vo.ContractVO"
             resultType="com.example.EAS.vo.ContractAddVO">
@@ -192,7 +195,7 @@
     cb.FCONTRACTWFTYPEID as contractWFTypeId,wf.FNAME_L2 as contractWFTypeName,cb.FOrgType as contractWFStartType,
     cb.FDESCRIPTION as description,bank.FNUMBER as unionBankNum,cb.FBANK as bank,cb.FBANKACCOUNT as bankAccount,
     cb.FTAXERNUM as taxNum,cb.FTAXERQUA as taxQua,cb.FISJT as isjt,cb.FISCOSTSPLIT as isCost,ct.FISWEBPC as needHygh,
-    ct.FISMARKET as isMarket
+    ct.FISMARKET as isMarket,cb.foaposition as foaposition
     from T_CON_ContractBill cb
     left join T_FDC_ContractType ct on cb.FContractTypeID=ct.fid
     left join T_CON_ProgrammingContract pc on pc.fid=cb.FProgrammingContract

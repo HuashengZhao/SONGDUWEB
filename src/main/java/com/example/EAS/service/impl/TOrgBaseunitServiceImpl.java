@@ -1,15 +1,23 @@
 package com.example.EAS.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.EAS.mapper.TConSupplierapplyMapper;
 import com.example.EAS.mapper.TOrgBaseunitMapper;
 import com.example.EAS.model.TOrgBaseunit;
 import com.example.EAS.service.ITOrgBaseunitService;
+import com.example.EAS.util.ServiceException;
 import com.example.EAS.util.Util;
 import com.example.EAS.vo.OrgVO;
+import com.example.EAS.vo.PersonIdentityVO;
 import com.google.common.collect.Maps;
+import org.apache.axis.client.Call;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +34,34 @@ import java.util.Map;
 public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOrgBaseunit> implements ITOrgBaseunitService {
 
     @Autowired
+    private TConSupplierapplyMapper mapper;
+    @Autowired
     private TOrgBaseunitMapper baseunitMapper;
+    org.apache.axis.client.Service service = new org.apache.axis.client.Service();
+
+    public Call getCall(String type, String operationName) {
+
+        String url = null;
+        if (type.contains("EAS")) {
+            url = mapper.selectEASURL();
+        } else if (type.contains("personPost")) {
+            url=mapper.selectPersonPost();
+        } else {
+            url = mapper.selectOAURL();
+        }
+        Call call = null;
+        try {
+            call = (Call) service.createCall();
+            call.setOperationName(operationName);
+            call.setTargetEndpointAddress(new java.net.URL(url));
+            call.addParameter("arg0", org.apache.axis.encoding.XMLType.XSD_STRING, javax.xml.rpc.ParameterMode.IN);
+            call.setReturnType(org.apache.axis.encoding.XMLType.XSD_STRING);
+            call.setUseSOAPAction(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return call;
+    }
 
     @Override
     public OrgVO getData(OrgVO vo) {
@@ -38,16 +73,16 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
             if (orgVOS != null && orgVOS.size() > 0) {
                 orgVOS = getChildren(orgVOS);
             }
-        }else{
-           orgVOS = baseunitMapper.selectALLLeafOrgs(vo);
+        } else {
+            orgVOS = baseunitMapper.selectALLLeafOrgs(vo);
             Map<String, OrgVO> map = Maps.newHashMap();
-           if (orgVOS != null && orgVOS.size() > 0){
-               for (OrgVO orgVO : orgVOS) {
-                   if (Util.isNotEmpty(orgVO)) {
-                       getUpOrgs(map, orgVO);
-                   }
-               }
-           }
+            if (orgVOS != null && orgVOS.size() > 0) {
+                for (OrgVO orgVO : orgVOS) {
+                    if (Util.isNotEmpty(orgVO)) {
+                        getUpOrgs(map, orgVO);
+                    }
+                }
+            }
             OrgVO total = map.get("topOrgVO");
             orgVOS.clear();
             orgVOS.add(total);
@@ -283,5 +318,57 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
             }
         }
         return orgVO;
+    }
+
+
+    @Override
+    public List<PersonIdentityVO> getPersonIdentities(PersonIdentityVO vo) {
+        String personNum = vo.getPerson();
+        if (Util.isEmpty(personNum)) {
+            return null;
+        }
+        JSONObject obj = new JSONObject();
+        List<PersonIdentityVO> returnList = new ArrayList<>();
+        String result = null;
+        JSONObject str = null;
+        Call call = getCall("personPost", "outPersonPost");
+        try {
+            obj.put("fdLoginName", personNum);
+            result = (String) call.invoke(new Object[]{obj.toString()});
+            if (Util.isNotEmpty(result)) {
+                str = JSONObject.parseObject(result);
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        if (Util.isNotEmpty(str)) {
+            String status = str.getString("status");
+            String message = str.getString("message");
+            JSONArray returnMessage = str.getJSONArray("ReturnMessage");
+            if (Util.isNotEmpty(status) && status.equals("0")) {
+                if (Util.isNotEmpty(returnMessage)) {
+                    for (int i = 0; i < returnMessage.size(); i++) {
+                        PersonIdentityVO personIdentityVO = new PersonIdentityVO();
+                        JSONObject json = returnMessage.getJSONObject(i);
+                        String fdId = json.getString("fdId");
+                        String fdName = json.getString("fdName");
+                        if (Util.isNotEmpty(fdId)) {
+                            personIdentityVO.setId(fdId);
+                        }
+                        if (Util.isNotEmpty(fdName)) {
+                            personIdentityVO.setTitle(fdName);
+                        }
+                        returnList.add(personIdentityVO);
+                    }
+                }
+            } else {
+                String errorMsg = "获取oa岗位请求失败！";
+                if (Util.isNotEmpty(message)) {
+                    errorMsg = message;
+                }
+                throw new ServiceException(errorMsg);
+            }
+        }
+        return returnList;
     }
 }

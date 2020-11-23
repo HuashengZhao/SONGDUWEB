@@ -7,6 +7,9 @@
     <update id="updateData">
         update T_CON_CONTRACTWITHOUTTEXT set fstate='1SAVED',FSOURCEFUNCTION=null where fid=#{easid}
     </update>
+    <update id="updatePersonPost">
+        update T_CON_CONTRACTWITHOUTTEXT set  foaposition= #{foaposition} where fid= #{id}
+    </update>
 
     <select id="selectDatas" resultType="com.example.EAS.vo.NoTextContractVO">
         select bill.fid as id,bill.FNUMBER as num,bill.FNAME as title,
@@ -91,7 +94,7 @@
         cc.FNAME_L2 as costDeptName,cp.FNAME_L2 as costCompanyName,bill.FMarketProjectId as marketProjectId,
         mar.FNAME as marketProjectName,cost.FNAME_L2 as costAccountName,bill.FMpCostAccountId as costAccountId,
         bill.FInvoiceAmt as invoiceAMT,bill.FRATEAMOUNT as rateAmount,pb.FMoneyDesc as description,ct.FISWEBPC as needHygh,
-        pb.FREALSUPPLIERID as receiveUnitId,sup2.FNAME_L2 as receiverName,bill.FISJT as isjt,
+        pb.FREALSUPPLIERID as receiveUnitId,sup2.FNAME_L2 as receiverName,bill.FISJT as isjt,bill.foaposition as foaposition,
         ct.FISMARKET as isMarket
         from T_CON_CONTRACTWITHOUTTEXT bill
         left join T_FDC_ContractType ct on ct.fid=bill.FCONTRACTTYPEID

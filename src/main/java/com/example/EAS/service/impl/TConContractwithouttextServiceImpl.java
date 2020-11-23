@@ -222,6 +222,13 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         if (Util.isEmpty(returnVO)) {
             return null;
         }
+        String foaposition = returnVO.getFoaposition();
+        if (Util.isNotEmpty(foaposition)){
+           String identityId = foaposition.split("\\.")[0];
+           String identityName = foaposition.split("\\.")[1];
+           returnVO.setIdentityId(identityId);
+           returnVO.setIdentityName(identityName);
+        }
         Integer isMarket = returnVO.getIsMarket();
         if (Util.isEmpty(isMarket)) {
             returnVO.setIsMarket(0);
@@ -803,6 +810,14 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         obj.put("docSubject", vo.getTitle());
         //        表单参数
         JSONObject data = new JSONObject();
+        String identityId = vo.getIdentityId();
+        String identityName = vo.getIdentityName();
+//        data.put("fd_application", identityId);
+        if (Util.isNotEmpty(identityId) && Util.isNotEmpty(identityName) && Util.isNotEmpty(id)) {
+            StringBuffer stringBuffer = new StringBuffer();
+            String foaposition = stringBuffer.append(identityId).append(";" + identityName).toString();
+            mapper.updatePersonPost(id, foaposition);
+        }
         if (Util.isNotEmpty(vo.getPayContentId())) {
             String payContentName = mapper.selectPayContentName(vo.getPayContentId());
             data.put("fd_38cf18383073ec", payContentName);

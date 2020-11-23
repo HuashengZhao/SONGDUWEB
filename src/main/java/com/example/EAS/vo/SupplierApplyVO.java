@@ -67,5 +67,8 @@ public class SupplierApplyVO {
     private String fileName;
 //    link查看oa流程
     private String link;
-
+    //OA岗位职位信息
+    private String identityId;
+    private String identityName;
+    private String foaposition;
 }
