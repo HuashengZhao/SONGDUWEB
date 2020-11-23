@@ -356,7 +356,7 @@ public class FtpUtil {
         FTPClient ftp = new FTPClient();
         try {
             int reply;
-            ftp.connect("172.17.16.31 ", 21);// 连接FTP服务器
+            ftp.connect("172.17.16.31", 21);// 连接FTP服务器
             // 如果采用默认端口，可以使用ftp.connect(host)的方式直接连接FTP服务器
             ftp.login("admin", "sdjt1234@#");// 登录
             reply = ftp.getReplyCode();
@@ -368,8 +368,10 @@ public class FtpUtil {
             ftp.changeWorkingDirectory(remotePath);// 转移到FTP服务器目录
             FTPFile[] fs = ftp.listFiles();
             for (FTPFile ff : fs) {
+
 //                        new String(ff.getName().getBytes(""));
                 if (ff.getName().equals(fileName)) {
+
                     String filenameEncoder = "";
                     response.reset();
                     try {

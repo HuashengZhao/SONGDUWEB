@@ -18,7 +18,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URLEncoder;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @PackageName:com.example.EAS.controller
@@ -137,6 +140,17 @@ public class OAController {
             }
         }
         result.put("data", personsVO);
+        result.put("msg", UtilMessage.GET_MSG_SUCCESS);
+        result.put("code", HttpStatus.SC_OK);
+        return R.ok(result);
+    }
+
+    /**
+     * 登陆用户取oa身份列表
+     */
+    public R getPersonIdentity(@RequestBody String  body) throws Exception {
+        HashMap<String, Object> result = new HashMap<>(10);
+        PersonsVO vo = BodyDecodeUtil.decodeBody(body, PersonsVO.class);
         result.put("msg", UtilMessage.GET_MSG_SUCCESS);
         result.put("code", HttpStatus.SC_OK);
         return R.ok(result);

@@ -34,7 +34,7 @@ public class AuthTokenInterceptor implements HandlerInterceptor {
     private RedisUtil redisUtil;
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
 
         String token = request.getHeader("token");
 
@@ -45,18 +45,18 @@ public class AuthTokenInterceptor implements HandlerInterceptor {
             return false;
         }
 //        解析token并根据token携带的信息获取缓存中对应的token;
-        String keyStr = RSAUtil.dencrypt(token, "pri.key");
+        String keyStr = null;
+        try {
+            keyStr = RSAUtil.dencrypt(token, "pri.key");
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw  new ServiceException(UtilMessage.DES_LOGININFO_ERROR);
+        }
         String[] split = keyStr.split("&&");
         String org = split[0];
         String person = split[1];
         if (Util.isEmpty(org) || Util.isEmpty(person)) {
             R result = R.error(10002, "登录信息错误，请确认信息后重新登录");
-            write2Response(response, result);
-            return false;
-        }
-        long expire = redisUtil.getExpire(redisUtil.generateKey(CacheKeyConstant.WEB_LOGIN_TOKEN,person));
-        if (expire<=0){
-            R result = R.error(10003, "登录过期，请重新登录");
             write2Response(response, result);
             return false;
         }
@@ -66,6 +66,13 @@ public class AuthTokenInterceptor implements HandlerInterceptor {
             write2Response(response, result);
             return false;
         }
+        long expire = redisUtil.getExpire(redisUtil.generateKey(CacheKeyConstant.WEB_LOGIN_TOKEN,person));
+        if (expire<=0){
+            R result = R.error(10003, "登录过期，请重新登录");
+            write2Response(response, result);
+            return false;
+        }
+
         LoginVO loginVO = new LoginVO();
 //        token = URLDecoder.decode(token,"utf-8");
         loginVO.setToken(token);

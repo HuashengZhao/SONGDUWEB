@@ -295,12 +295,15 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
                 String fileSize = attachmentsVO.getFileSize();
                 String descp = attachmentsVO.getDescription();
                 String originalFilename = attachmentsVO.getOriginalFilename() == null ? attachmentsVO.getTitle() : attachmentsVO.getOriginalFilename();
+                if (originalFilename.contains(".")) {
+                    originalFilename = originalFilename.replace("." + originalFilename.split("\\.")[originalFilename.split("\\.").length - 1], "");
+                }
                 StringBuffer stringBuffer = new StringBuffer();
                 object.put("FName", originalFilename == null ? null : originalFilename);//文件名称含后缀
                 object.put("FNumber", attachNum == null ? "upLoadFromEas" : attachNum);//附件编码
                 object.put("FRemotePath", webUrl == null ? null : webUrl);//文件相对路径
                 object.put("FSize", fileSize == null ? null : fileSize);// 附件大小
-                object.put("FDescription", descp == null ? null : descp);//附件来源类型
+                object.put("FDescription", descp == null ? "EAS" : descp);//附件来源类型
                 object.put("FCreatorId", creatorId == null ? null : creatorId); //创建人id
                 attach.add(object);
             }
@@ -320,7 +323,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         JSONObject str = JSONObject.parseObject(result);
         String state = str.getString("result");
         if (Util.isNotEmpty(state) && state.contains("fault")) {
-            throw new ServiceException(str.getString("message")==null?"保存失败":str.getString("message"));
+            throw new ServiceException(str.getString("message") == null ? "保存失败" : str.getString("message"));
         }
         String id = str.getString("id");
 //更新eas创建人为当前登录人
@@ -409,12 +412,15 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
                 String fileSize = attachmentsVO.getFileSize();
                 String descp = attachmentsVO.getDescription();
                 String originalFilename = attachmentsVO.getOriginalFilename() == null ? attachmentsVO.getTitle() : attachmentsVO.getOriginalFilename();
+                if (originalFilename.contains(".")) {
+                    originalFilename = originalFilename.replace("." + originalFilename.split("\\.")[originalFilename.split("\\.").length - 1], "");
+                }
                 StringBuffer stringBuffer = new StringBuffer();
-                object.put("FName", originalFilename == null ? null : originalFilename);//文件名称含后缀
+                object.put("FName", originalFilename == null ? null : originalFilename);//文件名称不含后缀
                 object.put("FNumber", attachNum == null ? "upLoadFromEas" : attachNum);//附件编码
                 object.put("FRemotePath", webUrl == null ? null : webUrl);//文件相对路径
                 object.put("FSize", fileSize == null ? null : fileSize);// 附件大小
-                object.put("FDescription", descp == null ? null : descp);//附件来源类型
+                object.put("FDescription", descp == null ? "EAS" : descp);//附件来源类型
                 object.put("FCreatorId", creatorId == null ? null : creatorId); //创建人id
                 attach.add(object);
             }
@@ -432,14 +438,9 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         JSONObject str = JSONObject.parseObject(result);
         String state = str.getString("result");
         if (Util.isNotEmpty(state) && state.contains("fault")) {
-            throw new ServiceException(str.getString("message")==null?"保存失败":str.getString("message"));
+            throw new ServiceException(str.getString("message") == null ? "保存失败" : str.getString("message"));
         }
-//更新eas创建人为当前登录人
-        if (Util.isNotEmpty(vo.getPerson()) && Util.isNotEmpty(id)) {
-            if (creatorId != null) {
-                mapper.updateCreatorId(creatorId, id);
-            }
-        }
+
         return str;
     }
 
@@ -604,8 +605,18 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         if (easFiles != null && easFiles.size() > 0) {
             for (AttachmentsVO easFile : easFiles) {
                 JSONObject attObj = new JSONObject();
-                attObj.put("filename", easFile.getTitle());
-                attObj.put("filepath", easFile.getWebUrl());
+                String title = easFile.getTitle();
+                String webUrl = easFile.getWebUrl();
+                String fileType = easFile.getFileType();
+                if (Util.isNotEmpty(title) && title.contains(".")) {
+                    String hz = title.split("\\.")[title.split("\\.").length - 1];
+                    title = title.replace("." + hz, "");
+                }
+                if (Util.isNotEmpty(fileType)) {
+                    title = new StringBuffer().append(title).append("." + fileType).toString();
+                }
+                attObj.put("filename", title);
+                attObj.put("filepath", webUrl);
                 attObj.put("fileType", "04");
                 attFile.add(attObj);
             }
@@ -652,8 +663,12 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
                 for (int i = 0; i < attUrlArray.size(); i++) {
                     JSONObject atturlObj = attUrlArray.getJSONObject(i);
                     String attName = atturlObj.getString("name");
+                    if (Util.isNotEmpty(attName) && attName.contains(".")) {
+                        String hz = attName.split("\\.")[attName.split("\\.").length - 1];
+                        attName = attName.replace("." + hz, "");
+                    }
                     String atturl = atturlObj.getString("url");
-                    System.out.println("附件返回地址"+attName+":"+atturl);
+                    System.out.println("附件返回地址" + attName + ":" + atturl);
 //                 取用户账号用作oa流程查看登录
                     if (Util.isEmpty(personNum)) {
                         throw new ServiceException(UtilMessage.PERSON_MISSING);
