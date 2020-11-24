@@ -604,7 +604,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         JSONObject data = new JSONObject();
         String identityId = vo.getIdentityId();
         String identityName = vo.getIdentityName();
-        obj.put("fd_application", identityId);
+//        obj.put("fd_application", identityId);
         if (Util.isNotEmpty(identityId) && Util.isNotEmpty(identityName) && Util.isNotEmpty(id)) {
             StringBuffer stringBuffer = new StringBuffer();
             String foaposition = stringBuffer.append(identityId).append(";" + identityName).toString();

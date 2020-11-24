@@ -629,7 +629,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             return null;
         }
         String foaposition = contractVO.getFoaposition();
-        if (Util.isNotEmpty(foaposition)){
+        if (Util.isNotEmpty(foaposition)) {
             String identityId = foaposition.split("\\.")[0];
             String identityName = foaposition.split("\\.")[1];
             contractVO.setIdentityId(identityId);
@@ -787,6 +787,19 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
 //        合同详情信息
         List<ContractDetailVO> detailVOS = mapper.selectDetails(vo.getId());
         if (Util.isNotEmpty(detailVOS)) {
+            for (ContractDetailVO detailVO : detailVOS) {
+                String detailInfo = detailVO.getDetailInfo();
+                if (Util.isNotEmpty(detailInfo) && detailInfo.contains("对应主合同编码")) {
+                    String content = detailVO.getContent();
+                    if (Util.isNotEmpty(content)) {
+                        TConContractbill tConContractbill = mapper.selectById(content);
+                        if (Util.isNotEmpty(tConContractbill)) {
+                            String fnumber = tConContractbill.getFnumber();
+                            detailVO.setContent(fnumber == null ? null : fnumber);
+                        }
+                    }
+                }
+            }
             contractVO.setDetailVOList(detailVOS);
         }
 //        附件信息
@@ -885,7 +898,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         JSONObject data = new JSONObject();
         String identityId = vo.getIdentityId();
         String identityName = vo.getIdentityName();
-        obj.put("fd_application", identityId); //职位参数放data外
+//        obj.put("fd_application", identityId); //职位参数放data外
         if (Util.isNotEmpty(identityId) && Util.isNotEmpty(identityName) && Util.isNotEmpty(id)) {
             StringBuffer stringBuffer = new StringBuffer();
             String foaposition = stringBuffer.append(identityId).append(";" + identityName).toString();
