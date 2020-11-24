@@ -812,7 +812,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         JSONObject data = new JSONObject();
         String identityId = vo.getIdentityId();
         String identityName = vo.getIdentityName();
-//        data.put("fd_application", identityId);
+        obj.put("fd_application", identityId);
         if (Util.isNotEmpty(identityId) && Util.isNotEmpty(identityName) && Util.isNotEmpty(id)) {
             StringBuffer stringBuffer = new StringBuffer();
             String foaposition = stringBuffer.append(identityId).append(";" + identityName).toString();

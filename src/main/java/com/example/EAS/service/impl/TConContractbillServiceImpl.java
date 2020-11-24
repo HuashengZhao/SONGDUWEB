@@ -885,7 +885,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         JSONObject data = new JSONObject();
         String identityId = vo.getIdentityId();
         String identityName = vo.getIdentityName();
-//        data.put("fd_application", identityId);
+        obj.put("fd_application", identityId); //职位参数放data外
         if (Util.isNotEmpty(identityId) && Util.isNotEmpty(identityName) && Util.isNotEmpty(id)) {
             StringBuffer stringBuffer = new StringBuffer();
             String foaposition = stringBuffer.append(identityId).append(";" + identityName).toString();
