@@ -102,9 +102,11 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                 projectIdList.addAll(ids);
             }
         }
-        if (projectIdList != null && projectIdList.size() > 0) {
-            vo.setProjectIds(projectIdList);
+
+        if(Util.isEmpty(projectIdList)) {
+           return null;
         }
+        vo.setProjectIds(projectIdList);
 //        根据合同类型id 查询 子类id集合
         String conTypeId = vo.getConTypeId();
         List<String> conTypeIdList = new ArrayList<>();

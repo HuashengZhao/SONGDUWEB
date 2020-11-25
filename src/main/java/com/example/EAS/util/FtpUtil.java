@@ -97,7 +97,7 @@ public class FtpUtil {
                 return result;
             }
             //切换到上传目录
-            if (!ftp.changeWorkingDirectory("/WEB" + filePath)) {
+            if (!ftp.changeWorkingDirectory(filePath)) {
                 //如果目录不存在创建目录
                 String[] dirs = filePath.split("/");
                 String tempPath = "/";

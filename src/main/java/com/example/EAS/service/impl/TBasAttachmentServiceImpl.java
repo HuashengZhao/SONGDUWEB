@@ -81,7 +81,7 @@ public class TBasAttachmentServiceImpl extends ServiceImpl<TBasAttachmentMapper,
             String fileUUID = UUID.randomUUID().toString();
             StringBuffer sbf = new StringBuffer();
             fileUUID = sbf.append(fileUUID).append(".").append(fileType).toString();
-            boolean b1 = ftpUtil.uploadFile(filePath, fileUUID, inputStream);
+            boolean b1 = ftpUtil.uploadFile("/WEB" + filePath, fileUUID, inputStream);
 //            ftp/2020/9/18/010000000/zbcdasdasdasdasd.txt
             String webUrl = String.valueOf(new StringBuffer().append("WEB").append(filePath).append("/").append(fileUUID));
 //            创建人
@@ -109,11 +109,11 @@ public class TBasAttachmentServiceImpl extends ServiceImpl<TBasAttachmentMapper,
             StringBuffer append = sb1.append(dateString).append(numString);
             String fileNum = append.toString();
 //              如果上传成功 返回文件类型 url 大小 文件名
-            String s1 = "172.17.4.60:21/ftp";
+//            String s1 = "172.17.4.60:21/ftp";
             StringBuffer sb = new StringBuffer();
-            String url = sb.append(s1).append(filePath).append("/").append(originalFilename).toString();
+//            String url = sb.append(s1).append(filePath).append("/").append(originalFilename).toString();
             AttachmentsVO attachmentsVO = new AttachmentsVO();
-            attachmentsVO.setFileUrl(url);
+//            attachmentsVO.setFileUrl(url);
             attachmentsVO.setWebUrl(webUrl);
             attachmentsVO.setContentType(contentType);
             attachmentsVO.setNum(fileNum);
@@ -145,9 +145,9 @@ public class TBasAttachmentServiceImpl extends ServiceImpl<TBasAttachmentMapper,
         String storgeType = vo.getStorgeType();
         String ftpId = vo.getFtpId();
 //        if (Util.isNotEmpty(description) && description.equals("WEB")) {
-            String replace = webUrl.replace(fileName, "");
+        String replace = webUrl.replace(fileName, "");
 //          来自web ftp服务器
-            ftpUtil.exportOutputStream(request, response, replace, fileName);
+        ftpUtil.exportOutputStream(request, response, replace, fileName);
 //        } else if (Util.isNotEmpty(storgeType) && storgeType.equals("1")) {
 //            String replace = webUrl.replace(fileName, "");
 ////             天联云
