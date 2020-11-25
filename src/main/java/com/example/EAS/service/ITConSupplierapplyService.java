@@ -26,7 +26,7 @@ public interface ITConSupplierapplyService extends IService<TConSupplierapply> {
 
 //    Integer whetherRepeat(SupplierApplyVO vo);
 
-    SupplierApplyVO supplierSubmit(SupplierApplyVO vo);
+    void supplierSubmit(SupplierApplyVO vo);
 
 //    void supplierAudit(SupplierApplyVO vo);
 

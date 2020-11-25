@@ -131,9 +131,9 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
             for (SupplierApplyVO supplierApplyVO : supplierApplyVOS) {
                 if (Util.isNotEmpty(vo.getId())) {
                     String foaposition = supplierApplyVO.getFoaposition();
-                    if (Util.isNotEmpty(foaposition)){
+                    if (Util.isNotEmpty(foaposition)) {
                         String identityId = foaposition.split(";")[0];
-                        String identityName = foaposition.split(";")[foaposition.split(";").length-1];
+                        String identityName = foaposition.split(";")[foaposition.split(";").length - 1];
                         supplierApplyVO.setIdentityId(identityId);
                         supplierApplyVO.setIdentityName(identityName);
                     }
@@ -158,7 +158,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
                         StringBuffer stringBuffer = new StringBuffer();
                         oaid = URLEncoder.encode(oaid);
                         String link = String.valueOf(stringBuffer.append(s1).append(oaid).append(s2).append(mtLoginNum));
-                        System.out.println("OA流程路径：" + link);
+//                        System.out.println("OA流程路径：" + link);
                         supplierApplyVO.setLink(link);
                         supplierApplyVO.setOaId(oaid);
                     }
@@ -245,15 +245,22 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
             }
             List<Object> objs = mapper.selectSupplierByName(title);
             if (objs != null && objs.size() > 0) {
-                throw new ServiceException(900,UtilMessage.SUPPLIER_NAME_REPEAT);
+                throw new ServiceException(900, UtilMessage.SUPPLIER_NAME_REPEAT);
             }
             obj.put("name", vo.getTitle());
         }
         if (Util.isNotEmpty(vo.getNum())) {
             List<TConSupplierapply> nums = mapper.selectList(new QueryWrapper<TConSupplierapply>()
                     .eq("fnumber", vo.getNum()));
-            if (nums!=null && nums.size()>0){
-                throw new ServiceException(UtilMessage.DATA_DOES_EXIST);
+            if (nums != null && nums.size() > 0) {
+                List<TConSupplierapply> tConSupplierapplies = mapper.selectList(new QueryWrapper<TConSupplierapply>()
+                        .eq("fnumber", vo.getNum())
+                        .eq("fname", vo.getTitle()));
+                if (Util.isEmpty(tConSupplierapplies)) {
+                    throw new ServiceException(901, UtilMessage.NUMBER_EXIST);
+                } else {
+                    throw new ServiceException(900,UtilMessage.DATA_DOES_EXIST);
+                }
             }
             obj.put("number", vo.getNum());
         }
@@ -326,10 +333,10 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         Call call = getCall("EASURL", "saveSupplierApply");
         String result = null;
         try {
-            long startTime = System.currentTimeMillis();
+//            long startTime = System.currentTimeMillis();
             result = (String) call.invoke(new Object[]{obj.toString()});
-            long endTime = System.currentTimeMillis();
-            System.out.println("供应商保存eas方法时长：" + (endTime - startTime) + "ms");
+//            long endTime = System.currentTimeMillis();
+//            System.out.println("供应商保存eas方法时长：" + (endTime - startTime) + "ms");
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -534,10 +541,8 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
      */
     @Transactional(rollbackFor = RuntimeException.class)
     @Override
-    public SupplierApplyVO supplierSubmit(SupplierApplyVO vo) {
+    public void supplierSubmit(SupplierApplyVO vo) {
         JSONObject token = loginInfoUtil.getToken();
-        SupplierApplyVO supplierApplyVO1 = new SupplierApplyVO();
-        String message = null;
         String id = vo.getId();
 //      保存提交修改的内容
         JSONObject json = null;
@@ -569,8 +574,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         //获取登录信息
         String personNum = token.getString("person");
         PersonsVO person = mapper.selectCreator(personNum);
-        //        http://172.17.4.125:8082/easWeb/#/
-        //        http://172.17.4.125:8082/easApp/#/
+
         String sendUrl = null;
         String sendAppUrl = null;
         StringBuffer sbv = new StringBuffer();
@@ -604,8 +608,8 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         sendAppUrl = String.valueOf(sba.append(appUrl).append(appAppendType).append(appendId)
                 .append(appendToken).append(tokenAppend));
 //        sb.append("http://172.17.4.125:8082/easWeb/#/supplier").append("?token=").append(token);
-        System.out.println("合同单据web端详情查看地址：" + sendUrl);
-        System.out.println(" 合同单据app端详情查看地址：" + sendAppUrl);
+//        System.out.println("合同单据web端详情查看地址：" + sendUrl);
+//        System.out.println(" 合同单据app端详情查看地址：" + sendAppUrl);
         obj.put("loginName", personNum);
         JSONObject data = new JSONObject();
         String identityId = vo.getIdentityId();
@@ -651,7 +655,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
             Call call = getCall("OAURL", "addtestEkpReview");
             try {
                 result = (String) call.invoke(new Object[]{obj.toString()});
-                if (Util.isNotEmpty(result)){
+                if (Util.isNotEmpty(result)) {
                     str = JSONObject.parseObject(result);
                 }
             } catch (RemoteException e) {
@@ -662,7 +666,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
             try {
                 obj.put("id", oaId);
                 result = (String) call.invoke(new Object[]{obj.toString()});
-                if (Util.isNotEmpty(result)){
+                if (Util.isNotEmpty(result)) {
                     str = JSONObject.parseObject(result);
                 }
             } catch (RemoteException e) {
@@ -693,7 +697,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
                         attName = attName.replace("." + hz, "");
                     }
                     String atturl = atturlObj.getString("url");
-                    System.out.println("附件返回地址" + attName + ":" + atturl);
+//                    System.out.println("附件返回地址" + attName + ":" + atturl);
 //                 取用户账号用作oa流程查看登录
                     if (Util.isEmpty(personNum)) {
                         throw new ServiceException(UtilMessage.PERSON_MISSING);
@@ -715,7 +719,6 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
                 throw new ServiceException(UtilMessage.SUBMIT_FAULT);
             }
         }
-        return supplierApplyVO1;
     }
 
 }

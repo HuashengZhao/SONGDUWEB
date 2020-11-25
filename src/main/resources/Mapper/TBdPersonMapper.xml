@@ -66,7 +66,7 @@
   left join T_ORG_PositionMember m on p.fid=m.fpersonid
   left join t_org_position  a on a.fid=m.fpositionid
   left join T_ORG_BaseUnit b on a.fadminorgunitid=b.fid
-where b.fid in ('d90AAAAASfLM567U','d90AAAAANNPM567U','d90AAAAANNTM567U')
+where b.fid in ('d90AAAFIJknM567U','d90AAAAANNPM567U','d90AAAAANNTM567U')
     </select>
 
 </mapper>

@@ -1,7 +1,6 @@
 package com.example.EAS.util;
 
 import com.example.EAS.mapper.TConSupplierapplyMapper;
-import com.example.EAS.vo.AttachmentsVO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.ftp.FTP;
@@ -15,8 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.net.URLEncoder;
-import java.util.List;
 
 
 /**
@@ -77,6 +74,8 @@ public class FtpUtil {
     /**
      * 附件上传
      * type：inputstream
+     * *测试地址：172.17.4.60  21  adminftp sdjt2020@#
+     * * 正式地址: 172.17.4.129 21 oa SongDu1234@#
      *
      * @param filePath
      * @param filename
@@ -89,16 +88,16 @@ public class FtpUtil {
         ftp.enterLocalPassiveMode();
         try {
             int reply;
-            ftp.connect("172.17.4.60", 21);// 连接FTP服务器
+            ftp.connect("172.17.4.129", 21);// 连接FTP服务器
             // 如果采用默认端口，可以使用ftp.connect(host)的方式直接连接FTP服务器
-            ftp.login("adminftp", "sdjt2020@#");// 登录
+            ftp.login("oa", "SongDu1234@#");// 登录
             reply = ftp.getReplyCode();
             if (!FTPReply.isPositiveCompletion(reply)) {
                 ftp.disconnect();
                 return result;
             }
             //切换到上传目录
-            if (!ftp.changeWorkingDirectory("/ftp" + filePath)) {
+            if (!ftp.changeWorkingDirectory("/WEB" + filePath)) {
                 //如果目录不存在创建目录
                 String[] dirs = filePath.split("/");
                 String tempPath = "/";
@@ -111,7 +110,7 @@ public class FtpUtil {
                         } else {
                             ftp.changeWorkingDirectory(tempPath);
                         }
-                        System.out.println(tempPath);
+//                        System.out.println(tempPath);
                     }
                 }
             }
@@ -119,7 +118,7 @@ public class FtpUtil {
             ftp.setFileType(FTP.BINARY_FILE_TYPE);
             //上传文件
             result = ftp.storeFile(new String(filename.getBytes("GBK"), "ISO-8859-1"), input);
-            System.out.println(new String(filename.getBytes("GBK"), "ISO-8859-1"));
+//            System.out.println(new String(filename.getBytes("GBK"), "ISO-8859-1"));
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -142,27 +141,127 @@ public class FtpUtil {
     }
 
     /**
-     * 保存附件单据关联 修改ftp文件名
+     * 宋都web 附件下载
+     * 测试地址：172.17.4.60  21  adminftp sdjt2020@#
+     * 正式地址: 172.17.4.129 21 oa SongDu1234@#
+     *
+     * @param request
+     * @param response
+     * @param remotePath
+     * @param fileName
      */
-    public void saveAttachMent(List<AttachmentsVO> attachmentsVOList, String billId) {
-        for (AttachmentsVO attachmentsVO : attachmentsVOList) {
+    public void exportOutputStream(HttpServletRequest request
+            , HttpServletResponse response, String remotePath, String fileName) {
 
-            String personName = attachmentsVO.getPersonName();
-            String webUrl = attachmentsVO.getWebUrl();
-            if (attachmentsVO.getCreateTime() != null) {
-                attachmentsVO.setCreateTime(attachmentsVO.getCreateTime());
+        FTPClient ftp = new FTPClient();
+        try {
+            int reply;
+            ftp.connect("172.17.4.129", 21);// 连接FTP服务器
+            // 如果采用默认端口，可以使用ftp.connect(host)的方式直接连接FTP服务器
+            ftp.login("oa", "SongDu1234@#");// 登录
+            reply = ftp.getReplyCode();
+            if (!FTPReply.isPositiveCompletion(reply)) {
+                ftp.disconnect();
+                return;
             }
-            attachmentsVO.setEasId(billId);
-            attachmentsVO.setPersonName(personName);
+            ftp.enterLocalPassiveMode();
+            ftp.changeWorkingDirectory(remotePath);// 转移到FTP服务器目录
+            FTPFile[] fs = ftp.listFiles();
+            for (FTPFile ff : fs) {
 
-            //        修改ftp附件目录
-            String[] split = webUrl.split("/");
-            String changeUrl = split[webUrl.split("/").length - 1];
-            String encode = URLEncoder.encode(billId);
-            String newUrl = webUrl.replace(changeUrl, encode).replace("ftp/", "");
+//                        new String(ff.getName().getBytes(""));
+                if (ff.getName().equals(fileName)) {
 
-            //      存入对应信息到 eas database
-//            mapper.insertAttachMent(attachmentsVO);
+                    String filenameEncoder = "";
+                    response.reset();
+                    try {
+                        filenameEncoder = java.net.URLEncoder.encode(fileName, "utf-8");
+                        filenameEncoder = filenameEncoder.replace("+", " ");
+                        response.addHeader("Content-Disposition", "attachment;filename=" + filenameEncoder);
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                    }
+                    response.addHeader("Access-Control-Allow-Origin", "*");
+                    response.addHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
+                    response.addHeader("Access-Control-Max-Age", "3600");
+                    response.addHeader("Access-Control-Allow-Headers", "x-requested-with");
+                    response.addHeader("Content-Length", "" + ff.getSize());
+                    response.setCharacterEncoding("utf-8");
+                    response.setContentType("application/octet-stream");
+                    ftp.retrieveFile(ff.getName(), response.getOutputStream());
+                }
+            }
+            ftp.logout();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (ftp.isConnected()) {
+                try {
+                    ftp.disconnect();
+                } catch (IOException ioe) {
+                }
+            }
+        }
+    }
+
+    /**
+     * 天联云ftp 附件下载
+     *
+     * @param request
+     * @param response
+     * @param remotePath
+     * @param fileName
+     */
+    public void exportTLYOS(HttpServletRequest request
+            , HttpServletResponse response, String remotePath, String fileName) {
+        FTPClient ftp = new FTPClient();
+        try {
+            int reply;
+            ftp.connect("172.17.16.31", 21);// 连接FTP服务器
+            // 如果采用默认端口，可以使用ftp.connect(host)的方式直接连接FTP服务器
+            ftp.login("admin", "sdjt1234@#");// 登录
+            reply = ftp.getReplyCode();
+            if (!FTPReply.isPositiveCompletion(reply)) {
+                ftp.disconnect();
+                return;
+            }
+            ftp.enterLocalPassiveMode();
+            ftp.changeWorkingDirectory(remotePath);// 转移到FTP服务器目录
+            FTPFile[] fs = ftp.listFiles();
+            for (FTPFile ff : fs) {
+
+//                        new String(ff.getName().getBytes(""));
+                if (ff.getName().equals(fileName)) {
+
+                    String filenameEncoder = "";
+                    response.reset();
+                    try {
+                        filenameEncoder = java.net.URLEncoder.encode(fileName, "utf-8");
+                        filenameEncoder = filenameEncoder.replace("+", " ");
+                        response.addHeader("Content-Disposition", "attachment;filename=" + filenameEncoder);
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                    }
+                    response.addHeader("Access-Control-Allow-Origin", "*");
+                    response.addHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
+                    response.addHeader("Access-Control-Max-Age", "3600");
+                    response.addHeader("Access-Control-Allow-Headers", "x-requested-with");
+                    response.addHeader("Content-Length", "" + ff.getSize());
+                    response.setCharacterEncoding("utf-8");
+                    response.setContentType("application/octet-stream");
+                    ftp.retrieveFile(ff.getName(), response.getOutputStream());
+                }
+            }
+            ftp.logout();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (ftp.isConnected()) {
+                try {
+                    ftp.disconnect();
+                } catch (IOException ioe) {
+                }
+            }
         }
     }
 
@@ -279,128 +378,5 @@ public class FtpUtil {
             }
         }
         return result;
-    }
-
-    /**
-     * 宋都web 附件下载
-     *
-     * @param request
-     * @param response
-     * @param remotePath
-     * @param fileName
-     */
-    public void exportOutputStream(HttpServletRequest request
-            , HttpServletResponse response, String remotePath, String fileName) {
-
-        FTPClient ftp = new FTPClient();
-        try {
-            int reply;
-            ftp.connect("172.17.4.60", 21);// 连接FTP服务器
-            // 如果采用默认端口，可以使用ftp.connect(host)的方式直接连接FTP服务器
-            ftp.login("adminftp", "sdjt2020@#");// 登录
-            reply = ftp.getReplyCode();
-            if (!FTPReply.isPositiveCompletion(reply)) {
-                ftp.disconnect();
-                return;
-            }
-            ftp.enterLocalPassiveMode();
-            ftp.changeWorkingDirectory(remotePath);// 转移到FTP服务器目录
-            FTPFile[] fs = ftp.listFiles();
-            for (FTPFile ff : fs) {
-
-//                        new String(ff.getName().getBytes(""));
-                if (ff.getName().equals(fileName)) {
-
-                    String filenameEncoder = "";
-                    response.reset();
-                    try {
-                        filenameEncoder = java.net.URLEncoder.encode(fileName, "utf-8");
-                        filenameEncoder = filenameEncoder.replace("+", " ");
-                        response.addHeader("Content-Disposition", "attachment;filename=" + filenameEncoder);
-                    } catch (Exception e1) {
-                        e1.printStackTrace();
-                    }
-                    response.addHeader("Access-Control-Allow-Origin", "*");
-                    response.addHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
-                    response.addHeader("Access-Control-Max-Age", "3600");
-                    response.addHeader("Access-Control-Allow-Headers", "x-requested-with");
-                    response.addHeader("Content-Length", "" + ff.getSize());
-                    response.setCharacterEncoding("utf-8");
-                    response.setContentType("application/octet-stream");
-                    ftp.retrieveFile(ff.getName(), response.getOutputStream());
-                }
-            }
-            ftp.logout();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (ftp.isConnected()) {
-                try {
-                    ftp.disconnect();
-                } catch (IOException ioe) {
-                }
-            }
-        }
-    }
-
-    /**
-     * 天联云ftp 附件下载
-     *
-     * @param request
-     * @param response
-     * @param remotePath
-     * @param fileName
-     */
-    public void exportTLYOS(HttpServletRequest request
-            , HttpServletResponse response, String remotePath, String fileName) {
-        FTPClient ftp = new FTPClient();
-        try {
-            int reply;
-            ftp.connect("172.17.16.31", 21);// 连接FTP服务器
-            // 如果采用默认端口，可以使用ftp.connect(host)的方式直接连接FTP服务器
-            ftp.login("admin", "sdjt1234@#");// 登录
-            reply = ftp.getReplyCode();
-            if (!FTPReply.isPositiveCompletion(reply)) {
-                ftp.disconnect();
-                return;
-            }
-            ftp.enterLocalPassiveMode();
-            ftp.changeWorkingDirectory(remotePath);// 转移到FTP服务器目录
-            FTPFile[] fs = ftp.listFiles();
-            for (FTPFile ff : fs) {
-
-//                        new String(ff.getName().getBytes(""));
-                if (ff.getName().equals(fileName)) {
-
-                    String filenameEncoder = "";
-                    response.reset();
-                    try {
-                        filenameEncoder = java.net.URLEncoder.encode(fileName, "utf-8");
-                        filenameEncoder = filenameEncoder.replace("+", " ");
-                        response.addHeader("Content-Disposition", "attachment;filename=" + filenameEncoder);
-                    } catch (Exception e1) {
-                        e1.printStackTrace();
-                    }
-                    response.addHeader("Access-Control-Allow-Origin", "*");
-                    response.addHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
-                    response.addHeader("Access-Control-Max-Age", "3600");
-                    response.addHeader("Access-Control-Allow-Headers", "x-requested-with");
-                    response.addHeader("Content-Length", "" + ff.getSize());
-                    response.setCharacterEncoding("utf-8");
-                    response.setContentType("application/octet-stream");
-                    ftp.retrieveFile(ff.getName(), response.getOutputStream());
-                }
-            }
-            ftp.logout();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (ftp.isConnected()) {
-                try {
-                    ftp.disconnect();
-                } catch (IOException ioe) {
-                }
-            }
-        }
     }
 }

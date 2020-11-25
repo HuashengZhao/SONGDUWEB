@@ -1,6 +1,5 @@
 package com.example.EAS.service.impl;
 
-import ch.ethz.ssh2.Connection;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.EAS.mapper.TBasAttachmentMapper;
 import com.example.EAS.mapper.TConSupplierapplyMapper;
@@ -8,7 +7,6 @@ import com.example.EAS.model.TBasAttachment;
 import com.example.EAS.service.ITBasAttachmentService;
 import com.example.EAS.util.EasFileDownLoadUtil;
 import com.example.EAS.util.FtpUtil;
-import com.example.EAS.util.Util;
 import com.example.EAS.vo.AttachmentsVO;
 import com.example.EAS.vo.PersonsVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,7 +83,7 @@ public class TBasAttachmentServiceImpl extends ServiceImpl<TBasAttachmentMapper,
             fileUUID = sbf.append(fileUUID).append(".").append(fileType).toString();
             boolean b1 = ftpUtil.uploadFile(filePath, fileUUID, inputStream);
 //            ftp/2020/9/18/010000000/zbcdasdasdasdasd.txt
-            String webUrl = String.valueOf(new StringBuffer().append(filePath).append("/").append(fileUUID));
+            String webUrl = String.valueOf(new StringBuffer().append("WEB").append(filePath).append("/").append(fileUUID));
 //            创建人
             String personName1 = null;
             if (vo.getPerson() != null) {
@@ -146,20 +144,20 @@ public class TBasAttachmentServiceImpl extends ServiceImpl<TBasAttachmentMapper,
         String description = vo.getDescription();
         String storgeType = vo.getStorgeType();
         String ftpId = vo.getFtpId();
-        if (Util.isNotEmpty(description) && description.equals("WEB")) {
+//        if (Util.isNotEmpty(description) && description.equals("WEB")) {
             String replace = webUrl.replace(fileName, "");
 //          来自web ftp服务器
             ftpUtil.exportOutputStream(request, response, replace, fileName);
-        } else if (Util.isNotEmpty(storgeType) && storgeType.equals("1")) {
-            String replace = webUrl.replace(fileName, "");
-//             天联云
-            ftpUtil.exportTLYOS(request, response, replace, fileName);
-        } else if (Util.isNotEmpty(storgeType) && storgeType.equals("2")) {
-//             eas附件
-            easFileDownLoadUtil.login();
-            Connection connection = easFileDownLoadUtil.getConnection();
-            easFileDownLoadUtil.copyFile(connection, webUrl, response);
-        }
+//        } else if (Util.isNotEmpty(storgeType) && storgeType.equals("1")) {
+//            String replace = webUrl.replace(fileName, "");
+////             天联云
+//            ftpUtil.exportTLYOS(request, response, replace, fileName);
+//        } else if (Util.isNotEmpty(storgeType) && storgeType.equals("2")) {
+////             eas附件
+//            easFileDownLoadUtil.login();
+//            Connection connection = easFileDownLoadUtil.getConnection();
+//            easFileDownLoadUtil.copyFile(connection, webUrl, response);
+//        }
     }
 }
 
