@@ -223,12 +223,12 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             return null;
         }
         String foaposition = returnVO.getFoaposition();
-        if (Util.isNotEmpty(foaposition)){
-           String identityId = foaposition.split("\\.")[0];
-           String identityName = foaposition.split("\\.")[1];
-           returnVO.setIdentityId(identityId);
-           returnVO.setIdentityName(identityName);
-        }
+//        if (Util.isNotEmpty(foaposition)){
+//           String identityId = foaposition.split(";")[0];
+//           String identityName = foaposition.split(";")[foaposition.split(";").length-1];
+//           returnVO.setIdentityId(identityId);
+//           returnVO.setIdentityName(identityName);
+//        }
         Integer isMarket = returnVO.getIsMarket();
         if (Util.isEmpty(isMarket)) {
             returnVO.setIsMarket(0);

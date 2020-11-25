@@ -629,12 +629,12 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             return null;
         }
         String foaposition = contractVO.getFoaposition();
-        if (Util.isNotEmpty(foaposition)) {
-            String identityId = foaposition.split("\\.")[0];
-            String identityName = foaposition.split("\\.")[1];
-            contractVO.setIdentityId(identityId);
-            contractVO.setIdentityName(identityName);
-        }
+//        if (Util.isNotEmpty(foaposition)) {
+//            String identityId = foaposition.split(";")[0];
+//            String identityName = foaposition.split(";")[foaposition.split(";").length-1];
+//            contractVO.setIdentityId(identityId);
+//            contractVO.setIdentityName(identityName);
+//        }
         Integer isMarket = contractVO.getIsMarket();
         if (Util.isEmpty(isMarket)) {
             contractVO.setIsMarket(0);

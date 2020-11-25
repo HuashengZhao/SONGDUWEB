@@ -131,8 +131,8 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
                 if (Util.isNotEmpty(vo.getId())) {
                     String foaposition = supplierApplyVO.getFoaposition();
                     if (Util.isNotEmpty(foaposition)){
-                        String identityId = foaposition.split("\\.")[0];
-                        String identityName = foaposition.split("\\.")[1];
+                        String identityId = foaposition.split(";")[0];
+                        String identityName = foaposition.split(";")[foaposition.split(";").length-1];
                         supplierApplyVO.setIdentityId(identityId);
                         supplierApplyVO.setIdentityName(identityName);
                     }
@@ -604,7 +604,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         JSONObject data = new JSONObject();
         String identityId = vo.getIdentityId();
         String identityName = vo.getIdentityName();
-//        obj.put("fd_application", identityId);
+        obj.put("fd_application", identityId);
         if (Util.isNotEmpty(identityId) && Util.isNotEmpty(identityName) && Util.isNotEmpty(id)) {
             StringBuffer stringBuffer = new StringBuffer();
             String foaposition = stringBuffer.append(identityId).append(";" + identityName).toString();
