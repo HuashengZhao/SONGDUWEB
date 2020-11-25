@@ -131,9 +131,9 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
             for (SupplierApplyVO supplierApplyVO : supplierApplyVOS) {
                 if (Util.isNotEmpty(vo.getId())) {
                     String foaposition = supplierApplyVO.getFoaposition();
-                    if (Util.isNotEmpty(foaposition)){
+                    if (Util.isNotEmpty(foaposition)) {
                         String identityId = foaposition.split(";")[0];
-                        String identityName = foaposition.split(";")[foaposition.split(";").length-1];
+                        String identityName = foaposition.split(";")[foaposition.split(";").length - 1];
                         supplierApplyVO.setIdentityId(identityId);
                         supplierApplyVO.setIdentityName(identityName);
                     }
@@ -245,15 +245,22 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
             }
             List<Object> objs = mapper.selectSupplierByName(title);
             if (objs != null && objs.size() > 0) {
-                throw new ServiceException(900,UtilMessage.SUPPLIER_NAME_REPEAT);
+                throw new ServiceException(900, UtilMessage.SUPPLIER_NAME_REPEAT);
             }
             obj.put("name", vo.getTitle());
         }
         if (Util.isNotEmpty(vo.getNum())) {
             List<TConSupplierapply> nums = mapper.selectList(new QueryWrapper<TConSupplierapply>()
                     .eq("fnumber", vo.getNum()));
-            if (nums!=null && nums.size()>0){
-                throw new ServiceException(UtilMessage.DATA_DOES_EXIST);
+            if (nums != null && nums.size() > 0) {
+                List<TConSupplierapply> tConSupplierapplies = mapper.selectList(new QueryWrapper<TConSupplierapply>()
+                        .eq("fnumber", vo.getNum())
+                        .eq("fname", vo.getTitle()));
+                if (Util.isEmpty(tConSupplierapplies)) {
+                    throw new ServiceException(901, UtilMessage.NUMBER_EXIST);
+                } else {
+                    throw new ServiceException(UtilMessage.DATA_DOES_EXIST);
+                }
             }
             obj.put("number", vo.getNum());
         }
@@ -651,7 +658,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
             Call call = getCall("OAURL", "addtestEkpReview");
             try {
                 result = (String) call.invoke(new Object[]{obj.toString()});
-                if (Util.isNotEmpty(result)){
+                if (Util.isNotEmpty(result)) {
                     str = JSONObject.parseObject(result);
                 }
             } catch (RemoteException e) {
@@ -662,7 +669,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
             try {
                 obj.put("id", oaId);
                 result = (String) call.invoke(new Object[]{obj.toString()});
-                if (Util.isNotEmpty(result)){
+                if (Util.isNotEmpty(result)) {
                     str = JSONObject.parseObject(result);
                 }
             } catch (RemoteException e) {

@@ -284,7 +284,14 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                 List<TConContractbill> nums = mapper.selectList(new QueryWrapper<TConContractbill>()
                         .eq("fnumber", num));
                 if (nums != null && nums.size() > 0) {
-                    throw new ServiceException(900,UtilMessage.DATA_DOES_EXIST);
+                    List<TConContractbill> conContractbills = mapper.selectList(new QueryWrapper<TConContractbill>()
+                            .eq("fnumber", num)
+                            .eq("fname", conName));
+                    if (Util.isEmpty(conContractbills)){
+                        throw new ServiceException(901,UtilMessage.NUMBER_EXIST);
+                    }else {
+                        throw new ServiceException(900, UtilMessage.DATA_DOES_EXIST);
+                    }
                 }
             }
             easJson.put("num", num);
