@@ -282,7 +282,7 @@ public class FtpUtil {
     }
 
     /**
-     * 宋都web 附件下载
+     * 宋都web 附件下载(测试)
      *
      * @param request
      * @param response

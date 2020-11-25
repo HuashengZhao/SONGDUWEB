@@ -106,13 +106,7 @@ public class TConSupplierapplyController {
     public R supplierSubmit(@RequestBody String body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         SupplierApplyVO vo = BodyDecodeUtil.decodeBody(body, SupplierApplyVO.class);
-        SupplierApplyVO supplierApplyVO = service.supplierSubmit(vo);
-        String message = supplierApplyVO.getMessage();
-        if (message != null) {
-            result.put("msg", message);
-            result.put("code", HttpStatus.SC_NO_CONTENT);
-            return R.ok(result);
-        }
+        service.supplierSubmit(vo);
         result.put("msg", UtilMessage.GET_MSG_SUCCESS);
         result.put("code", HttpStatus.SC_OK);
         return R.ok(result);
