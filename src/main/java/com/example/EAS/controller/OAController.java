@@ -85,7 +85,8 @@ public class OAController {
             token = URLEncoder.encode(token, "utf-8");
             json.put("permission", token);
 //            type
-            String link = String.valueOf(sb1.append("http://172.17.4.125:8082/easWeb/#/")
+            String s1 = mapper.selectViewUrl();
+            String link = String.valueOf(sb1.append(s1)
                     .append(type).append("?token=").append(token));
             json.put("link", link);
             System.out.println("oa登录时返回link: " + link);
