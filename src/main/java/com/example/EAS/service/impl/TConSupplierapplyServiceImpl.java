@@ -2,6 +2,7 @@ package com.example.EAS.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.EAS.mapper.TBasAttachmentMapper;
 import com.example.EAS.mapper.TConSupplierapplyMapper;
@@ -244,11 +245,16 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
             }
             List<Object> objs = mapper.selectSupplierByName(title);
             if (objs != null && objs.size() > 0) {
-                throw new ServiceException(UtilMessage.SUPPLIER_NAME_REPEAT);
+                throw new ServiceException(900,UtilMessage.SUPPLIER_NAME_REPEAT);
             }
             obj.put("name", vo.getTitle());
         }
         if (Util.isNotEmpty(vo.getNum())) {
+            List<TConSupplierapply> nums = mapper.selectList(new QueryWrapper<TConSupplierapply>()
+                    .eq("fnumber", vo.getNum()));
+            if (nums!=null && nums.size()>0){
+                throw new ServiceException(UtilMessage.DATA_DOES_EXIST);
+            }
             obj.put("number", vo.getNum());
         }
         if (Util.isNotEmpty(vo.getDescription())) {

@@ -104,4 +104,6 @@ public class UtilMessage {
     public static final String UNSUPPORTED_DOWNLOAD_FILE = "该附件不支持下载，请到eas查看!";
     public static final String VIEW_URL_NOT_FOUND = "未找到页面查看的地址信息，请联系后台管理!";
     public static final String MISS_PROJECT_INFO = "缺失营销立项信息,请联系后台管理！";
+    public static final String DATA_DOES_EXIST = "单据已存在，请勿重复操作";
+
 }

@@ -397,6 +397,13 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         }
         String num = vo.getNum();
         if (Util.isNotEmpty(num)) {
+            if (Util.isEmpty(id)){
+                List<TConContractwithouttext> nums = mapper.selectList(new QueryWrapper<TConContractwithouttext>()
+                        .eq("fnumber", num));
+                if (nums != null && nums.size() > 0) {
+                    throw new ServiceException(900,UtilMessage.DATA_DOES_EXIST);
+                }
+            }
             easJson.put("number", num);
         }
         String title = vo.getTitle();

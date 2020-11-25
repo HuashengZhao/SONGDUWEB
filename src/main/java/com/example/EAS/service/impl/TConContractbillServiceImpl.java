@@ -280,6 +280,13 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         }
         String num = vo.getNum();
         if (Util.isNotEmpty(num)) {
+            if (Util.isEmpty(contractBillId)) {
+                List<TConContractbill> nums = mapper.selectList(new QueryWrapper<TConContractbill>()
+                        .eq("fnumber", num));
+                if (nums != null && nums.size() > 0) {
+                    throw new ServiceException(900,UtilMessage.DATA_DOES_EXIST);
+                }
+            }
             easJson.put("num", num);
         }
         String conTypeId = vo.getConTypeId();
