@@ -7,7 +7,7 @@ public class CallUtil {
     org.apache.axis.client.Service service = new org.apache.axis.client.Service();
 
     //    String url = "http://127.0.0.1:8088/ormrpc/services/WSOAContractFacade";
-    String url = "http://172.17.4.69:6888/ormrpc/services/WSOAContractFacade";
+    String url = "http://172.17.4.63:6888/ormrpc/services/WSOAContractFacade";
 //    String url = "http://2x743c4002.zicp.vip:37492/ormrpc/services/WSOAContractFacade";
 
     public Call getCall(String operationName) {

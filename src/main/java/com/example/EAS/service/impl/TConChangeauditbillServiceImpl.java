@@ -77,9 +77,10 @@ public class TConChangeauditbillServiceImpl extends ServiceImpl<TConChangeauditb
 //        如果是项目 获取项目下的分期id集合
         if (Util.isNotEmpty(projectId)) {
             List<String> projectIds = mapper.selectProjectInfo(projectId);
-            if (projectIds != null && projectIds.size() > 0) {
-                vo.setProjectIds(projectIds);
+            if(Util.isEmpty(projectIds)) {
+                return null;
             }
+            vo.setProjectIds(projectIds);
         }
         PageHelper.startPage(vo.getCurrentPage(), vo.getPageSize());
         List<ChangeAuditVO> auditVOS = mapper.selectDatas(vo);

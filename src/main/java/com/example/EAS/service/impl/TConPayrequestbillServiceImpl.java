@@ -68,9 +68,10 @@ public class TConPayrequestbillServiceImpl extends ServiceImpl<TConPayrequestbil
                 projectIdList.addAll(ids);
             }
         }
-        if (projectIdList != null && projectIdList.size() > 0) {
-            vo.setProjectIds(projectIdList);
+        if(Util.isEmpty(projectIdList)) {
+            return null;
         }
+        vo.setProjectIds(projectIdList);
         //        过权限
         Boolean aBoolean = loginInfoUtil.ifInItDept();
         if (aBoolean == false) {
