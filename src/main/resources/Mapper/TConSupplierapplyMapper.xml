@@ -163,5 +163,11 @@
     <select id="selectPersonPost" resultType="java.lang.String">
          select url from webUrl where type ='personPost'
     </select>
+    <select id="selectEASLogin" resultType="java.lang.String">
+         select url from weburl where type ='EASLOGIN'
+    </select>
+    <select id="selectTemplateId" resultType="java.lang.String">
+        select tid from oatemplate where type='supplier'
+    </select>
 
 </mapper>

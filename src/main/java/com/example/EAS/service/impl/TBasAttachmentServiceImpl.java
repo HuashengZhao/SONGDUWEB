@@ -9,6 +9,9 @@ import com.example.EAS.util.EasFileDownLoadUtil;
 import com.example.EAS.util.FtpUtil;
 import com.example.EAS.vo.AttachmentsVO;
 import com.example.EAS.vo.PersonsVO;
+import lombok.extern.log4j.Log4j2;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-
 /**
  * <p>
  * 服务实现类
@@ -32,6 +34,7 @@ import java.util.UUID;
  * @author watson
  * @since 2020-09-24
  */
+@Log4j2
 @Service
 public class TBasAttachmentServiceImpl extends ServiceImpl<TBasAttachmentMapper, TBasAttachment> implements ITBasAttachmentService {
 
@@ -81,7 +84,10 @@ public class TBasAttachmentServiceImpl extends ServiceImpl<TBasAttachmentMapper,
             String fileUUID = UUID.randomUUID().toString();
             StringBuffer sbf = new StringBuffer();
             fileUUID = sbf.append(fileUUID).append(".").append(fileType).toString();
-            boolean b1 = ftpUtil.uploadFile("/WEB" + filePath, fileUUID, inputStream);
+            Logger logger = LoggerFactory.getLogger(TBasAttachmentServiceImpl.class);
+            logger.info("WEB" + filePath);
+            logger.info(fileUUID);
+            boolean b1 = ftpUtil.uploadFile("WEB" + filePath, fileUUID, inputStream);
 //            ftp/2020/9/18/010000000/zbcdasdasdasdasd.txt
             String webUrl = String.valueOf(new StringBuffer().append("WEB").append(filePath).append("/").append(fileUUID));
 //            创建人
@@ -130,7 +136,6 @@ public class TBasAttachmentServiceImpl extends ServiceImpl<TBasAttachmentMapper,
             Date date1 = new Date();
             String format2 = formatter.format(date1);
             attachmentsVO.setCreateTime(format2);
-//                attachmentsVO.setContentType(contentType);
             attachmentsVOS.add(attachmentsVO);
         }
         return attachmentsVOS;

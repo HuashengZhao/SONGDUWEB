@@ -91,5 +91,11 @@ public interface TConSupplierapplyMapper extends BaseMapper<TConSupplierapply> {
     String selectPersonPost();
 
     void updatePersonPost(String id, String foaposition);
+
+    String selectEASLogin();
+
+
+    String selectTemplateId(String supplier);
+
 }
 

@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.EAS.dto.WSContext;
 import com.example.EAS.mapper.TBasAttachmentMapper;
 import com.example.EAS.mapper.TConSupplierapplyMapper;
 import com.example.EAS.mapper.TFdcContracttypeMapper;
@@ -18,10 +19,14 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.axis.client.Call;
+import org.apache.axis.message.SOAPHeaderElement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.xml.namespace.QName;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.rmi.RemoteException;
@@ -59,7 +64,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
     @Autowired
     private LoginInfoUtil loginInfoUtil;
 
-
+    Logger logger = LoggerFactory.getLogger(TConSupplierapplyServiceImpl.class);
     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
     org.apache.axis.client.Service service = new org.apache.axis.client.Service();
@@ -69,6 +74,8 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         String url = null;
         if (type.contains("EAS")) {
             url = mapper.selectEASURL();
+        } else if (type.contains("LOGIN")) {
+            url = mapper.selectEASLogin();
         } else {
             url = mapper.selectOAURL();
         }
@@ -259,7 +266,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
                 if (Util.isEmpty(tConSupplierapplies)) {
                     throw new ServiceException(901, UtilMessage.NUMBER_EXIST);
                 } else {
-                    throw new ServiceException(900,UtilMessage.DATA_DOES_EXIST);
+                    throw new ServiceException(900, UtilMessage.DATA_DOES_EXIST);
                 }
             }
             obj.put("number", vo.getNum());
@@ -330,16 +337,72 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         }
 
         obj.put("attach", attach);
-        Call call = getCall("EASURL", "saveSupplierApply");
+//        Call call = getCall("EASURL", "saveSupplierApply");
+//        调用eas登录获取sessionid
+        String sessionId = null;
         String result = null;
+        String url=null;
+        Call call = null;
         try {
-//            long startTime = System.currentTimeMillis();
-            result = (String) call.invoke(new Object[]{obj.toString()});
-//            long endTime = System.currentTimeMillis();
-//            System.out.println("供应商保存eas方法时长：" + (endTime - startTime) + "ms");
+            try {
+                call = (Call) service.createCall();
+            } catch (javax.xml.rpc.ServiceException e) {
+                e.printStackTrace();
+            }
+        } catch (ServiceException e1) {
+            e1.printStackTrace();
+        }
+        url=mapper.selectEASLogin();
+        call.setOperationName("login");
+        call.setTargetEndpointAddress(url);
+        call.setReturnType(new QName("urn:client", "WSContext"));
+        call.setReturnClass(WSContext.class);
+        call.setReturnQName(new QName("", "loginReturn"));
+        //超时
+        call.setTimeout(Integer.valueOf(1000 * 600000 * 60));
+        call.setMaintainSession(true);
+        //登陆接口参数
+        try {
+            WSContext rs = (WSContext) call.invoke(new Object[]{"servicekd", "servicekd", "eas", "easdb", "L2", Integer.valueOf(2)});
+            System.out.println("session:" + rs.getSessionId());
+            sessionId = rs.getSessionId();
         } catch (RemoteException e) {
             e.printStackTrace();
+            throw new ServiceException(e.getMessage());
         }
+        if (Util.isNotEmpty(sessionId)){
+            //清理
+            call.clearOperation();
+            url=mapper.selectEASURL();
+            call.setOperationName("saveSupplierApply");    //接口方法
+            call.setTargetEndpointAddress(url);   //对应接口地址
+            call.addParameter("arg0", org.apache.axis.encoding.XMLType.XSD_STRING, javax.xml.rpc.ParameterMode.IN);
+            call.setReturnType(org.apache.axis.encoding.XMLType.XSD_STRING);
+            call.setTimeout(Integer.valueOf(1000*600000*60));
+            call.setMaintainSession(true);
+            call.setUseSOAPAction(true);
+            SOAPHeaderElement header=new SOAPHeaderElement("http://login.webservice.bos.kingdee.com","SessionId", sessionId);
+            call.addHeader(header);
+
+            try {
+                result = (String) call.invoke(new Object[]{obj.toString()});
+                logger.info("新增供应商申请单返回结果:" + result);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+                throw new ServiceException(e.getMessage());
+            }
+        }
+        call.clearOperation();
+        call.setOperationName("logout");
+        url=mapper.selectEASLogin();
+        call.setTargetEndpointAddress(url);
+        try {
+            call.invoke(new Object[]{"servicekd", "eas", "easdb", "L2"});
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            throw new ServiceException(e.getMessage());
+        }
+
         JSONObject str = JSONObject.parseObject(result);
         String state = str.getString("result");
         if (Util.isNotEmpty(state) && state.contains("fault")) {
@@ -446,13 +509,63 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
             }
         }
         obj.put("attach", attach);
-        Call call = getCall("EASURL", "saveSupplierApply");
+        //        调用eas登录获取sessionid
+        String sessionId = null;
         String result = null;
+        String url=null;
+        Call call = null;
         try {
-            result = (String) call.invoke(new Object[]{obj.toString()});
+            try {
+                call = (Call) service.createCall();
+            } catch (javax.xml.rpc.ServiceException e) {
+                e.printStackTrace();
+                throw new ServiceException(e.getMessage());
+            }
+        } catch (ServiceException e1) {
+            e1.printStackTrace();
+            throw new ServiceException(e1.getMessage());
+        }
+        call.setOperationName("login");
+        url=mapper.selectEASLogin();
+        call.setTargetEndpointAddress(url);
+        call.setReturnType(new QName("urn:client", "WSContext"));
+        call.setReturnClass(WSContext.class);
+        call.setReturnQName(new QName("", "loginReturn"));
+
+        //超时
+        call.setTimeout(Integer.valueOf(1000 * 600000 * 60));
+        call.setMaintainSession(true);
+        //登陆接口参数
+        try {
+            WSContext rs = (WSContext) call.invoke(new Object[]{"servicekd", "servicekd", "eas", "easdb", "L2", Integer.valueOf(2)});
+            System.out.println("session:" + rs.getSessionId());
+            sessionId = rs.getSessionId();
         } catch (RemoteException e) {
+            // TODO Auto-generated catch block
             e.printStackTrace();
-            throw new ServiceException(UtilMessage.SAVE_MSG_ERROR);
+            throw new ServiceException(e.getMessage());
+        }
+        if (Util.isNotEmpty(sessionId)){
+            //清理
+            call.clearOperation();
+            url=mapper.selectEASURL();
+            call.setOperationName("saveSupplierApply");    //接口方法
+            call.setTargetEndpointAddress(url);   //对应接口地址
+            call.addParameter("arg0", org.apache.axis.encoding.XMLType.XSD_STRING, javax.xml.rpc.ParameterMode.IN);
+            call.setReturnType(org.apache.axis.encoding.XMLType.XSD_STRING);
+            call.setTimeout(Integer.valueOf(1000*600000*60));
+            call.setMaintainSession(true);
+            call.setUseSOAPAction(true);
+            SOAPHeaderElement header=new SOAPHeaderElement("http://login.webservice.bos.kingdee.com","SessionId", sessionId);
+            call.addHeader(header);
+
+            try {
+                result = (String) call.invoke(new Object[]{obj.toString()});
+                logger.info("新增供应商申请单返回结果:" + result);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+                throw new ServiceException(e.getMessage());
+            }
         }
 
         JSONObject str = JSONObject.parseObject(result);
@@ -550,7 +663,9 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
             json = suplierUpdate(vo);
         } else {
             json = addSupplierApply(vo);
-            id = json.get("id").toString();
+            if (Util.isNotEmpty(json.get("id"))) {
+                id = json.get("id").toString();
+            }
             String message1 = json.getString("message");
             if (Util.isNotEmpty(message1)) {
                 throw new ServiceException(message1);
@@ -567,7 +682,8 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
 //        基本参数
 //        obj.put("oaid", oaId);
         obj.put("id", id);
-        obj.put("tmplateId", "17400f46dd2db720a8bfcf348c1984dc");
+        String tId = mapper.selectTemplateId("supplier");
+        obj.put("tmplateId", tId);
         obj.put("fdType", "1");
         obj.put("docSubject", vo.getTitle());
         StringBuffer sb = new StringBuffer();
@@ -660,6 +776,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
                 }
             } catch (RemoteException e) {
                 e.printStackTrace();
+                throw new ServiceException(e.getMessage());
             }
         } else {
             Call call = getCall("OAURL", "updatetestEkpReview");
@@ -671,6 +788,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
                 }
             } catch (RemoteException e) {
                 e.printStackTrace();
+                throw new ServiceException(e.getMessage());
             }
         }
 //        code 1 success 2 fault
@@ -709,6 +827,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
                         attachmentMapper.updateAttLink(id, attName, attLink);
                     } catch (Exception e) {
                         e.printStackTrace();
+                        throw new ServiceException(e.getMessage());
                     }
                 }
             }

@@ -85,12 +85,14 @@ public class FtpUtil {
     public boolean uploadFile(String filePath, String filename, InputStream input) {
         boolean result = false;
         FTPClient ftp = new FTPClient();
-        ftp.enterLocalPassiveMode();
+        ftp.enterLocalPassiveMode();//设置被动模式
+//        ftp.enterLocalActiveMode();//设置主动模式
+//        ftp.setActivePortRange(3000,3010);
         try {
             int reply;
             ftp.connect("172.17.4.129", 21);// 连接FTP服务器
             // 如果采用默认端口，可以使用ftp.connect(host)的方式直接连接FTP服务器
-            ftp.login("oa", "SongDu1234@#");// 登录
+            ftp.login("root", "sdjt1234@#");// 登录
             reply = ftp.getReplyCode();
             if (!FTPReply.isPositiveCompletion(reply)) {
                 ftp.disconnect();
@@ -134,6 +136,7 @@ public class FtpUtil {
                 try {
                     ftp.disconnect();
                 } catch (IOException ioe) {
+                    ioe.printStackTrace();
                 }
             }
         }
@@ -158,13 +161,15 @@ public class FtpUtil {
             int reply;
             ftp.connect("172.17.4.129", 21);// 连接FTP服务器
             // 如果采用默认端口，可以使用ftp.connect(host)的方式直接连接FTP服务器
-            ftp.login("oa", "SongDu1234@#");// 登录
+            ftp.login("root", "sdjt1234@#");// 登录
             reply = ftp.getReplyCode();
             if (!FTPReply.isPositiveCompletion(reply)) {
                 ftp.disconnect();
                 return;
             }
-            ftp.enterLocalPassiveMode();
+            ftp.enterLocalPassiveMode();//被动模式
+//            ftp.enterLocalActiveMode();//设置主动模式
+//            ftp.setActivePortRange(3000,3010);
             ftp.changeWorkingDirectory(remotePath);// 转移到FTP服务器目录
             FTPFile[] fs = ftp.listFiles();
             for (FTPFile ff : fs) {
@@ -199,6 +204,7 @@ public class FtpUtil {
                 try {
                     ftp.disconnect();
                 } catch (IOException ioe) {
+                    ioe.printStackTrace();
                 }
             }
         }
