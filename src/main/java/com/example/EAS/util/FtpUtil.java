@@ -88,10 +88,11 @@ public class FtpUtil {
         ftp.enterLocalPassiveMode();
         try {
             int reply;
-            ftp.connect("172.17.4.129", 21);// 连接FTP服务器
+            ftp.connect("172.17.4.60", 21);// 连接FTP服务器
             // 如果采用默认端口，可以使用ftp.connect(host)的方式直接连接FTP服务器
-            ftp.login("oa", "SongDu1234@#");// 登录
+            ftp.login("adminftp", "sdjt2020@#");// 登录
             reply = ftp.getReplyCode();
+
             if (!FTPReply.isPositiveCompletion(reply)) {
                 ftp.disconnect();
                 return result;
@@ -156,15 +157,16 @@ public class FtpUtil {
         FTPClient ftp = new FTPClient();
         try {
             int reply;
-            ftp.connect("172.17.4.129", 21);// 连接FTP服务器
+            ftp.connect("172.17.4.60", 21);// 连接FTP服务器
             // 如果采用默认端口，可以使用ftp.connect(host)的方式直接连接FTP服务器
-            ftp.login("oa", "SongDu1234@#");// 登录
+            ftp.login("adminftp", "sdjt2020@#");// 登录
             reply = ftp.getReplyCode();
             if (!FTPReply.isPositiveCompletion(reply)) {
                 ftp.disconnect();
                 return;
             }
             ftp.enterLocalPassiveMode();
+            ftp.setControlEncoding("UTF-8");
             ftp.changeWorkingDirectory(remotePath);// 转移到FTP服务器目录
             FTPFile[] fs = ftp.listFiles();
             for (FTPFile ff : fs) {
@@ -188,7 +190,7 @@ public class FtpUtil {
                     response.addHeader("Content-Length", "" + ff.getSize());
                     response.setCharacterEncoding("utf-8");
                     response.setContentType("application/octet-stream");
-                    ftp.retrieveFile(ff.getName(), response.getOutputStream());
+                    ftp.retrieveFile(new String(ff.getName().getBytes("ISO-8859-1"),"GBK"), response.getOutputStream());
                 }
             }
             ftp.logout();
