@@ -14,6 +14,7 @@ import com.example.EAS.util.*;
 import com.example.EAS.vo.*;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.axis.client.Call;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,7 @@ import java.util.List;
  * @author watson
  * @since 2020-09-03
  */
+@Slf4j
 @Service
 public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMapper, TConContractbill> implements ITConContractbillService {
 
@@ -88,7 +90,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
 
     @Override
     public PageBean<ContractVO> getContractList(ContractVO vo) throws Exception {
-        System.out.println("合同列表查看开始");
+        log.info("合同列表查看开始");
         long startTime = System.currentTimeMillis();
         //获取登录信息
         JSONObject token = loginInfoUtil.getToken();
@@ -235,7 +237,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         pageBean.setTotalCount(((Page) contractVOList).getTotal());
         pageBean.setPageData(contractVOList);
         long endTime = System.currentTimeMillis();
-        System.out.println("总耗时：" + (endTime - startTime) + "ms");
+        log.info("总耗时：" + (endTime - startTime) + "ms");
         return pageBean;
     }
 
@@ -591,7 +593,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         if (Util.isEmpty(flag) || flag.compareTo(false) == 0) {
             call = getCall("EASURL", "saveContractBill");
             try {
-                System.out.println(conName + " 合同提交参数：" + easJson.toJSONString());
+                log.info(conName + " 合同提交参数：" + easJson.toJSONString());
                 result = (String) call.invoke(new Object[]{easJson.toString()});
             } catch (RemoteException e) {
                 e.printStackTrace();
@@ -601,7 +603,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             //            如果是驳回后重新提交 调用eas合同提交方法
             call = getCall("EASURL", "submitContractBill");
             try {
-                System.out.println(conName + " 合同重新提交参数：" + easJson.toJSONString());
+                log.info(conName + " 合同重新提交参数：" + easJson.toJSONString());
                 result = (String) call.invoke(new Object[]{easJson.toString()});
             } catch (RemoteException e) {
                 e.printStackTrace();
@@ -609,7 +611,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             }
         }
         long saveEnd = System.currentTimeMillis();
-        System.out.println("调用EAS合同保存时间:" + (saveEnd - saveStart) + "ms");
+        log.info("调用EAS合同保存时间:" + (saveEnd - saveStart) + "ms");
 //        接收返回eas信息
         JSONObject object = JSONObject.parseObject(result);
         if (result != null && object.get("result") != null) {
@@ -629,7 +631,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             }
         }
         long endTime = System.currentTimeMillis();
-        System.out.println("合同保存时间：" + (endTime - startTime) + "ms");
+        log.info("合同保存耗时：" + (endTime - startTime) + "ms");
         return contractVO;
     }
 
@@ -715,7 +717,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             StringBuffer stringBuffer = new StringBuffer();
             oaid = URLEncoder.encode(oaid);
             String link = String.valueOf(stringBuffer.append(s1).append(oaid).append(s2).append(mtLoginNum));
-            System.out.println("OA流程路径：" + link);
+            log.info("OA流程路径：" + link);
             contractVO.setLink(link);
             contractVO.setOaId(oaid);
         }
@@ -860,7 +862,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             contractVO.setMarketContDetailVOS(marketContDetailVOS);
         }
         long endTime = System.currentTimeMillis();
-        System.out.println("合同查看详情运行时间：" + (endTime - startTime) + "ms");
+        log.info("合同查看耗时：" + (endTime - startTime) + "ms");
         return contractVO;
     }
 
@@ -924,7 +926,6 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         if (Util.isNotEmpty(vo.getContractWFTypeId())) {
             String contractWFTypeName = mapper.selectContractType(vo.getContractWFTypeId());
             data.put("fd_38cf1780c1c14a", contractWFTypeName);
-            System.out.println("合同提交分支新增字段：" + contractWFTypeName);
         }
 //        后评估审核
         if (Util.isNotEmpty(vo.getMarketProjectId())) {
@@ -932,21 +933,17 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             Long fisjt = tConMarketproject.getFisjt();
             if (Util.isEmpty(fisjt) || fisjt == 0) {
                 data.put("fd_38f672bcb4a998", "否");
-                System.out.println("是否后评估审核：否");
             } else {
                 data.put("fd_38f672bcb4a998", "是");
-                System.out.println("是否后评估审核：是");
             }
         }
 //        原币金额
         if (Util.isNotEmpty(vo.getOriginalAmount())) {
             Double aDouble = Double.valueOf(String.valueOf(vo.getOriginalAmount()));
             data.put("fd_38cf1798043f94", aDouble);
-            System.out.println(aDouble);
         }
 //        审批流程发起组织
         data.put("fd_38cf17bb650026", vo.getContractWFStartType());
-        System.out.println(vo.getContractWFStartType());
 //        是否使用电子章
         List<ContractDetailVO> detailVOList = vo.getDetailVOList();
         if (detailVOList != null && detailVOList.size() > 0) {
@@ -956,7 +953,6 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                 if (Util.isNotEmpty(detailInfo) && Util.isNotEmpty(content)) {
                     if (detailInfo.contains("电子章")) {
                         data.put("fd_38f02d7df82f3e", content);
-                        System.out.println(content);
                     }
                 }
             }
@@ -999,8 +995,8 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         sendAppUrl = String.valueOf(sba.append(appUrl).append(appAppendType).append(appendId)
                 .append(appendToken).append(tokenAppend));
 //        sb.append("http://172.17.4.125:8082/easWeb/#/supplier").append("?token=").append(token);
-        System.out.println("合同单据web端详情查看地址：" + sendUrl);
-        System.out.println(" 合同单据app端详情查看地址：" + sendAppUrl);
+        log.info("合同单据web端详情查看地址：" + sendUrl);
+        log.info(" 合同单据app端详情查看地址：" + sendAppUrl);
         obj.put("loginName", personNum);
 
         data.put("fd_link", sendUrl);
@@ -1040,7 +1036,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                 result = (String) call.invoke(new Object[]{obj.toString()});
                 System.out.println(vo.getConName() + "本次提交传给oa的参数" + obj.toString());
                 str = JSONObject.parseObject(result);
-                System.out.println("这次是新增流程：" + str);
+                log.info("这次是新增流程：" + str);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -1049,9 +1045,9 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             try {
                 obj.put("id", oaId);
                 result = (String) call.invoke(new Object[]{obj.toString()});
-                System.out.println(vo.getConName() + "本次提交传给oa的参数" + obj.toString());
+                log.info(vo.getConName() + "本次提交传给oa的参数" + obj.toString());
                 str = JSONObject.parseObject(result);
-                System.out.println("这次是修改流程：" + str + "原流程id" + oaId);
+                log.info("这次是修改流程：" + str + "原流程id" + oaId);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -1083,7 +1079,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                         attName = attName.replace("." + hz, "");
                     }
                     String atturl = atturlObj.getString("url");
-                    System.out.println("附件返回地址" + attName + ":" + atturl);
+                    log.info("附件返回地址" + attName + ":" + atturl);
 //                 取用户账号用作oa流程查看登录
                     if (Util.isEmpty(personNum)) {
                         throw new ServiceException(UtilMessage.PERSON_MISSING);

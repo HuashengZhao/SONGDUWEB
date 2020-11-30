@@ -35,11 +35,10 @@
         select sa.fid id,sa.fnumber num,sa.fname title,sa.fstate state,sa.fdescription description,
         sa.fcreatorid,sa.fcreatetime createTime,sa.fauditorid,sa.faudittime auditTime,sa.foaposition as foaposition,
         sa.FBANKACCOUNT bankAccount,sa.FBANK bank,sa.FTAXERQUA taxerQua,sa.FTaxerNum taxerNum,
-        u.fname_l2 as creator,u1.fname_l2 as auditor,sa.FSOURCEFUNCTION as sourceFunction,o.OAID as oaId
+        u.fname_l2 as creator,u1.fname_l2 as auditor,sa.FSOURCEFUNCTION as sourceFunction
         from T_CON_SupplierApply sa
         left join T_PM_User u on u.fid=sa.fcreatorid
         left join T_PM_User u1 on u1.fid=sa.fauditorid
-        left join oaidrecord o on o.BILLID=sa.fid
         <where>
             <if test="id!=null and id!=''">
                 and sa.fid=#{id}
@@ -168,6 +167,9 @@
     </select>
     <select id="selectTemplateId" resultType="java.lang.String">
         select tid from oatemplate where type='supplier'
+    </select>
+    <select id="selectOAINFO" resultType="java.lang.String">
+        select url from weburl where type ='OAINFO'
     </select>
 
 </mapper>

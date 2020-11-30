@@ -2,16 +2,21 @@ package com.example.EAS.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.EAS.dto.WSContext;
 import com.example.EAS.mapper.*;
 import com.example.EAS.model.*;
 import com.example.EAS.service.IBaseDataService;
 import com.example.EAS.thread.AsyncExecutor;
 import com.example.EAS.util.OaIdUtil;
+import com.example.EAS.util.ServiceException;
 import com.example.EAS.util.Util;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.axis.client.Call;
+import org.apache.axis.message.SOAPHeaderElement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.xml.namespace.QName;
 import java.rmi.RemoteException;
 import java.time.LocalDateTime;
 
@@ -23,7 +28,7 @@ import java.time.LocalDateTime;
  * @author watson
  * @since 2020-08-17
  */
-
+@Slf4j
 @Service
 public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> implements IBaseDataService {
 
@@ -90,6 +95,7 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
         obj.put("code", "1");
         obj.put("msg", "success");
 //      请求参数
+        log.info(body.toString());
         String oaid = body.get("oaid").toString();
         String attlink = body.get("attlink").toString();
 //      01:审批通过,02:废弃,03:驳回,修订
@@ -137,25 +143,78 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
             //       如果审核成功 调用eas审核方法
             if (result.contains("01")) {
                 acceptType= "审核";
-                System.out.println("type为" + type + "流程调用了回调审批！");
+                log.info("type为" + type + "流程调用了回调审批！");
                 if (oaid != null && easid != null) {
                     oaIdUtil.getString(easid, oaid);
                 }
-                Call call = getCall("EASURL", auditOperation);
-
+                //        调用eas登录获取sessionid
+                String sessionId = null;
+                String url = null;
+                Call call = null;
                 try {
-                    back = (String) call.invoke(new Object[]{jsonObject.toString()});
+                    call = (Call) service.createCall();
+                } catch (javax.xml.rpc.ServiceException e) {
+                    e.printStackTrace();
+                }
+
+                url = supplierapplyMapper.selectEASLogin();
+                call.setOperationName("login");
+                call.setTargetEndpointAddress(url);
+                call.setReturnType(new QName("urn:client", "WSContext"));
+                call.setReturnClass(WSContext.class);
+                call.setReturnQName(new QName("", "loginReturn"));
+                //超时
+                call.setTimeout(Integer.valueOf(1000 * 600000 * 60));
+                call.setMaintainSession(true);
+                //登陆接口参数
+                try {
+                    WSContext rs = (WSContext) call.invoke(new Object[]{"servicekd", "servicekd", "eas", "easdb", "L2", Integer.valueOf(2)});
+                    sessionId = rs.getSessionId();
+                    log.info("登录成功：" + sessionId);
                 } catch (RemoteException e) {
                     e.printStackTrace();
-                    String message = e.getMessage();
-                    supplierapplyMapper.insertAcceptInfo(easid, acceptTime, finalBillType, acceptType, 2, message);
+                    throw new ServiceException(e.getMessage());
                 }
+                if (Util.isNotEmpty(sessionId)) {
+                    //清理
+                    call.clearOperation();
+                    url = supplierapplyMapper.selectEASURL();
+                    call.setOperationName(auditOperation);    //接口方法
+                    call.setTargetEndpointAddress(url);   //对应接口地址
+                    call.addParameter("arg0", org.apache.axis.encoding.XMLType.XSD_STRING, javax.xml.rpc.ParameterMode.IN);
+                    call.setReturnType(org.apache.axis.encoding.XMLType.XSD_STRING);
+                    call.setTimeout(Integer.valueOf(1000 * 600000 * 60));
+                    call.setMaintainSession(true);
+                    call.setUseSOAPAction(true);
+                    SOAPHeaderElement header = new SOAPHeaderElement("http://login.webservice.bos.kingdee.com", "SessionId", sessionId);
+                    call.addHeader(header);
+                    try {
+                        back = (String) call.invoke(new Object[]{jsonObject.toString()});
+                        log.info("新增供应商申请单返回结果:" + result);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                        String message = e.getMessage();
+                        supplierapplyMapper.insertAcceptInfo(easid, acceptTime, finalBillType, acceptType, 2, message);
+                    }
+                }
+                call.clearOperation();
+                call.setOperationName("logout");
+                url = supplierapplyMapper.selectEASLogin();
+                call.setTargetEndpointAddress(url);
+                try {
+                    call.invoke(new Object[]{"servicekd", "eas", "easdb", "L2"});
+                    log.info("登出成功");
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                    throw new ServiceException(e.getMessage());
+                }
+
             }
             try {
 //        如果oa作废 修改状态为保存 删除easid 跟oaid的关联
                 if (result.contains("02")) {
                     acceptType = "作废";
-                    System.out.println("type为" + type + "流程调用了回调作废！");
+                    log.info("type为" + type + "流程调用了回调作废！");
                     if (oaid != null && easid != null) {
                         oaIdUtil.deleteId(easid, oaid);
                     }
@@ -184,7 +243,7 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
 //        如果驳回 修改状态为已提交 并保留oaid
             if (result.contains("03")) {
                 acceptType = "驳回";
-                System.out.println("type为" + type + "流程调用了回调驳回！");
+                log.info("type为" + type + "流程调用了回调驳回！");
                 if (type.contains("01")) {
                     if (oaid != null && easid != null) {
                         oaIdUtil.getString(easid, oaid);

@@ -97,5 +97,8 @@ public interface TConSupplierapplyMapper extends BaseMapper<TConSupplierapply> {
 
     String selectTemplateId(String supplier);
 
+    String selectOAINFO();
+
+
 }
 
