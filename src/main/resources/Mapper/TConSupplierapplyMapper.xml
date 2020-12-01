@@ -61,9 +61,6 @@
             <if test="state!=null and state!=''">
                 and sa.fstate like CONCAT(CONCAT('%',#{state}),'%')
             </if>
-            <if test="authorNum!=null and authorNum!=''">
-                and u.fnumber =#{authorNum}
-            </if>
         </where>
         order by sa.FBOOKEDDATE desc,sa.fnumber desc
     </select>
