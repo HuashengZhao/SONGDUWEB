@@ -37,7 +37,6 @@ public class AuthTokenInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
 
         String token = request.getHeader("token");
-
         if (Util.isEmpty(token)) {
             logger.warn("未携带token,非法请求");
             R result = R.error(10001, "未携带token,非法请求");
@@ -47,6 +46,8 @@ public class AuthTokenInterceptor implements HandlerInterceptor {
 //        解析token并根据token携带的信息获取缓存中对应的token;
         String keyStr = null;
         try {
+//            String decode = URLDecoder.decode(token, "utf-8");
+            log.info("解密token:"+token);
             keyStr = RSAUtil.dencrypt(token, "pri.key");
         } catch (Exception e) {
             e.printStackTrace();
