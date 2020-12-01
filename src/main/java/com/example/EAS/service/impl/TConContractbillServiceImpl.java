@@ -909,6 +909,8 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         }
 //      基本参数
         obj.put("id", id);
+        String tId = supplierapplyMapper.selectTemplateId("contract");
+        obj.put("tmplateId", tId);
         obj.put("tmplateId", "174046df325987eb1d487be4026b1b64");
         obj.put("fdType", "1");
         obj.put("docSubject", vo.getConName());

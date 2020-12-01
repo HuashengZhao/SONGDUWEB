@@ -819,7 +819,8 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         }
         //      基本参数
         obj.put("id", id);
-        obj.put("tmplateId", "17400f0f65621b8cae9869445db9c6f6");
+        String tId = supplierapplyMapper.selectTemplateId("notext");
+        obj.put("tmplateId", tId);
         obj.put("fdType", "1");
         obj.put("docSubject", vo.getTitle());
         //        表单参数

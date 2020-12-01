@@ -11,7 +11,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -160,9 +159,9 @@ public class RSAUtil {
         System.out.println("加密后的数据:"+data);
         //使用私钥解密,第二个参数classpath下的私钥文件
         String s =null;
-        s="E0fZfMxiQ%2Bl5ids85Lw2GN2r1cdL3WxtQb2JA8q2%2FOoKtDDgaoVhQwhb7qPoXUCml4%2BXQwKhvTwIMqcuLLXxpTZL0oZJofQEKjX8QtHYrTnJF7VuV%2BZ9oH9e8CTi9%2B5DcZhQDPGEbhXqPyQmHCuNFRX1IctaQU%2Bjg8Qu9Z%2FXRYA%3D";
+        s="c0pmmO9yV5Yif+8mU/ghJ/3sz5jHkO/ac6IVTTv0Jh8SkQ6yjN3S2GI9i7ELA1qSYX7BBpCyBizsCQVfxc5Mc6GIYLY+h1r0fXeCo5yp2xgJl3wZJvECF9hGQpufXdyLduUhJPO/8lw7gM8CHWqqFKKrglIb/dKOTJCrm9facAk=";
         String decode = URLDecoder.decode(s, "utf-8");
-        data = dencrypt(decode,"pri.key");
+        data = dencrypt(s,"pri.key");
         System.out.println("解密后的数据:"+data);
     }
 }

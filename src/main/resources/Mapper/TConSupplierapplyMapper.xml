@@ -163,7 +163,7 @@
          select url from weburl where type ='EASLOGIN'
     </select>
     <select id="selectTemplateId" resultType="java.lang.String">
-        select tid from oatemplate where type='supplier'
+        select tid from oatemplate where type=#{supplier}
     </select>
     <select id="selectOAINFO" resultType="java.lang.String">
         select url from weburl where type ='OAINFO'
