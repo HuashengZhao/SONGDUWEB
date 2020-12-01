@@ -75,7 +75,7 @@ public class OAController {
             String s = String.valueOf(sb.append(org).append("&&").append(person));
             String token = RSAUtil.encrypt(s, "pub.key");
 //          存放token
-            redisUtil.set(redisUtil.generateKey(CacheKeyConstant.WEB_LOGIN_TOKEN, person), token, 1000 * 3600 * 24 * 100);
+            redisUtil.set(redisUtil.generateKey(CacheKeyConstant.WEB_LOGIN_TOKEN, person), token, 1000 * 3600 * 24);
 //          返回link拼接
             String type = null;
             if (Util.isNotEmpty(vo.getType())) {
@@ -89,7 +89,7 @@ public class OAController {
             String link = String.valueOf(sb1.append(s1)
                     .append(type).append("?token=").append(token));
             json.put("link", link);
-            System.out.println("oa登录时返回link: " + link);
+            log.info("oa登录时返回link: " + link);
             json.put("code", 1);
             json.put("message", "success");
         } catch (Exception e) {
@@ -99,6 +99,7 @@ public class OAController {
             json.put("message", e.toString());
             return R.error(json.toString());
         }
+        log.info(json.toString());
         return R.ok(json);
     }
 

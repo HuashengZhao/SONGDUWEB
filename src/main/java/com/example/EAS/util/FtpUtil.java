@@ -75,7 +75,7 @@ public class FtpUtil {
      * 附件上传
      * type：inputstream
      * *测试地址：172.17.4.60  21  adminftp sdjt2020@#
-     * * 正式地址: 172.17.4.129 21 oa SongDu1234@#
+     * * 正式地址: 172.17.4.129 21
      *
      * @param filePath
      * @param filename
@@ -85,18 +85,23 @@ public class FtpUtil {
     public boolean uploadFile(String filePath, String filename, InputStream input) {
         boolean result = false;
         FTPClient ftp = new FTPClient();
-        ftp.enterLocalPassiveMode();
+//        ftp.setControlEncoding("GBK");
+        ftp.enterLocalPassiveMode();//设置被动模式
+//        ftp.enterLocalActiveMode();//设置主动模式
+//        ftp.setActivePortRange(3000,3010);
         try {
             int reply;
+//            ftp.connect("172.17.4.129", 21);// 连接FTP服务器
             ftp.connect("172.17.4.60", 21);// 连接FTP服务器
             // 如果采用默认端口，可以使用ftp.connect(host)的方式直接连接FTP服务器
+//            ftp.login("kingdeeftp", "kingdeeftp");// 登录
             ftp.login("adminftp", "sdjt2020@#");// 登录
             reply = ftp.getReplyCode();
-
             if (!FTPReply.isPositiveCompletion(reply)) {
                 ftp.disconnect();
                 return result;
             }
+
             //切换到上传目录
             if (!ftp.changeWorkingDirectory(filePath)) {
                 //如果目录不存在创建目录
@@ -135,6 +140,7 @@ public class FtpUtil {
                 try {
                     ftp.disconnect();
                 } catch (IOException ioe) {
+                    ioe.printStackTrace();
                 }
             }
         }
@@ -144,7 +150,7 @@ public class FtpUtil {
     /**
      * 宋都web 附件下载
      * 测试地址：172.17.4.60  21  adminftp sdjt2020@#
-     * 正式地址: 172.17.4.129 21 oa SongDu1234@#
+     * 正式地址: 172.17.4.129 21
      *
      * @param request
      * @param response
@@ -155,18 +161,23 @@ public class FtpUtil {
             , HttpServletResponse response, String remotePath, String fileName) {
 
         FTPClient ftp = new FTPClient();
+        ftp.enterLocalPassiveMode();//被动模式
         try {
             int reply;
+//            ftp.connect("172.17.4.129", 21);// 连接FTP服务器
             ftp.connect("172.17.4.60", 21);// 连接FTP服务器
             // 如果采用默认端口，可以使用ftp.connect(host)的方式直接连接FTP服务器
+//            ftp.login("kingdeeftp", "kingdeeftp");// 登录
             ftp.login("adminftp", "sdjt2020@#");// 登录
             reply = ftp.getReplyCode();
+//            ftp.setControlEncoding("GBK");
+
             if (!FTPReply.isPositiveCompletion(reply)) {
                 ftp.disconnect();
                 return;
             }
-            ftp.enterLocalPassiveMode();
-            ftp.setControlEncoding("UTF-8");
+//            ftp.enterLocalActiveMode();//设置主动模式
+//            ftp.setActivePortRange(3000,3010);
             ftp.changeWorkingDirectory(remotePath);// 转移到FTP服务器目录
             FTPFile[] fs = ftp.listFiles();
             for (FTPFile ff : fs) {
@@ -190,7 +201,8 @@ public class FtpUtil {
                     response.addHeader("Content-Length", "" + ff.getSize());
                     response.setCharacterEncoding("utf-8");
                     response.setContentType("application/octet-stream");
-                    ftp.retrieveFile(new String(ff.getName().getBytes("ISO-8859-1"),"GBK"), response.getOutputStream());
+                    ftp.setFileType(FTP.BINARY_FILE_TYPE);
+                    ftp.retrieveFile(new String(ff.getName().getBytes("ISO-8859-1"), "GBK"), response.getOutputStream());
                 }
             }
             ftp.logout();
@@ -201,6 +213,7 @@ public class FtpUtil {
                 try {
                     ftp.disconnect();
                 } catch (IOException ioe) {
+                    ioe.printStackTrace();
                 }
             }
         }

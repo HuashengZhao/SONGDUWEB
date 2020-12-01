@@ -10,6 +10,7 @@ import com.example.EAS.util.Util;
 import com.example.EAS.vo.ProgramConVO;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +25,7 @@ import java.util.List;
  * @author watson
  * @since 2020-09-02
  */
+@Slf4j
 @Service
 public class TConProgrammingcontractServiceImpl extends ServiceImpl<TConProgrammingcontractMapper, TConProgrammingcontract> implements ITConProgrammingcontractService {
 
@@ -66,9 +68,9 @@ public class TConProgrammingcontractServiceImpl extends ServiceImpl<TConProgramm
         pageBean.setPageData(programConVOList);
         long et = System.currentTimeMillis();
         if (vo.getOperationType()!=null && vo.getOperationType()==1) {
-            System.out.println("合同查询合约规划耗时：" + (et - st) + "ms");
+            log.info("合同查询合约规划耗时：" + (et - st) + "ms");
         }else if (vo.getOperationType()!=null && vo.getOperationType()==2){
-            System.out.println("无文本查询合约规划耗时：" + (et - st) + "ms");
+            log.info("无文本查询合约规划耗时：" + (et - st) + "ms");
         }
         return pageBean;
     }

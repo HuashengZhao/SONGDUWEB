@@ -13,6 +13,7 @@ import com.example.EAS.vo.ChangeAuditContentVO;
 import com.example.EAS.vo.ChangeAuditVO;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +28,7 @@ import java.util.List;
  * @author watson
  * @since 2020-09-22
  */
+@Slf4j
 @Service
 public class TConChangeauditbillServiceImpl extends ServiceImpl<TConChangeauditbillMapper, TConChangeauditbill> implements ITConChangeauditbillService {
 
@@ -141,7 +143,7 @@ public class TConChangeauditbillServiceImpl extends ServiceImpl<TConChangeauditb
                     StringBuffer stringBuffer = new StringBuffer();
                     oaId = URLEncoder.encode(oaId);
                     String link = String.valueOf(stringBuffer.append(s1).append(oaId).append(s2).append(mtLoginNum));
-                    System.out.println("OA流程路径：" + link);
+                    log.info("OA流程路径：" + link);
                     auditVO.setLink(link);
                     auditVO.setOaId(oaId);
                 }

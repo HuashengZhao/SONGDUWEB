@@ -35,11 +35,10 @@
         select sa.fid id,sa.fnumber num,sa.fname title,sa.fstate state,sa.fdescription description,
         sa.fcreatorid,sa.fcreatetime createTime,sa.fauditorid,sa.faudittime auditTime,sa.foaposition as foaposition,
         sa.FBANKACCOUNT bankAccount,sa.FBANK bank,sa.FTAXERQUA taxerQua,sa.FTaxerNum taxerNum,
-        u.fname_l2 as creator,u1.fname_l2 as auditor,sa.FSOURCEFUNCTION as sourceFunction,o.OAID as oaId
+        u.fname_l2 as creator,u1.fname_l2 as auditor,sa.FSOURCEFUNCTION as sourceFunction
         from T_CON_SupplierApply sa
         left join T_PM_User u on u.fid=sa.fcreatorid
         left join T_PM_User u1 on u1.fid=sa.fauditorid
-        left join oaidrecord o on o.BILLID=sa.fid
         <where>
             <if test="id!=null and id!=''">
                 and sa.fid=#{id}
@@ -61,9 +60,6 @@
             </if>
             <if test="state!=null and state!=''">
                 and sa.fstate like CONCAT(CONCAT('%',#{state}),'%')
-            </if>
-            <if test="authorNum!=null and authorNum!=''">
-                and u.fnumber =#{authorNum}
             </if>
         </where>
         order by sa.FBOOKEDDATE desc,sa.fnumber desc
@@ -162,6 +158,15 @@
     </select>
     <select id="selectPersonPost" resultType="java.lang.String">
          select url from webUrl where type ='personPost'
+    </select>
+    <select id="selectEASLogin" resultType="java.lang.String">
+         select url from weburl where type ='EASLOGIN'
+    </select>
+    <select id="selectTemplateId" resultType="java.lang.String">
+        select tid from oatemplate where type='supplier'
+    </select>
+    <select id="selectOAINFO" resultType="java.lang.String">
+        select url from weburl where type ='OAINFO'
     </select>
 
 </mapper>

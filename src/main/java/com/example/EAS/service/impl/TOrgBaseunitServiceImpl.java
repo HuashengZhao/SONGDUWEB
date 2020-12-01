@@ -1,6 +1,5 @@
 package com.example.EAS.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -13,6 +12,7 @@ import com.example.EAS.util.Util;
 import com.example.EAS.vo.OrgVO;
 import com.example.EAS.vo.PersonIdentityVO;
 import com.google.common.collect.Maps;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.axis.client.Call;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,6 +30,7 @@ import java.util.Map;
  * @author watson
  * @since 2020-08-31
  */
+@Slf4j
 @Service
 public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOrgBaseunit> implements ITOrgBaseunitService {
 
@@ -90,7 +91,7 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
         }
         orgVO1.setOrgVOList(orgVOS);
         long et = System.currentTimeMillis();
-        System.out.println("组织查询耗时：" + (et - st) + "ms");
+        log.info("组织查询耗时：" + (et - st) + "ms");
         return orgVO1;
     }
 
@@ -173,7 +174,7 @@ public class TOrgBaseunitServiceImpl extends ServiceImpl<TOrgBaseunitMapper, TOr
         }
         vo.setOrgVOList(vos);
         long et = System.currentTimeMillis();
-        System.out.println("获取预算公司、财务组织耗时：" + (et - st) + "ms");
+        log.info("获取预算公司、财务组织耗时：" + (et - st) + "ms");
         return vo;
     }
 
