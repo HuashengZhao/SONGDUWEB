@@ -342,38 +342,14 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         obj.put("attach", attach);
 //        Call call = getCall("EASURL", "saveSupplierApply");
 //        调用eas登录获取sessionid
-        String sessionId = null;
         String result = null;
-        String url = null;
-        Call call = null;
-        try {
-            call = (Call) service.createCall();
-        } catch (javax.xml.rpc.ServiceException e) {
-            e.printStackTrace();
-        }
-
-        url = mapper.selectEASLogin();
-        call.setOperationName("login");
-        call.setTargetEndpointAddress(url);
-        call.setReturnType(new QName("urn:client", "WSContext"));
-        call.setReturnClass(WSContext.class);
-        call.setReturnQName(new QName("", "loginReturn"));
-        //超时
-        call.setTimeout(Integer.valueOf(1000 * 600000 * 60));
-        call.setMaintainSession(true);
-        //登陆接口参数
-        try {
-            WSContext rs = (WSContext) call.invoke(new Object[]{"servicekd", "servicekd", "eas", "easdb", "L2", Integer.valueOf(2)});
-            sessionId = rs.getSessionId();
-            log.info("登录成功：" + sessionId);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-            throw new ServiceException(e.getMessage());
-        }
+        JSONObject login = wsLoginUtil.login();//        登录
+        String sessionId = login.getString("sessionId");
+        Call call = (Call) login.get("call");
         if (Util.isNotEmpty(sessionId)) {
             //清理
             call.clearOperation();
-            url = mapper.selectEASURL();
+            String url = mapper.selectEASURL();
             call.setOperationName("saveSupplierApply");    //接口方法
             call.setTargetEndpointAddress(url);   //对应接口地址
             call.addParameter("arg0", org.apache.axis.encoding.XMLType.XSD_STRING, javax.xml.rpc.ParameterMode.IN);
@@ -383,7 +359,6 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
             call.setUseSOAPAction(true);
             SOAPHeaderElement header = new SOAPHeaderElement("http://login.webservice.bos.kingdee.com", "SessionId", sessionId);
             call.addHeader(header);
-
             try {
                 result = (String) call.invoke(new Object[]{obj.toString()});
                 logger.info("新增供应商申请单返回结果:" + result);
@@ -392,17 +367,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
                 throw new ServiceException(e.getMessage());
             }
         }
-        call.clearOperation();
-        call.setOperationName("logout");
-        url = mapper.selectEASLogin();
-        call.setTargetEndpointAddress(url);
-        try {
-            call.invoke(new Object[]{"servicekd", "eas", "easdb", "L2"});
-            log.info("登出成功");
-        } catch (RemoteException e) {
-            e.printStackTrace();
-            throw new ServiceException(e.getMessage());
-        }
+        wsLoginUtil.logout(call);//登出
 //
         JSONObject str = JSONObject.parseObject(result);
         String state = str.getString("result");
@@ -531,7 +496,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
             call.addHeader(header);
             try {
                 result = (String) call.invoke(new Object[]{obj.toString()});
-                logger.info("新增供应商申请单返回结果:" + result);
+                logger.info("修改供应商申请单返回结果:" + result);
             } catch (RemoteException e) {
                 e.printStackTrace();
                 throw new ServiceException(e.getMessage());
