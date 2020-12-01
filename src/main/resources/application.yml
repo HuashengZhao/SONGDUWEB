@@ -3,7 +3,7 @@ server:
   max-threads: 10
   min-spare-threads: 10
 
- port: 18080
+ port: 18888
  servlet:
    session:
      timeout: 30
