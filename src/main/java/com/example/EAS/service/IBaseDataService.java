@@ -14,6 +14,6 @@ import com.example.EAS.model.BaseData;
  */
 public interface IBaseDataService  extends IService<BaseData> {
 
-    JSONObject acceptHandle(JSONObject body);
+    JSONObject acceptHandle(JSONObject body) throws Exception;
 
 }

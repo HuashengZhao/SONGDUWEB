@@ -123,7 +123,7 @@ public class TConChangeauditbillServiceImpl extends ServiceImpl<TConChangeauditb
                 String foaposition = auditVO.getFoaposition();
                 if (Util.isNotEmpty(foaposition)){
                     String identityId = foaposition.split("\\.")[0];
-                    String identityName = foaposition.split("\\.")[1];
+                    String identityName = foaposition.split("\\.")[foaposition.split("\\.").length-1];
                     auditVO.setIdentityId(identityId);
                     auditVO.setIdentityName(identityName);
                 }
@@ -199,7 +199,14 @@ public class TConChangeauditbillServiceImpl extends ServiceImpl<TConChangeauditb
 //            附件信息
 
             List<AttachmentsVO> attachmentsVOS = attachmentMapper.selectAttachMent(id);
-            if (attachmentsVOS!=null && attachmentsVOS.size()>0) {
+            if (attachmentsVOS != null && attachmentsVOS.size() > 0) {
+                for (AttachmentsVO easAttFile : attachmentsVOS) {
+                    String fileType = easAttFile.getFileType();
+                    if (Util.isNotEmpty(fileType)) {
+                        String s = FileContentTypeUtils.contentType("." + fileType);
+                        easAttFile.setContentType(s);
+                    }
+                }
                 auditVO.setAttachmentsVOS(attachmentsVOS);
             }
         }

@@ -2,7 +2,6 @@ package com.example.EAS.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.EAS.dto.WSContext;
 import com.example.EAS.mapper.*;
 import com.example.EAS.model.*;
 import com.example.EAS.service.IBaseDataService;
@@ -10,13 +9,13 @@ import com.example.EAS.thread.AsyncExecutor;
 import com.example.EAS.util.OaIdUtil;
 import com.example.EAS.util.ServiceException;
 import com.example.EAS.util.Util;
+import com.example.EAS.util.WSLoginUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.axis.client.Call;
 import org.apache.axis.message.SOAPHeaderElement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.xml.namespace.QName;
 import java.rmi.RemoteException;
 import java.time.LocalDateTime;
 
@@ -32,6 +31,8 @@ import java.time.LocalDateTime;
 @Service
 public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> implements IBaseDataService {
 
+    @Autowired
+    private WSLoginUtil wsLoginUtil;
     @Autowired
     private OaIdUtil oaIdUtil;
     @Autowired
@@ -85,7 +86,7 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
      */
 
     @Override
-    public JSONObject acceptHandle(JSONObject body) {
+    public JSONObject acceptHandle(JSONObject body) throws Exception {
 //        回调接口调用时间
         String acceptTime = LocalDateTime.now().toString();
 //        单据类型
@@ -96,12 +97,36 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
         obj.put("msg", "success");
 //      请求参数
         log.info(body.toString());
+
+        if (Util.isEmpty(body.get("type"))) {
+            obj.put("code", "2");
+            obj.put("msg", "fault");
+            obj.put("content", "回调单据type不能为空");
+            return obj;
+        } else if (Util.isEmpty(body.get("result"))) {
+            obj.put("code", "2");
+            obj.put("msg", "fault");
+            obj.put("content", "回调单据result不能为空");
+            return obj;
+        } else if (Util.isEmpty(body.get("oaid"))) {
+            obj.put("code", "2");
+            obj.put("msg", "fault");
+            obj.put("content", "回调单据oaid不能为空");
+            return obj;
+        } else if (Util.isEmpty(body.get("easid"))) {
+            obj.put("code", "2");
+            obj.put("msg", "fault");
+            obj.put("content", "回调单据easid不能为空");
+            return obj;
+        }
         String oaid = body.get("oaid").toString();
         String attlink = body.get("attlink").toString();
 //      01:审批通过,02:废弃,03:驳回,修订
         String result = body.get("result").toString();
 //      type 01:合同、02:合同付款申请单、03:无合同付款;04：供应商申请，05变更审批单，06变更确认单
         String type = body.get("type").toString();
+        String easid = body.get("easid").toString();
+
         if (Util.isNotEmpty(type)) {
             if (type.contains("01")) {
                 billType = "合同";
@@ -117,12 +142,7 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
                 billType = "变更确认单";
             }
         }
-        String easid = body.get("easid").toString();
-        if (oaid == null || type == null || easid == null) {
-            obj.put("code", "2");
-            obj.put("msg", "fault");
-            return obj;
-        }
+
 //      操作类型 对应webservice 的方法
         JSONObject operation = getOperation(type);
         String saveOperation = operation.getString("saveOperation");
@@ -139,46 +159,23 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
         String finalBillType = billType;
         AsyncExecutor.executeTask(t -> {
             String back = null;
-            String acceptType=null;
+            String acceptType = null;
             //       如果审核成功 调用eas审核方法
             if (result.contains("01")) {
-                acceptType= "审核";
+                acceptType = "审核";
                 log.info("type为" + type + "流程调用了回调审批！");
                 if (oaid != null && easid != null) {
                     oaIdUtil.getString(easid, oaid);
                 }
+                supplierapplyMapper.insertAcceptInfo(easid, acceptTime, finalBillType, acceptType, 1);
                 //        调用eas登录获取sessionid
-                String sessionId = null;
-                String url = null;
-                Call call = null;
-                try {
-                    call = (Call) service.createCall();
-                } catch (javax.xml.rpc.ServiceException e) {
-                    e.printStackTrace();
-                }
-
-                url = supplierapplyMapper.selectEASLogin();
-                call.setOperationName("login");
-                call.setTargetEndpointAddress(url);
-                call.setReturnType(new QName("urn:client", "WSContext"));
-                call.setReturnClass(WSContext.class);
-                call.setReturnQName(new QName("", "loginReturn"));
-                //超时
-                call.setTimeout(Integer.valueOf(1000 * 600000 * 60));
-                call.setMaintainSession(true);
-                //登陆接口参数
-                try {
-                    WSContext rs = (WSContext) call.invoke(new Object[]{"servicekd", "servicekd", "eas", "easdb", "L2", Integer.valueOf(2)});
-                    sessionId = rs.getSessionId();
-                    log.info("登录成功：" + sessionId);
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                    throw new ServiceException(e.getMessage());
-                }
+                JSONObject login = wsLoginUtil.login();//       登录
+                String sessionId = login.getString("sessionId");
+                Call call = (Call) login.get("call");
                 if (Util.isNotEmpty(sessionId)) {
                     //清理
                     call.clearOperation();
-                    url = supplierapplyMapper.selectEASURL();
+                    String url = supplierapplyMapper.selectEASURL();
                     call.setOperationName(auditOperation);    //接口方法
                     call.setTargetEndpointAddress(url);   //对应接口地址
                     call.addParameter("arg0", org.apache.axis.encoding.XMLType.XSD_STRING, javax.xml.rpc.ParameterMode.IN);
@@ -194,21 +191,23 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
                     } catch (RemoteException e) {
                         e.printStackTrace();
                         String message = e.getMessage();
-                        supplierapplyMapper.insertAcceptInfo(easid, acceptTime, finalBillType, acceptType, 2, message);
+                        supplierapplyMapper.updateAcceptInfo(easid, acceptTime, 2, message);
+                        throw new ServiceException(message);
+                    }
+                    if (Util.isNotEmpty(back)) {
+                        JSONObject backObj = JSONObject.parseObject(back);
+                        String resultBack = backObj.getString("result");
+                        if (Util.isNotEmpty(resultBack) && resultBack.contains("fault")) {
+                            String message = backObj.getString("message");
+                            supplierapplyMapper.updateAcceptInfo(easid, acceptTime, 2, message == null ? "eas审批时发生错误" : message);
+                        } else if (Util.isNotEmpty(resultBack) && resultBack.contains("success")) {
+                            supplierapplyMapper.updateAcceptInfo(easid, acceptTime, 1, "success");
+                        }
+                    } else {
+                        supplierapplyMapper.updateAcceptInfo(easid, acceptTime, 2, "eas审批时发生错误,审批调用无返回");
                     }
                 }
-                call.clearOperation();
-                call.setOperationName("logout");
-                url = supplierapplyMapper.selectEASLogin();
-                call.setTargetEndpointAddress(url);
-                try {
-                    call.invoke(new Object[]{"servicekd", "eas", "easdb", "L2"});
-                    log.info("登出成功");
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                    throw new ServiceException(e.getMessage());
-                }
-
+                wsLoginUtil.logout(call);//登出
             }
             try {
 //        如果oa作废 修改状态为保存 删除easid 跟oaid的关联
@@ -218,6 +217,7 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
                     if (oaid != null && easid != null) {
                         oaIdUtil.deleteId(easid, oaid);
                     }
+                    supplierapplyMapper.insertAcceptInfo(easid, acceptTime, finalBillType, acceptType, 1);
                     if (type.contains("01")) {
                         contractbillMapper.updateData(easid);
                     } else if (type.contains("02")) {
@@ -237,10 +237,11 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
             } catch (Exception e) {
                 e.printStackTrace();
                 String message = e.getMessage();
-                supplierapplyMapper.insertAcceptInfo(easid, acceptTime, finalBillType, acceptType, 2, message);
+                supplierapplyMapper.updateAcceptInfo(easid, acceptTime, 2, message);
             }
 
 //        如果驳回 修改状态为已提交 并保留oaid
+            try {
             if (result.contains("03")) {
                 acceptType = "驳回";
                 log.info("type为" + type + "流程调用了回调驳回！");
@@ -248,6 +249,7 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
                     if (oaid != null && easid != null) {
                         oaIdUtil.getString(easid, oaid);
                     }
+                    supplierapplyMapper.insertAcceptInfo(easid, acceptTime, finalBillType, acceptType, 1);
                     TConContractbill tConContractbill = contractbillMapper.selectById(easid);
                     tConContractbill.setFstate("2SUBMITTED");
                     contractbillMapper.updateById(tConContractbill);
@@ -283,18 +285,12 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
                     settleMapper.updateById(tConContractchangesettlebill);
                 }
             }
-            if (Util.isNotEmpty(back)) {
-                JSONObject backObj = JSONObject.parseObject(back);
-                String resultBack = backObj.getString("result");
-                if (Util.isNotEmpty(resultBack) && resultBack.contains("fault")) {
-                    String message = backObj.getString("message");
-                    supplierapplyMapper.insertAcceptInfo(easid, acceptTime, finalBillType, acceptType, 2, message == null ? "eas审批报错" : message);
-                }else if (Util.isNotEmpty(resultBack) && resultBack.contains("success")){
-                    supplierapplyMapper.insertAcceptInfo(easid, acceptTime, finalBillType, acceptType, 1, "success");
-                }
-            }else{
-                supplierapplyMapper.insertAcceptInfo(easid, acceptTime, finalBillType, acceptType, 1, "success");
+        } catch (Exception e) {
+                e.printStackTrace();
+                String message = e.getMessage();
+                supplierapplyMapper.updateAcceptInfo(easid, acceptTime, 2, message);
             }
+
             try {
                 Thread.sleep(5000);
             } catch (InterruptedException e) {

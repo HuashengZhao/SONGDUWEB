@@ -84,7 +84,7 @@ public interface TConSupplierapplyMapper extends BaseMapper<TConSupplierapply> {
 
     String selectAppUrl();
 
-    void insertAcceptInfo(String easid, String acceptTime, String finalBillType, String acceptType, int i, String message);
+    void insertAcceptInfo(String easid, String acceptTime, String finalBillType, String acceptType, int i);
 
     void updateData(String easid);
 
@@ -99,6 +99,10 @@ public interface TConSupplierapplyMapper extends BaseMapper<TConSupplierapply> {
 
     String selectOAINFO();
 
+
+    void updateAcceptInfo(String easid, String acceptTime, int i, String message);
+
+    String selectEditUrl();
 
 }
 

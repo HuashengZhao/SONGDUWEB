@@ -311,6 +311,13 @@ public class TConPayrequestbillServiceImpl extends ServiceImpl<TConPayrequestbil
 //            附件信息
             List<AttachmentsVO> attachmentsVOS = attachmentMapper.selectAttachMent(id);
             if (attachmentsVOS != null && attachmentsVOS.size() > 0) {
+                for (AttachmentsVO easAttFile : attachmentsVOS) {
+                    String fileType = easAttFile.getFileType();
+                    if (Util.isNotEmpty(fileType)) {
+                        String s = FileContentTypeUtils.contentType("." + fileType);
+                        easAttFile.setContentType(s);
+                    }
+                }
                 payRequestBillVO.setAttachmentsVOS(attachmentsVOS);
             }
 //            纳税人

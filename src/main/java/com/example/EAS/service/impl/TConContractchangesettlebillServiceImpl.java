@@ -151,13 +151,20 @@ public class TConContractchangesettlebillServiceImpl extends ServiceImpl<TConCon
                 String foaposition = settleVO.getFoaposition();
                 if (Util.isNotEmpty(foaposition)){
                     String identityId = foaposition.split("\\.")[0];
-                    String identityName = foaposition.split("\\.")[1];
+                    String identityName = foaposition.split("\\.")[foaposition.split("\\.").length-1];
                     settleVO.setIdentityId(identityId);
                     settleVO.setIdentityName(identityName);
                 }
                 //            附件信息
                 List<AttachmentsVO> attachmentsVOS = attachmentMapper.selectAttachMent(id);
-                if (attachmentsVOS!=null && attachmentsVOS.size()>0) {
+                if (attachmentsVOS != null && attachmentsVOS.size() > 0) {
+                    for (AttachmentsVO easAttFile : attachmentsVOS) {
+                        String fileType = easAttFile.getFileType();
+                        if (Util.isNotEmpty(fileType)) {
+                            String s = FileContentTypeUtils.contentType("." + fileType);
+                            easAttFile.setContentType(s);
+                        }
+                    }
                     settleVO.setAttachmentsVOS(attachmentsVOS);
                 }
 //                提出部门、单位

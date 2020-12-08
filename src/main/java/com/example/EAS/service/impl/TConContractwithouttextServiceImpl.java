@@ -267,6 +267,13 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             //            附件信息
             List<AttachmentsVO> easFiles = attachmentMapper.selectAttachMent(id);
             if (easFiles != null && easFiles.size() > 0) {
+                for (AttachmentsVO easAttFile : easFiles) {
+                    String fileType = easAttFile.getFileType();
+                    if (Util.isNotEmpty(fileType)) {
+                        String s = FileContentTypeUtils.contentType("." + fileType);
+                        easAttFile.setContentType(s);
+                    }
+                }
                 returnVO.setAttachmentsVOS(easFiles);
             }
 
@@ -896,8 +903,8 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         System.out.println("合同单据web端详情查看地址：" + sendUrl);
         System.out.println(" 合同单据app端详情查看地址：" + sendAppUrl);
         obj.put("loginName", personNum);
-        data.put("fd_link", sendUrl);
-        data.put("fd_mobile_link", sendAppUrl);
+        obj.put("fdPcViewLink", sendUrl);
+        obj.put("fdMobileViewLink", sendAppUrl);
         obj.put("data", data.toString());
 //      附件参数
         JSONArray attFile = new JSONArray();

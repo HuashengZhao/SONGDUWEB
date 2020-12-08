@@ -823,6 +823,13 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
 //        附件信息
         List<AttachmentsVO> attachmentsVOS = attachmentMapper.selectAttachMent(vo.getId());
         if (attachmentsVOS != null && attachmentsVOS.size() > 0) {
+            for (AttachmentsVO easAttFile : attachmentsVOS) {
+                String fileType = easAttFile.getFileType();
+                if (Util.isNotEmpty(fileType)) {
+                    String s = FileContentTypeUtils.contentType("." + fileType);
+                    easAttFile.setContentType(s);
+                }
+            }
             contractVO.setAttachmentsVOS(attachmentsVOS);
         }
 
@@ -1001,8 +1008,8 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         log.info(" 合同单据app端详情查看地址：" + sendAppUrl);
         obj.put("loginName", personNum);
 
-        data.put("fd_link", sendUrl);
-        data.put("fd_mobile_link", sendAppUrl);
+        obj.put("fdPcViewLink", sendUrl);
+        obj.put("fdMobileViewLink", sendAppUrl);
 //        data.put("createTime", vo.getCreateTime());
         obj.put("data", data.toString());
 

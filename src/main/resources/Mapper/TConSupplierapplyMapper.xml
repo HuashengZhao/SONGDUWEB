@@ -5,8 +5,8 @@
         insert into oaidrecord(billId,oaid) values(#{easid},#{oaid})
     </insert>
     <insert id="insertAcceptInfo">
-        insert into acceptinfo(billId,accepttime,billtype,optype,state,message)
-         values(#{easid},#{acceptTime},#{finalBillType},#{acceptType},#{i},#{message})
+        insert into acceptinfo(billId,accepttime,billtype,optype,state)
+         values(#{easid},#{acceptTime},#{finalBillType},#{acceptType},#{i})
     </insert>
     <update id="updateNumberRecord">
         update OANUMBERRECORD set value =#{numberRecord} where type like '%supplier%'
@@ -25,6 +25,10 @@
     </update>
     <update id="updatePersonPost">
         update T_CON_SUPPLIERAPPLY set  foaposition= #{foaposition} where fid= #{id}
+    </update>
+    <update id="updateAcceptInfo">
+        update acceptinfo set state=#{i},message=#{message}
+        where billId=#{easid} and accepttime=#{acceptTime}
     </update>
 
     <delete id="deleteData">
@@ -167,6 +171,9 @@
     </select>
     <select id="selectOAINFO" resultType="java.lang.String">
         select url from weburl where type ='OAINFO'
+    </select>
+    <select id="selectEditUrl" resultType="java.lang.String">
+        select url from webUrl where type ='edit'
     </select>
 
 </mapper>

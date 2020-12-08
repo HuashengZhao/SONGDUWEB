@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.EAS.dto.WSContext;
 import com.example.EAS.mapper.TBasAttachmentMapper;
 import com.example.EAS.mapper.TConSupplierapplyMapper;
 import com.example.EAS.mapper.TFdcContracttypeMapper;
@@ -26,7 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.xml.namespace.QName;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.rmi.RemoteException;
@@ -643,8 +641,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         sendAppUrl = String.valueOf(sba.append(appUrl).append(appAppendType).append(appendId)
                 .append(appendToken));
 //        sb.append("http://172.17.4.125:8082/easWeb/#/supplier").append("?token=").append(token);
-//        System.out.println("合同单据web端详情查看地址：" + sendUrl);
-//        System.out.println(" 合同单据app端详情查看地址：" + sendAppUrl);
+
         obj.put("loginName", personNum);
         JSONObject data = new JSONObject();
         String identityId = vo.getIdentityId();
@@ -655,8 +652,8 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
             String foaposition = stringBuffer.append(identityId).append(";" + identityName).toString();
             mapper.updatePersonPost(id, foaposition);
         }
-        data.put("fd_link", sendUrl);
-        data.put("fd_mobile_link", sendAppUrl);
+        obj.put("fdPcViewLink", sendUrl);
+        obj.put("fdMobileViewLink", sendAppUrl);
         obj.put("data", data.toString());
 
         //      附件参数

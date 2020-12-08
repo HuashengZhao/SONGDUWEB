@@ -91,11 +91,9 @@ public class FtpUtil {
 //        ftp.setActivePortRange(3000,3010);
         try {
             int reply;
-//            ftp.connect("172.17.4.129", 21);// 连接FTP服务器
-            ftp.connect("172.17.4.60", 21);// 连接FTP服务器
+            ftp.connect("172.17.4.129", 21);// 连接FTP服务器
             // 如果采用默认端口，可以使用ftp.connect(host)的方式直接连接FTP服务器
-//            ftp.login("kingdeeftp", "kingdeeftp");// 登录
-            ftp.login("adminftp", "sdjt2020@#");// 登录
+            ftp.login("kingdeeftp", "kingdeeftp");// 登录
             reply = ftp.getReplyCode();
             if (!FTPReply.isPositiveCompletion(reply)) {
                 ftp.disconnect();
@@ -164,11 +162,9 @@ public class FtpUtil {
         ftp.enterLocalPassiveMode();//被动模式
         try {
             int reply;
-//            ftp.connect("172.17.4.129", 21);// 连接FTP服务器
-            ftp.connect("172.17.4.60", 21);// 连接FTP服务器
+            ftp.connect("172.17.4.129", 21);// 连接FTP服务器
             // 如果采用默认端口，可以使用ftp.connect(host)的方式直接连接FTP服务器
-//            ftp.login("kingdeeftp", "kingdeeftp");// 登录
-            ftp.login("adminftp", "sdjt2020@#");// 登录
+            ftp.login("kingdeeftp", "kingdeeftp");// 登录
             reply = ftp.getReplyCode();
 //            ftp.setControlEncoding("GBK");
 
@@ -176,6 +172,7 @@ public class FtpUtil {
                 ftp.disconnect();
                 return;
             }
+
 //            ftp.enterLocalActiveMode();//设置主动模式
 //            ftp.setActivePortRange(3000,3010);
             ftp.changeWorkingDirectory(remotePath);// 转移到FTP服务器目录

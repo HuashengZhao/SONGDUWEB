@@ -69,13 +69,13 @@ public class OAController {
                 return R.error(json);
             }
             String sysName = vo.getSysName();
-
             List<LoginVO> vos = mapper.selectIFExist(org, person);
+
             StringBuffer sb = new StringBuffer();
             String s = String.valueOf(sb.append(org).append("&&").append(person));
             String token = RSAUtil.encrypt(s, "pub.key");
 //          存放token
-            redisUtil.set(redisUtil.generateKey(CacheKeyConstant.WEB_LOGIN_TOKEN, person), token, 1000 * 3600 * 24);
+            redisUtil.set(redisUtil.generateKey(CacheKeyConstant.WEB_LOGIN_TOKEN, person), token, 1000 * 3600 * 240);
 //          返回link拼接
             String type = null;
             if (Util.isNotEmpty(vo.getType())) {

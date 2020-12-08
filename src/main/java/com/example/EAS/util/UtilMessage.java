@@ -102,7 +102,7 @@ public class UtilMessage {
     public static final String HYGH_HAS_BELINKED = "合约规划已被其他合同关联，请重新选择!";
     public static final String CONTRACT_AMOUNT_NOT_FOUND = "合同金额不能为空!";
     public static final String UNSUPPORTED_DOWNLOAD_FILE = "该附件不支持下载，请到eas查看!";
-    public static final String VIEW_URL_NOT_FOUND = "未找到页面查看的地址信息，请联系后台管理!";
+    public static final String VIEW_URL_NOT_FOUND = "提交流程报错，请联系后台管理!";
     public static final String MISS_PROJECT_INFO = "缺失营销立项信息,请联系后台管理！";
     public static final String DATA_DOES_EXIST = "单据已存在，请勿重复操作";
 
