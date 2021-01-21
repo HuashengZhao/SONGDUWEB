@@ -39,7 +39,7 @@ public class TConContractwithouttextController {
      * @throws Exception
      */
 
-    @RequestMapping(value = "/getNoTextBills", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/getNoTextBills", method =  RequestMethod. POST, produces = "application/json;charset=UTF-8")
     public R getNoTextBills(@RequestBody String body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         NoTextContractVO vo = BodyDecodeUtil.decodeBody(body, NoTextContractVO.class);
@@ -57,7 +57,7 @@ public class TConContractwithouttextController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/viewNoTextBill", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/viewNoTextBill", method =  RequestMethod. POST, produces = "application/json;charset=UTF-8")
     public R viewNoTextBill(@RequestBody String body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         NoTextContractVO vo = BodyDecodeUtil.decodeBody(body, NoTextContractVO.class);
@@ -75,7 +75,7 @@ public class TConContractwithouttextController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/saveNoTextBill", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/saveNoTextBill", method =  RequestMethod. POST, produces = "application/json;charset=UTF-8")
     public R saveNoTextBill(@RequestBody String body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         NoTextContractVO vo = BodyDecodeUtil.decodeBody(body, NoTextContractVO.class);
@@ -93,7 +93,7 @@ public class TConContractwithouttextController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/submitNoTextBill", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/submitNoTextBill", method =  RequestMethod. POST, produces = "application/json;charset=UTF-8")
     public R submitNoTextBill(@RequestBody String body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         NoTextContractVO vo = BodyDecodeUtil.decodeBody(body, NoTextContractVO.class);
@@ -111,7 +111,7 @@ public class TConContractwithouttextController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/getNoTextNum", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/getNoTextNum", method =  RequestMethod. POST, produces = "application/json;charset=UTF-8")
     public R getNoTextNum(@RequestBody String body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         NoTextContractVO vo = BodyDecodeUtil.decodeBody(body, NoTextContractVO.class);
@@ -130,7 +130,7 @@ public class TConContractwithouttextController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/deleteNoTextBills", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/deleteNoTextBills", method =  RequestMethod. POST, produces = "application/json;charset=UTF-8")
     public R deleteNoTextNum(@RequestBody String body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         NoTextContractVO vo = BodyDecodeUtil.decodeBody(body, NoTextContractVO.class);

@@ -36,7 +36,7 @@ public class TBdCurrencyController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/getCurrency", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/getCurrency", method =  RequestMethod. POST, produces = "application/json;charset=UTF-8")
     public R getCurrency(@RequestBody String  body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         CurrencyVO vo = BodyDecodeUtil.decodeBody(body, CurrencyVO.class);

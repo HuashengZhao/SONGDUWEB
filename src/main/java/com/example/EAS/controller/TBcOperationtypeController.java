@@ -37,7 +37,7 @@ public class TBcOperationtypeController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/getOperationType", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/getOperationType", method =  RequestMethod. POST, produces = "application/json;charset=UTF-8")
     public R getOperationType(@RequestBody String body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         OperationTypeVO vo = BodyDecodeUtil.decodeBody(body, OperationTypeVO.class);

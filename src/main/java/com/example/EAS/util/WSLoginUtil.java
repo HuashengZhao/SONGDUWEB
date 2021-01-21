@@ -1,6 +1,7 @@
 package com.example.EAS.util;
 
 import com.alibaba.fastjson.JSONObject;
+import com.example.EAS.constant.CacheKeyConstant;
 import com.example.EAS.dto.WSContext;
 import com.example.EAS.mapper.TConSupplierapplyMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,8 @@ import java.rmi.RemoteException;
 public class WSLoginUtil {
     @Autowired
     private TConSupplierapplyMapper mapper;
+    @Autowired
+    private RedisUtil redisUtil;
 
     org.apache.axis.client.Service service = new org.apache.axis.client.Service();
     String sessionId = null;
@@ -25,14 +28,18 @@ public class WSLoginUtil {
 
     //    登录websevice
     public JSONObject login() {
+        long expire = redisUtil.getExpire(redisUtil.generateKey(CacheKeyConstant.EAS_LOGIN_WAITING));
+        if (Util.isNotEmpty(expire)&&expire>0) {
+            throw new com.example.EAS.util.ServiceException("当前操作正在执行，请等待三秒后重新操作！");
+        }
         JSONObject jsonObject = new JSONObject();
-
         try {
             call = (Call) service.createCall();
         } catch (ServiceException e) {
             e.printStackTrace();
         }
         url = mapper.selectEASLogin();
+//        再登录
         call.setOperationName("login");
         call.setTargetEndpointAddress(url);
         call.setReturnType(new QName("urn:client", "WSContext"));
@@ -41,11 +48,13 @@ public class WSLoginUtil {
         //超时
         call.setTimeout(Integer.valueOf(1000 * 600000 * 60));
         call.setMaintainSession(true);
+        String s = call.toString();
         //登陆接口参数
         try {
-            WSContext rs = (WSContext) call.invoke(new Object[]{"webservice", "12345678", "eas", "kingdeedc69", "L2", Integer.valueOf(2)}); //测试地址
+            WSContext rs = (WSContext) call.invoke(new Object[]{"webservice", "webservice", "eas", "easdb", "L2", Integer.valueOf(2)}); //测试地址
 //            WSContext rs = (WSContext) call.invoke(new Object[]{"servicekd", "servicekd", "eas", "easdb", "L2", Integer.valueOf(2)});  ////正式地址
             sessionId = rs.getSessionId();
+            redisUtil.set(redisUtil.generateKey(CacheKeyConstant.EAS_LOGIN_WAITING), "point", 5);
             log.info("登录成功：" + sessionId);
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -53,17 +62,17 @@ public class WSLoginUtil {
         }
         jsonObject.put("call", call);
         jsonObject.put("sessionId", sessionId);
-
         return jsonObject;
     }
-//    登出websevice
-    public void logout(Call call){
+
+    //    登出websevice
+    public void logout(Call call) {
         call.clearOperation();
         call.setOperationName("logout");
         String url = mapper.selectEASLogin();
         call.setTargetEndpointAddress(url);
         try {
-            call.invoke(new Object[]{"webservice", "eas", "kingdeedc69", "L2"});//测试地址
+            call.invoke(new Object[]{"webservice", "eas", "easdb", "L2"});//测试地址
 //            call.invoke(new Object[]{"servicekd", "eas", "easdb", "L2"});//正式地址
             log.info("登出成功");
         } catch (RemoteException e) {

@@ -82,6 +82,7 @@ public class AuthTokenInterceptor implements HandlerInterceptor {
         LoginVO loginVO = new LoginVO();
 //        token = URLDecoder.decode(token,"utf-8");
         loginVO.setToken(token);
+        loginVO.setPerson(person);
         RequestHolder.add(loginVO);
         return true;
     }

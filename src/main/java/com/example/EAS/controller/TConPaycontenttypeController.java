@@ -37,7 +37,7 @@ public class TConPaycontenttypeController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/getPayContentType", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/getPayContentType", method =  RequestMethod. POST, produces = "application/json;charset=UTF-8")
     public R getPayContentType(@RequestBody String body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         PayContentTypeVO vo = BodyDecodeUtil.decodeBody(body, PayContentTypeVO.class);

@@ -16,6 +16,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.axis.client.Call;
+import org.apache.axis.message.SOAPHeaderElement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,6 +41,8 @@ import java.util.List;
 @Service
 public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMapper, TConContractbill> implements ITConContractbillService {
 
+    @Autowired
+    private WSLoginUtil wsLoginUtil;
     @Autowired
     private TConContractbillMapper mapper;
     @Autowired
@@ -105,8 +108,8 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             }
         }
 
-        if(Util.isEmpty(projectIdList)) {
-           return null;
+        if (Util.isEmpty(projectIdList)) {
+            return null;
         }
         vo.setProjectIds(projectIdList);
 //        根据合同类型id 查询 子类id集合
@@ -291,9 +294,9 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                     List<TConContractbill> conContractbills = mapper.selectList(new QueryWrapper<TConContractbill>()
                             .eq("fnumber", num)
                             .eq("fname", conName));
-                    if (Util.isEmpty(conContractbills)){
-                        throw new ServiceException(901,UtilMessage.NUMBER_EXIST);
-                    }else {
+                    if (Util.isEmpty(conContractbills)) {
+                        throw new ServiceException(901, UtilMessage.NUMBER_EXIST);
+                    } else {
                         throw new ServiceException(900, UtilMessage.DATA_DOES_EXIST);
                     }
                 }
@@ -586,32 +589,31 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             }
         }
         easJson.put("marketConArray", jsonArray);
-        long saveStart = System.currentTimeMillis();
+
+        JSONObject login = wsLoginUtil.login();//        登录
+        String sessionId = login.getString("sessionId");
+        Call call = (Call) login.get("call");
+
         String result = null;
-        Call call = null;
-//        调用eas 保存方法进行保存
-        if (Util.isEmpty(flag) || flag.compareTo(false) == 0) {
-            call = getCall("EASURL", "saveContractBill");
-            try {
-                log.info(conName + " 合同提交参数：" + easJson.toJSONString());
-                result = (String) call.invoke(new Object[]{easJson.toString()});
-            } catch (RemoteException e) {
-                e.printStackTrace();
-                throw new ServiceException(e.getMessage());
+        if (Util.isNotEmpty(sessionId)) {
+            //清理
+            call.clearOperation();
+            String url = supplierapplyMapper.selectEASURL();
+            if (Util.isEmpty(flag) || flag.compareTo(false) == 0) {
+                call.setOperationName("saveContractBill");    //接口方法
+            } else {
+                call.setOperationName("submitContractBill");    //接口方法
             }
-        } else {
-            //            如果是驳回后重新提交 调用eas合同提交方法
-            call = getCall("EASURL", "submitContractBill");
-            try {
-                log.info(conName + " 合同重新提交参数：" + easJson.toJSONString());
-                result = (String) call.invoke(new Object[]{easJson.toString()});
-            } catch (RemoteException e) {
-                e.printStackTrace();
-                throw new ServiceException(e.getMessage());
-            }
+            call.setTargetEndpointAddress(url);   //对应接口地址
+            call.addParameter("arg0", org.apache.axis.encoding.XMLType.XSD_STRING, javax.xml.rpc.ParameterMode.IN);
+            call.setReturnType(org.apache.axis.encoding.XMLType.XSD_STRING);
+            call.setTimeout(Integer.valueOf(1000 * 600000 * 60));
+            call.setMaintainSession(true);
+            call.setUseSOAPAction(true);
+            SOAPHeaderElement header = new SOAPHeaderElement("http://login.webservice.bos.kingdee.com", "SessionId", sessionId);
+            call.addHeader(header);
         }
-        long saveEnd = System.currentTimeMillis();
-        log.info("调用EAS合同保存时间:" + (saveEnd - saveStart) + "ms");
+        wsLoginUtil.logout(call);//登出
 //        接收返回eas信息
         JSONObject object = JSONObject.parseObject(result);
         if (result != null && object.get("result") != null) {
@@ -630,14 +632,11 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
                 }
             }
         }
-        long endTime = System.currentTimeMillis();
-        log.info("合同保存耗时：" + (endTime - startTime) + "ms");
         return contractVO;
     }
 
     @Override
     public ContractVO viewContractBill(ContractVO vo) throws Exception {
-        long startTime = System.currentTimeMillis();
         String id = vo.getId();
         if (Util.isEmpty(id)) {
             return null;
@@ -712,7 +711,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
 //          http://122.224.88.138:58080/km/review/km_review_main/
 //          kmReviewMain.do?method=view&fdId=173c6b9e6dd55fccb9a0be942b2b074d&MtFdLoinName
 //          =gdjjXmldhhTqgDyrFOTunA==
-            String s1 = "http://122.224.88.138:58080/km/review/km_review_main/kmReviewMain.do?method=view&fdId=";
+            String s1 = supplierapplyMapper.selectOAINFO();
             String s2 = "&MtFdLoinName=";
             StringBuffer stringBuffer = new StringBuffer();
             oaid = URLEncoder.encode(oaid);
@@ -868,8 +867,6 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         if (marketContDetailVOS != null && marketContDetailVOS.size() > 0) {
             contractVO.setMarketContDetailVOS(marketContDetailVOS);
         }
-        long endTime = System.currentTimeMillis();
-        log.info("合同查看耗时：" + (endTime - startTime) + "ms");
         return contractVO;
     }
 
@@ -918,7 +915,6 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
         obj.put("id", id);
         String tId = supplierapplyMapper.selectTemplateId("contract");
         obj.put("tmplateId", tId);
-        obj.put("tmplateId", "174046df325987eb1d487be4026b1b64");
         obj.put("fdType", "1");
         obj.put("docSubject", vo.getConName());
         //        表单参数
@@ -1043,7 +1039,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             Call call = getCall("OAURL", "addtestEkpReview");
             try {
                 result = (String) call.invoke(new Object[]{obj.toString()});
-                System.out.println(vo.getConName() + "本次提交传给oa的参数" + obj.toString());
+                log.info(vo.getConName() + "本次提交传给oa的参数" + obj.toString());
                 str = JSONObject.parseObject(result);
                 log.info("这次是新增流程：" + str);
             } catch (RemoteException e) {

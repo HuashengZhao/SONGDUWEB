@@ -39,7 +39,7 @@ public class TConPayrequestbillController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/getPayRequestBill", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/getPayRequestBill", method =  RequestMethod. POST, produces = "application/json;charset=UTF-8")
     public R getPayRequestBill(@RequestBody String body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         PayRequestBillVO vo = BodyDecodeUtil.decodeBody(body, PayRequestBillVO.class);
@@ -57,7 +57,7 @@ public class TConPayrequestbillController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/viewPayRequestBill", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/viewPayRequestBill", method =  RequestMethod. POST, produces = "application/json;charset=UTF-8")
     public R viewPayRequestBill(@RequestBody String body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         PayRequestBillVO vo = BodyDecodeUtil.decodeBody(body, PayRequestBillVO.class);

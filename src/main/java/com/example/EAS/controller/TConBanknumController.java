@@ -37,7 +37,7 @@ public class TConBanknumController {
      * @param body
      * @return
      */
-    @RequestMapping(value = "/getBankNum", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/getBankNum", method =  RequestMethod. POST, produces = "application/json;charset=UTF-8")
     public R getBankNum(@RequestBody String body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         BankNumberVO vo = BodyDecodeUtil.decodeBody(body, BankNumberVO.class);

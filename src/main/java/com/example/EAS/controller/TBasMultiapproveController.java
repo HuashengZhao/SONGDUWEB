@@ -38,7 +38,7 @@ public class TBasMultiapproveController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/getMultiApprove", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/getMultiApprove", method = {RequestMethod.POST, RequestMethod.GET}, produces = "application/json;charset=UTF-8")
     public R getMultiApprove(@RequestBody String body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         MultiApproveVO vo = BodyDecodeUtil.decodeBody(body, MultiApproveVO.class);

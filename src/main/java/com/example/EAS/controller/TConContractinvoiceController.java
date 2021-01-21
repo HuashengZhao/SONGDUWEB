@@ -37,7 +37,7 @@ public class TConContractinvoiceController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/getInvoice", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/getInvoice", method =  RequestMethod. POST, produces = "application/json;charset=UTF-8")
     public R getInvoice(@RequestBody String  body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         InvoiceVO vo = BodyDecodeUtil.decodeBody(body, InvoiceVO.class);

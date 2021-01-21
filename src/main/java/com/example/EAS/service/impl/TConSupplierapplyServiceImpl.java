@@ -338,9 +338,9 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         }
 
         obj.put("attach", attach);
-//        Call call = getCall("EASURL", "saveSupplierApply");
 //        调用eas登录获取sessionid
         String result = null;
+
         JSONObject login = wsLoginUtil.login();//        登录
         String sessionId = login.getString("sessionId");
         Call call = (Call) login.get("call");
@@ -365,8 +365,8 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
                 throw new ServiceException(e.getMessage());
             }
         }
+
         wsLoginUtil.logout(call);//登出
-//
         JSONObject str = JSONObject.parseObject(result);
         String state = str.getString("result");
         if (Util.isNotEmpty(state) && state.contains("fault")) {
@@ -477,6 +477,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
         String result = null;
 
         JSONObject login = wsLoginUtil.login();//        登录
+
         String sessionId = login.getString("sessionId");
         Call call = (Call) login.get("call");
         if (Util.isNotEmpty(sessionId)) {
@@ -500,7 +501,9 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
                 throw new ServiceException(e.getMessage());
             }
         }
+
         wsLoginUtil.logout(call);//登出
+
         JSONObject str = JSONObject.parseObject(result);
         String state = str.getString("result");
         if (Util.isNotEmpty(state) && state.contains("fault")) {

@@ -37,7 +37,7 @@ public class TConChangeauditbillController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/getChangeAuditList", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/getChangeAuditList", method =  RequestMethod. POST, produces = "application/json;charset=UTF-8")
     public R getChangeAuditList(@RequestBody String body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         ChangeAuditVO vo = BodyDecodeUtil.decodeBody(body, ChangeAuditVO.class);
@@ -55,7 +55,7 @@ public class TConChangeauditbillController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/viewChangeAudit", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/viewChangeAudit", method =  RequestMethod. POST, produces = "application/json;charset=UTF-8")
     public R viewChangeAudit(@RequestBody String body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         ChangeAuditVO vo = BodyDecodeUtil.decodeBody(body, ChangeAuditVO.class);

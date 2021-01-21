@@ -193,7 +193,7 @@ public class TConPayrequestbillServiceImpl extends ServiceImpl<TConPayrequestbil
             String foaposition = payRequestBillVO.getFoaposition();
             if (Util.isNotEmpty(foaposition)) {
                 String identityId = foaposition.split("\\.")[0];
-                String identityName = foaposition.split("\\.")[1];
+                String identityName = foaposition.split("\\.")[foaposition.split("\\.").length - 1];
                 payRequestBillVO.setIdentityId(identityId);
                 payRequestBillVO.setIdentityName(identityName);
             }
@@ -208,7 +208,7 @@ public class TConPayrequestbillServiceImpl extends ServiceImpl<TConPayrequestbil
 //          http://122.224.88.138:58080/km/review/km_review_main/
 //          kmReviewMain.do?method=view&fdId=173c6b9e6dd55fccb9a0be942b2b074d&MtFdLoinName
 //          =gdjjXmldhhTqgDyrFOTunA==
-                String s1 = "http://122.224.88.138:58080/km/review/km_review_main/kmReviewMain.do?method=view&fdId=";
+                String s1 = supplierapplyMapper.selectOAINFO();
                 String s2 = "&MtFdLoinName=";
                 StringBuffer stringBuffer = new StringBuffer();
                 oaid = URLEncoder.encode(oaid);

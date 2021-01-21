@@ -41,7 +41,7 @@ public class TOrgBaseUnitController {
      * @param
      * @return
      */
-    @RequestMapping(value = "/getOrgs", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/getOrgs", method =  RequestMethod. POST, produces = "application/json;charset=UTF-8")
     public R getOrgs(@RequestBody String body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         OrgVO vo = BodyDecodeUtil.decodeBody(body, OrgVO.class);
@@ -59,7 +59,7 @@ public class TOrgBaseUnitController {
      * @param
      * @return
      */
-    @RequestMapping(value = "/getCostEntities", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/getCostEntities", method =  RequestMethod. POST, produces = "application/json;charset=UTF-8")
     public R getCostEntitys(@RequestBody String body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         OrgVO vo = BodyDecodeUtil.decodeBody(body, OrgVO.class);
@@ -74,7 +74,7 @@ public class TOrgBaseUnitController {
      * 实体财务组织
      * 只展示实体财务组织，无文本录入时获取预算承担公司调用
      */
-    @RequestMapping(value = "/getEntityFinalOrg", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/getEntityFinalOrg", method =  RequestMethod. POST, produces = "application/json;charset=UTF-8")
     public R getEntityFinalOrg(@RequestBody String body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         OrgVO vo = BodyDecodeUtil.decodeBody(body, OrgVO.class);

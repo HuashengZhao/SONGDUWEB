@@ -234,6 +234,7 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
                         settleMapper.updateData(easid);
                     }
                 }
+                supplierapplyMapper.updateAcceptInfo(easid, acceptTime, 1, "success");
             } catch (Exception e) {
                 e.printStackTrace();
                 String message = e.getMessage();
@@ -242,50 +243,51 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
 
 //        如果驳回 修改状态为已提交 并保留oaid
             try {
-            if (result.contains("03")) {
-                acceptType = "驳回";
-                log.info("type为" + type + "流程调用了回调驳回！");
-                if (type.contains("01")) {
-                    if (oaid != null && easid != null) {
-                        oaIdUtil.getString(easid, oaid);
-                    }
+                if (result.contains("03")) {
+                    acceptType = "驳回";
+                    log.info("type为" + type + "流程调用了回调驳回！");
                     supplierapplyMapper.insertAcceptInfo(easid, acceptTime, finalBillType, acceptType, 1);
-                    TConContractbill tConContractbill = contractbillMapper.selectById(easid);
-                    tConContractbill.setFstate("2SUBMITTED");
-                    contractbillMapper.updateById(tConContractbill);
-                } else if (type.contains("02")) {
-                    if (oaid != null && easid != null) {
-                        oaIdUtil.getString(easid, oaid);
+                    if (type.contains("01")) {
+                        if (oaid != null && easid != null) {
+                            oaIdUtil.getString(easid, oaid);
+                        }
+                        TConContractbill tConContractbill = contractbillMapper.selectById(easid);
+                        tConContractbill.setFstate("2SUBMITTED");
+                        contractbillMapper.updateById(tConContractbill);
+                    } else if (type.contains("02")) {
+                        if (oaid != null && easid != null) {
+                            oaIdUtil.getString(easid, oaid);
+                        }
+                        TConPayrequestbill tConPayrequestbill = payrequestbillMapper.selectById(easid);
+                        tConPayrequestbill.setFstate("2SUBMITTED");
+                        payrequestbillMapper.updateById(tConPayrequestbill);
+                    } else if (type.contains("03")) {
+                        if (oaid != null && easid != null) {
+                            oaIdUtil.getString(easid, oaid);
+                        }
+                        TConContractwithouttext tConContractwithouttext = noTextMapper.selectById(easid);
+                        tConContractwithouttext.setFstate("2SUBMITTED");
+                        noTextMapper.updateById(tConContractwithouttext);
+                    } else if (type.contains("04")) {
+                        if (oaid != null && easid != null) {
+                            oaIdUtil.getString(easid, oaid);
+                        }
+                        TConSupplierapply tConSupplierapply = supplierapplyMapper.selectById(easid);
+                        tConSupplierapply.setFstate("2SUBMITTED");
+                        supplierapplyMapper.updateById(tConSupplierapply);
+                    } else if (type.contains("05")) {
+                        TConChangeauditbill tConChangeauditbill = auditMapper.selectById(easid);
+                        tConChangeauditbill.setFstate("2SUBMITTED");
+                        tConChangeauditbill.setFchangestate("3Submit");
+                        auditMapper.updateById(tConChangeauditbill);
+                    } else if (type.contains("06")) {
+                        TConContractchangesettlebill tConContractchangesettlebill = settleMapper.selectById(easid);
+                        tConContractchangesettlebill.setFstate("2SUBMITTED");
+                        settleMapper.updateById(tConContractchangesettlebill);
                     }
-                    TConPayrequestbill tConPayrequestbill = payrequestbillMapper.selectById(easid);
-                    tConPayrequestbill.setFstate("2SUBMITTED");
-                    payrequestbillMapper.updateById(tConPayrequestbill);
-                } else if (type.contains("03")) {
-                    if (oaid != null && easid != null) {
-                        oaIdUtil.getString(easid, oaid);
-                    }
-                    TConContractwithouttext tConContractwithouttext = noTextMapper.selectById(easid);
-                    tConContractwithouttext.setFstate("2SUBMITTED");
-                    noTextMapper.updateById(tConContractwithouttext);
-                } else if (type.contains("04")) {
-                    if (oaid != null && easid != null) {
-                        oaIdUtil.getString(easid, oaid);
-                    }
-                    TConSupplierapply tConSupplierapply = supplierapplyMapper.selectById(easid);
-                    tConSupplierapply.setFstate("2SUBMITTED");
-                    supplierapplyMapper.updateById(tConSupplierapply);
-                } else if (type.contains("05")) {
-                    TConChangeauditbill tConChangeauditbill = auditMapper.selectById(easid);
-                    tConChangeauditbill.setFstate("2SUBMITTED");
-                    tConChangeauditbill.setFchangestate("3Submit");
-                    auditMapper.updateById(tConChangeauditbill);
-                } else if (type.contains("06")) {
-                    TConContractchangesettlebill tConContractchangesettlebill = settleMapper.selectById(easid);
-                    tConContractchangesettlebill.setFstate("2SUBMITTED");
-                    settleMapper.updateById(tConContractchangesettlebill);
                 }
-            }
-        } catch (Exception e) {
+                supplierapplyMapper.updateAcceptInfo(easid, acceptTime, 1, "success");
+            } catch (Exception e) {
                 e.printStackTrace();
                 String message = e.getMessage();
                 supplierapplyMapper.updateAcceptInfo(easid, acceptTime, 2, message);

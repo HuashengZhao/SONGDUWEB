@@ -36,7 +36,7 @@ public class TBdSupplierController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/getSuppliers", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/getSuppliers", method =  RequestMethod. POST, produces = "application/json;charset=UTF-8")
     public R getSuppliers(@RequestBody String  body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         SupplierVO vo = BodyDecodeUtil.decodeBody(body, SupplierVO.class);

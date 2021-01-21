@@ -24,4 +24,7 @@ public interface TBdPersonMapper extends BaseMapper<TBdPerson> {
 
     List<String> selectITPersonNumbers();
 
+    List<String> selectTestUserName();
+
+
 }

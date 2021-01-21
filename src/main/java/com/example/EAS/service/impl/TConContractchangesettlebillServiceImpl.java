@@ -194,7 +194,7 @@ public class TConContractchangesettlebillServiceImpl extends ServiceImpl<TConCon
 //          http://122.224.88.138:58080/km/review/km_review_main/
 //          kmReviewMain.do?method=view&fdId=173c6b9e6dd55fccb9a0be942b2b074d&MtFdLoinName
 //          =gdjjXmldhhTqgDyrFOTunA==
-                    String s1 = "http://122.224.88.138:58080/km/review/km_review_main/kmReviewMain.do?method=view&fdId=";
+                    String s1 = supplierapplyMapper.selectOAINFO();
                     String s2 = "&MtFdLoinName=";
                     StringBuffer stringBuffer = new StringBuffer();
                     oaId = URLEncoder.encode(oaId);

@@ -36,7 +36,7 @@ public class TConContractwftypeController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/getContractProcessType", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/getContractProcessType", method =  RequestMethod. POST, produces = "application/json;charset=UTF-8")
     public R getContractProcessType(@RequestBody String  body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         ContractProcessTypeVO vo = BodyDecodeUtil.decodeBody(body, ContractProcessTypeVO.class);

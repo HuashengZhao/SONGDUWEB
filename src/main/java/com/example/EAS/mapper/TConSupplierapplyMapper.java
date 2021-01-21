@@ -104,5 +104,13 @@ public interface TConSupplierapplyMapper extends BaseMapper<TConSupplierapply> {
 
     String selectEditUrl();
 
+    void insertALLAcceptInfo(String easid, String acceptTime, String finalBillType, String acceptType, int state, String message);
+
+    String selectEASSessionId();
+
+    void updateSessionId();
+
+    void insertSessionId(String sessionId);
+
 }
 

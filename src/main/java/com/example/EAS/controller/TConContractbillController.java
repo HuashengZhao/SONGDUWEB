@@ -35,7 +35,7 @@ public class TConContractbillController {
      * @param body
      * @return
      */
-    @RequestMapping(value = "/getContractList", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/getContractList", method =  RequestMethod. POST, produces = "application/json;charset=UTF-8")
     public R getContractList(@RequestBody String body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         ContractVO vo = BodyDecodeUtil.decodeBody(body, ContractVO.class);
@@ -49,7 +49,7 @@ public class TConContractbillController {
     /**
      * 保存、修改合同单据
      */
-    @RequestMapping(value = "/saveContractBill", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/saveContractBill", method =  RequestMethod. POST, produces = "application/json;charset=UTF-8")
     public R saveContractBill(@RequestBody String body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         ContractVO vo = BodyDecodeUtil.decodeBody(body, ContractVO.class);
@@ -63,7 +63,7 @@ public class TConContractbillController {
     /**
      * 根据合同类型获取对应的合同详情信息集合
      */
-    @RequestMapping(value = "/getContractDetails", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/getContractDetails", method =  RequestMethod. POST, produces = "application/json;charset=UTF-8")
     public R getContractDetails(@RequestBody String body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         ContractDetailVO vo = BodyDecodeUtil.decodeBody(body, ContractDetailVO.class);
@@ -77,7 +77,7 @@ public class TConContractbillController {
     /**
      * 合同查看
      */
-    @RequestMapping(value = "viewContractBill", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "viewContractBill", method =  RequestMethod. POST, produces = "application/json;charset=UTF-8")
     public R viewContractBill(@RequestBody String body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         ContractVO vo = BodyDecodeUtil.decodeBody(body, ContractVO.class);
@@ -90,7 +90,7 @@ public class TConContractbillController {
     /**
      * 合同提交oa
      */
-    @RequestMapping(value = "submitToOa", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "submitToOa", method =  RequestMethod. POST, produces = "application/json;charset=UTF-8")
     public R submitToOa(@RequestBody String body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         ContractVO vo = BodyDecodeUtil.decodeBody(body, ContractVO.class);
@@ -103,7 +103,7 @@ public class TConContractbillController {
     /**
      * 批量删除合同
      */
-    @RequestMapping(value = "deleteContractBills", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "deleteContractBills", method =  RequestMethod. POST, produces = "application/json;charset=UTF-8")
     public R deleteContractBills(@RequestBody String body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         ContractVO vo = BodyDecodeUtil.decodeBody(body, ContractVO.class);
@@ -116,7 +116,7 @@ public class TConContractbillController {
     /**
      * 新增合同时选择合同性质为补充合同时返回合同编码集合
      */
-    @RequestMapping(value = "getMainContractNums", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "getMainContractNums", method =  RequestMethod. POST, produces = "application/json;charset=UTF-8")
     public R getMainContractNums(@RequestBody String body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         ContractVO vo = BodyDecodeUtil.decodeBody(body, ContractVO.class);

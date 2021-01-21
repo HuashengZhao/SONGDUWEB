@@ -34,7 +34,7 @@ public class TBdCsspgroupController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/getSupplierTypes", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/getSupplierTypes", method =  RequestMethod. POST, produces = "application/json;charset=UTF-8")
     public R getSupplierType(@RequestBody String  body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         SupplierTypeVO vo = BodyDecodeUtil.decodeBody(body, SupplierTypeVO.class);
@@ -51,7 +51,7 @@ public class TBdCsspgroupController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/getSupplierStandard", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/getSupplierStandard", method =  RequestMethod. POST, produces = "application/json;charset=UTF-8")
     public R getSupplierStandard(@RequestBody String  body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         SupplierTypeVO vo = BodyDecodeUtil.decodeBody(body, SupplierTypeVO.class);

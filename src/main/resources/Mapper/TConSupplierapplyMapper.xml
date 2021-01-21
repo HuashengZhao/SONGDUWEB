@@ -8,6 +8,14 @@
         insert into acceptinfo(billId,accepttime,billtype,optype,state)
          values(#{easid},#{acceptTime},#{finalBillType},#{acceptType},#{i})
     </insert>
+    <insert id="insertALLAcceptInfo">
+        insert into acceptinfo(billId,accepttime,billtype,optype,state,message)
+         values(#{easid},#{acceptTime},#{finalBillType},#{acceptType},#{state},#{message})
+    </insert>
+    <update id="insertSessionId">
+        update eas_sessionId set sessionid=#{sessionId} where type='eas'
+    </update>
+
     <update id="updateNumberRecord">
         update OANUMBERRECORD set value =#{numberRecord} where type like '%supplier%'
     </update>
@@ -30,10 +38,14 @@
         update acceptinfo set state=#{i},message=#{message}
         where billId=#{easid} and accepttime=#{acceptTime}
     </update>
+    <update id="updateSessionId">
+        update eas_sessionId set sessionid='' where  type='eas'
+    </update>
 
     <delete id="deleteData">
         delete from OAIDRECORD where billid=#{billId}
     </delete>
+
 
     <select id="selectDatas" resultType="com.example.EAS.vo.SupplierApplyVO">
         select sa.fid id,sa.fnumber num,sa.fname title,sa.fstate state,sa.fdescription description,
@@ -174,6 +186,9 @@
     </select>
     <select id="selectEditUrl" resultType="java.lang.String">
         select url from webUrl where type ='edit'
+    </select>
+    <select id="selectEASSessionId" resultType="java.lang.String">
+        select sessionId from eas_sessionId where type='eas'
     </select>
 
 </mapper>

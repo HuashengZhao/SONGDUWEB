@@ -36,7 +36,7 @@ public class TBdPersonController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/getPersons", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/getPersons", method =  RequestMethod. POST, produces = "application/json;charset=UTF-8")
     public R getPersons(@RequestBody String  body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         PersonsVO vo = BodyDecodeUtil.decodeBody(body, PersonsVO.class);

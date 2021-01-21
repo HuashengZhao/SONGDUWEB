@@ -37,7 +37,7 @@ public class TFdcCostaccountController {
      * @param body
      * @return
      */
-    @RequestMapping(value = "/getCostAccount", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/getCostAccount", method =  RequestMethod. POST, produces = "application/json;charset=UTF-8")
     public R getCostAccount(@RequestBody String body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         CostAccountVO vo = BodyDecodeUtil.decodeBody(body, CostAccountVO.class);
@@ -52,7 +52,7 @@ public class TFdcCostaccountController {
      * 新增合同时 获取未曾关联的费用归属
      * 根据 合同单据表中  fmarketprojectid  跟 fmpcostaccountid  查看 是否存在关联
      */
-    @RequestMapping(value = "/unUseCostAccount", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/unUseCostAccount", method =  RequestMethod. POST, produces = "application/json;charset=UTF-8")
     public R unUseCostAccount(@RequestBody String body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         CostAccountVO vo = BodyDecodeUtil.decodeBody(body, CostAccountVO.class);

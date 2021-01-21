@@ -11,7 +11,9 @@ import com.example.EAS.util.*;
 import com.example.EAS.vo.*;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.axis.client.Call;
+import org.apache.axis.message.SOAPHeaderElement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,9 +39,12 @@ import java.util.stream.Collectors;
  * @author watson
  * @since 2020-09-28
  */
+@Slf4j
 @Service
 public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContractwithouttextMapper, TConContractwithouttext> implements ITConContractwithouttextService {
 
+    @Autowired
+    private WSLoginUtil wsLoginUtil;
     @Autowired
     private TConContractwithouttextMapper mapper;
     @Autowired
@@ -299,12 +304,12 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
 //          http://122.224.88.138:58080/km/review/km_review_main/
 //          kmReviewMain.do?method=view&fdId=173c6b9e6dd55fccb9a0be942b2b074d&MtFdLoinName
 //          =gdjjXmldhhTqgDyrFOTunA==
-                String s1 = "http://122.224.88.138:58080/km/review/km_review_main/kmReviewMain.do?method=view&fdId=";
+                String s1 = supplierapplyMapper.selectOAINFO();
                 String s2 = "&MtFdLoinName=";
                 StringBuffer stringBuffer = new StringBuffer();
                 oaid = URLEncoder.encode(oaid);
                 String link = String.valueOf(stringBuffer.append(s1).append(oaid).append(s2).append(mtLoginNum));
-                System.out.println("OA流程路径：" + link);
+                log.info("OA流程路径：" + link);
                 returnVO.setLink(link);
                 returnVO.setOaId(oaid);
             }
@@ -744,32 +749,37 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             easJson.put("attach", attach);
         }
 
-        long easStart = System.currentTimeMillis();
+        JSONObject login = wsLoginUtil.login();//        登录
+        String sessionId = login.getString("sessionId");
+        Call call = (Call) login.get("call");
+
         String result = null;
-        Call call = null;
-//        调用eas 保存方法进行保存
-        if (Util.isEmpty(flag) || flag.compareTo(false) == 0) {
-            call = getCall("EASURL", "saveContractwithouttext");
-            try {
-                System.out.println(title + "无文本保存信息：" + easJson.toString());
-                result = (String) call.invoke(new Object[]{easJson.toString()});
-            } catch (RemoteException e) {
-                e.printStackTrace();
-                throw new ServiceException(e.getMessage());
+        if (Util.isNotEmpty(sessionId)) {
+            //清理
+            call.clearOperation();
+            String url = supplierapplyMapper.selectEASURL();
+            if (Util.isEmpty(flag) || flag.compareTo(false) == 0) {
+                call.setOperationName("saveContractwithouttext");    //接口方法
+            } else {
+                call.setOperationName("submitContractwithouttext");    //接口方法
             }
-        } else {
-            //            如果是驳回后重新提交 调用eas合同提交方法
-            call = getCall("EASURL", "submitContractwithouttext");
+            call.setTargetEndpointAddress(url);   //对应接口地址
+            call.addParameter("arg0", org.apache.axis.encoding.XMLType.XSD_STRING, javax.xml.rpc.ParameterMode.IN);
+            call.setReturnType(org.apache.axis.encoding.XMLType.XSD_STRING);
+            call.setTimeout(Integer.valueOf(1000 * 600000 * 60));
+            call.setMaintainSession(true);
+            call.setUseSOAPAction(true);
+            SOAPHeaderElement header = new SOAPHeaderElement("http://login.webservice.bos.kingdee.com", "SessionId", sessionId);
+            call.addHeader(header);
             try {
-                System.out.println(title + "无文本提交信息" + easJson.toJSONString());
                 result = (String) call.invoke(new Object[]{easJson.toString()});
+                log.info("新增供应商申请单返回结果:" + result);
             } catch (RemoteException e) {
                 e.printStackTrace();
                 throw new ServiceException(e.getMessage());
             }
         }
-        long easEnd = System.currentTimeMillis();
-        System.out.println("无文本调用eas保存时间" + (easEnd - easStart) + "ms");
+        wsLoginUtil.logout(call);//登出
 //        接收返回eas信息
         JSONObject object = JSONObject.parseObject(result);
         if (result != null && object.get("result") != null) {
@@ -788,15 +798,6 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
                 }
             }
         }
-        //        保存附件到web表
-//        if (Util.isNotEmpty(id) && vo.getAttachmentsVOS() != null && vo.getAttachmentsVOS().size() > 0) {
-//            supplierapplyMapper.deletAttach(id);
-//            ftpUtil.saveAttachMent(attachmentsVOS, id);
-//        } else {
-//            supplierapplyMapper.deletAttach(id);
-//        }
-        long saveEnd = System.currentTimeMillis();
-        System.out.println("无文本保存方法耗时：" + (saveEnd - saveStart) + "ms");
         return noTextContractVO;
     }
 
@@ -860,7 +861,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         if (Util.isNotEmpty(vo.getContractTypeId())) {
             String contractTypeName = mapper.selectContractType(vo.getContractTypeId());
             data.put("fd_38cf183640fe40", contractTypeName);
-            System.out.println(contractTypeName);
+            log.info(contractTypeName);
         }
         StringBuffer sb = new StringBuffer();
         String personNum = token.getString("person");
@@ -900,8 +901,8 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
         sendAppUrl = String.valueOf(sba.append(appUrl).append(appAppendType).append(appendId)
                 .append(appendToken).append(tokenAppend));
 //        sb.append("http://172.17.4.125:8082/easWeb/#/supplier").append("?token=").append(token);
-        System.out.println("合同单据web端详情查看地址：" + sendUrl);
-        System.out.println(" 合同单据app端详情查看地址：" + sendAppUrl);
+        log.info("合同单据web端详情查看地址：" + sendUrl);
+        log.info(" 合同单据app端详情查看地址：" + sendAppUrl);
         obj.put("loginName", personNum);
         obj.put("fdPcViewLink", sendUrl);
         obj.put("fdMobileViewLink", sendAppUrl);
@@ -937,7 +938,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             Call call = getCall("OAURL", "addtestEkpReview");
             try {
                 result = (String) call.invoke(new Object[]{obj.toString()});
-                System.out.println(vo.getTitle() + "oa新增流程传参：" + obj.toString());
+                log.info(vo.getTitle() + "oa新增流程传参：" + obj.toString());
                 str = JSONObject.parseObject(result);
             } catch (RemoteException e) {
                 e.printStackTrace();
@@ -947,7 +948,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             try {
                 obj.put("id", oaId);
                 result = (String) call.invoke(new Object[]{obj.toString()});
-                System.out.println(vo.getTitle() + "oa修改流程传参：" + obj.toString());
+                log.info(vo.getTitle() + "oa修改流程传参：" + obj.toString());
                 str = JSONObject.parseObject(result);
             } catch (RemoteException e) {
                 e.printStackTrace();
@@ -980,7 +981,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
                         attName = attName.replace("." + hz, "");
                     }
                     String atturl = atturlObj.getString("url");
-                    System.out.println("附件返回地址" + attName + ":" + atturl);
+                    log.info("附件返回地址" + attName + ":" + atturl);
 //                 取用户账号用作oa流程查看登录
                     if (Util.isEmpty(personNum)) {
                         throw new ServiceException(UtilMessage.PERSON_MISSING);
@@ -1054,8 +1055,8 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
             result = (String) call.invoke(new Object[]{jsonObject.toString()});
             JSONObject jsonObject1 = JSONObject.parseObject(result);
             String result1 = jsonObject1.getString("result");
-            System.out.println(result1);
-            System.out.println(jsonObject1.toString());
+            log.info(result1);
+            log.info(jsonObject1.toString());
         } catch (RemoteException e) {
             e.printStackTrace();
         }

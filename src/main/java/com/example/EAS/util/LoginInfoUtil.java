@@ -51,7 +51,6 @@ public class LoginInfoUtil {
     /**
      * 判断是否在it部门
      * d90AAAFIJknM567U，正式库信息部的ID,d90AAAAANNPM567U。正式库董事长ID,d90AAAAANNTM567U，正式库总裁室ID
-     * d90AAAAASfLM567U，测试库信息部ID,d90AAAAANNPM567U，测试库董事长ID,d90AAAAANNTM567U，测试库总裁室ID
      */
 
     public  Boolean ifInItDept() {
@@ -59,6 +58,10 @@ public class LoginInfoUtil {
         JSONObject token = getToken();
         String personNumber = token.getString("person");
         List<String> numbers = personMapper.selectITPersonNumbers();//it部门人员编码集合
+        List<String> testNums = personMapper.selectTestUserName();
+        if (Util.isNotEmpty(testNums)&&Util.isNotEmpty(numbers)){
+            numbers.addAll(testNums);
+        }
         if (numbers!=null && numbers.size()>0){
             if (numbers.contains(personNumber)){
                 b=true;

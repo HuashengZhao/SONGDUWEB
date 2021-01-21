@@ -37,7 +37,7 @@ public class TBcExpensetypeController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/getExpenseType", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/getExpenseType", method =  RequestMethod. POST, produces = "application/json;charset=UTF-8")
     public R getExpenseType(@RequestBody String body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         ExpenseTypeVO vo = BodyDecodeUtil.decodeBody(body, ExpenseTypeVO.class);

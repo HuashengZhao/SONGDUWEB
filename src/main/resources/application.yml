@@ -15,7 +15,7 @@ spring:
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: oracle.jdbc.driver.OracleDriver
-    url: jdbc:oracle:thin:@172.17.4.69:1521:easdb
+    url: jdbc:oracle:thin:@172.17.4.65:1521:easdb
 #    url: jdbc:oracle:thin:@172.17.4.64:1521:easdb
     username: kingdee
     password: kingdee

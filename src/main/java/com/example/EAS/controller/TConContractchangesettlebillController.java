@@ -38,7 +38,7 @@ public class TConContractchangesettlebillController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/getChangeSettleList", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/getChangeSettleList", method =  RequestMethod. POST, produces = "application/json;charset=UTF-8")
     public R getChangeSettleList(@RequestBody String body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         ChangeSettleVO vo = BodyDecodeUtil.decodeBody(body, ChangeSettleVO.class);
@@ -56,7 +56,7 @@ public class TConContractchangesettlebillController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/viewChangeSettle", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/viewChangeSettle", method =  RequestMethod. POST, produces = "application/json;charset=UTF-8")
     public R viewChangeSettle(@RequestBody String body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         ChangeSettleVO vo = BodyDecodeUtil.decodeBody(body, ChangeSettleVO.class);

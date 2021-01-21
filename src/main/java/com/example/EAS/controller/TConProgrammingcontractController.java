@@ -36,7 +36,7 @@ public class TConProgrammingcontractController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/getProgramCon", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/getProgramCon", method =  RequestMethod. POST, produces = "application/json;charset=UTF-8")
     public R getProgramCon(@RequestBody String  body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         ProgramConVO vo = BodyDecodeUtil.decodeBody(body, ProgramConVO.class);

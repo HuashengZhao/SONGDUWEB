@@ -37,7 +37,7 @@ public class TConSupplierapplyController {
      * @param body
      * @return
      */
-    @RequestMapping(value = "/getSupplierApply", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/getSupplierApply", method =  RequestMethod. POST , produces = "application/json;charset=UTF-8")
     public R getSupplierApply(@RequestBody String body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         SupplierApplyVO vo = BodyDecodeUtil.decodeBody(body, SupplierApplyVO.class);
@@ -55,7 +55,7 @@ public class TConSupplierapplyController {
      * @param body
      * @return
      */
-    @RequestMapping(value = "/addSupplierApply", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/addSupplierApply", method = RequestMethod. POST , produces = "application/json;charset=UTF-8")
     public R addSupplierApply(@RequestBody String body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         SupplierApplyVO vo = BodyDecodeUtil.decodeBody(body, SupplierApplyVO.class);
@@ -72,7 +72,7 @@ public class TConSupplierapplyController {
      * @param body
      * @return
      */
-    @RequestMapping(value = "/deleteSupplierApply", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/deleteSupplierApply", method =  RequestMethod. POST , produces = "application/json;charset=UTF-8")
     public R deleteSupplierApply(@RequestBody String body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         SupplierApplyVO vo = BodyDecodeUtil.decodeBody(body, SupplierApplyVO.class);
@@ -88,7 +88,7 @@ public class TConSupplierapplyController {
      * @param
      * @return
      */
-    @RequestMapping(value = "/getSupplierNewNum", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/getSupplierNewNum", method =  RequestMethod. POST , produces = "application/json;charset=UTF-8")
     public R getSupplierNewNum(@RequestBody String body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         SupplierApplyVO vo = BodyDecodeUtil.decodeBody(body, SupplierApplyVO.class);
@@ -102,7 +102,7 @@ public class TConSupplierapplyController {
     /**
      * submit supplier Apply
      */
-    @RequestMapping(value = "/supplierSubmit", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/supplierSubmit", method =  RequestMethod. POST , produces = "application/json;charset=UTF-8")
     public R supplierSubmit(@RequestBody String body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         SupplierApplyVO vo = BodyDecodeUtil.decodeBody(body, SupplierApplyVO.class);
@@ -115,7 +115,7 @@ public class TConSupplierapplyController {
     /**
      * update supplier Apply
      */
-    @RequestMapping(value = "/updateSupplierApply", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/updateSupplierApply", method =  RequestMethod. POST , produces = "application/json;charset=UTF-8")
     public R supllierUpdate(@RequestBody String body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         SupplierApplyVO vo = BodyDecodeUtil.decodeBody(body, SupplierApplyVO.class);

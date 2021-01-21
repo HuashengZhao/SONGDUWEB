@@ -36,7 +36,7 @@ public class TFdcContractsourceController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/getMadeWay", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/getMadeWay", method =  RequestMethod. POST, produces = "application/json;charset=UTF-8")
     public R getMadeWay(@RequestBody String  body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         MadeWayVO vo = BodyDecodeUtil.decodeBody(body, MadeWayVO.class);

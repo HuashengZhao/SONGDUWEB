@@ -40,7 +40,7 @@ public class TBasAttachmentController {
      * @return
      */
 
-    @RequestMapping(value = "/uploadAttachment", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/uploadAttachment", method = {RequestMethod.POST, RequestMethod.GET}, produces = "application/json;charset=UTF-8")
     public R uploadAttachment(AttachmentsVO vo) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
 //        AttachmentsVO vo = BodyDecodeUtil.decodeBody(body, AttachmentsVO.class);

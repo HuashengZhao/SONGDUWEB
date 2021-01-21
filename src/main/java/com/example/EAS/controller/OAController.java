@@ -68,8 +68,6 @@ public class OAController {
                 json.put("message", "登录缺少员工信息");
                 return R.error(json);
             }
-            String sysName = vo.getSysName();
-            List<LoginVO> vos = mapper.selectIFExist(org, person);
 
             StringBuffer sb = new StringBuffer();
             String s = String.valueOf(sb.append(org).append("&&").append(person));
@@ -80,6 +78,9 @@ public class OAController {
             String type = null;
             if (Util.isNotEmpty(vo.getType())) {
                 type = vo.getType();
+                if (type!=null&&type.contains("payment")){
+                    type="payment";
+                }
             }
             StringBuffer sb1 = new StringBuffer();
             token = URLEncoder.encode(token, "utf-8");
@@ -163,6 +164,36 @@ public class OAController {
         result.put("msg", UtilMessage.GET_MSG_SUCCESS);
         result.put("code", HttpStatus.SC_OK);
         return R.ok(result);
+    }
+
+    /**
+     * 流程查看获取当前token 返回oa
+     */
+    @RequestMapping(value = "/getRecentToken", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public R getRecentToken(@RequestBody LoginVO vo) throws Exception {
+        JSONObject json = new JSONObject();
+        String person = vo.getPerson();
+        String org = vo.getOrg();
+        if (Util.isEmpty(person) || Util.isEmpty(org)) {
+            json.put("code", 2);
+            json.put("message", "请求参数缺失");
+        }
+        String token = redisUtil.getString(redisUtil.generateKey(CacheKeyConstant.WEB_LOGIN_TOKEN, person));
+        if (Util.isNotEmpty(token)) {
+            redisUtil.set(redisUtil.generateKey(CacheKeyConstant.WEB_LOGIN_TOKEN, person), token, 1000 * 3600 * 240);//刷新时效
+        } else {
+            StringBuffer sb = new StringBuffer();
+            String s = String.valueOf(sb.append(org).append("&&").append(person));
+            token = RSAUtil.encrypt(s, "pub.key");
+//          存放token
+            redisUtil.set(redisUtil.generateKey(CacheKeyConstant.WEB_LOGIN_TOKEN, person), token, 1000 * 3600 * 240);
+        }
+        token = URLEncoder.encode(token, "utf-8");
+        json.put("permission", token);
+        json.put("code", 1);
+        json.put("message", "success");
+        log.info("流程查看获取token" + token);
+        return R.ok(json);
     }
 
     /**

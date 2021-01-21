@@ -14,7 +14,7 @@ import java.util.HashMap;
 
 /**
  * <p>
- *  前端控制器
+ * 前端控制器
  * </p>
  *
  * @author watson
@@ -30,7 +30,7 @@ public class BaseDataController {
     /**
      * 流程回掉接口
      */
-    @RequestMapping(value = "/acceptHandle", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/acceptHandle", method = {RequestMethod.POST, RequestMethod.GET}, produces = "application/json;charset=UTF-8")
     public JSONObject acceptHandle(@RequestBody JSONObject body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         JSONObject obj = service.acceptHandle(body);

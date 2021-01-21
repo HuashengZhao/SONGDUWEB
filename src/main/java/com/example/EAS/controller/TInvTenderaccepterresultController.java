@@ -37,7 +37,7 @@ public class TInvTenderaccepterresultController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/getTenderAccepter", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/getTenderAccepter", method =  RequestMethod. POST, produces = "application/json;charset=UTF-8")
     public R getTenderAcc(@RequestBody String body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         TenderAccepterVO vo = BodyDecodeUtil.decodeBody(body, TenderAccepterVO.class);

@@ -38,7 +38,7 @@ public class TFdcContracttypeController {
      * @param body
      * @return
      */
-    @RequestMapping(value = "/getContractType", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/getContractType", method =  RequestMethod. POST, produces = "application/json;charset=UTF-8")
     public R getContractType(@RequestBody String body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         ContractTypeVO vo = BodyDecodeUtil.decodeBody(body, ContractTypeVO.class);
@@ -52,7 +52,7 @@ public class TFdcContracttypeController {
      * 新增合同时返回生成的编码
      * 生成合同编码规则额："web"+组织编码+合同类型编码+四位数流水号
      */
-    @RequestMapping(value = "/getNewContractNumber", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/getNewContractNumber", method =  RequestMethod. POST, produces = "application/json;charset=UTF-8")
     public R getNewContractNumber(@RequestBody String body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         ContractTypeVO vo = BodyDecodeUtil.decodeBody(body, ContractTypeVO.class);

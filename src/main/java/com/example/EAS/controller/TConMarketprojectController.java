@@ -36,7 +36,7 @@ public class TConMarketprojectController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/getMarketProjects", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/getMarketProjects", method =  RequestMethod. POST, produces = "application/json;charset=UTF-8")
     public R getMarketProjects(@RequestBody String  body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         MarketProjectVO vo = BodyDecodeUtil.decodeBody(body, MarketProjectVO.class);

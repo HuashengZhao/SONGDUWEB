@@ -37,7 +37,7 @@ public class TFdcLanddeveloperController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/getPartA", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/getPartA", method =  RequestMethod. POST, produces = "application/json;charset=UTF-8")
     public R getPartA(@RequestBody String body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         PartAVO vo = BodyDecodeUtil.decodeBody(body, PartAVO.class);
