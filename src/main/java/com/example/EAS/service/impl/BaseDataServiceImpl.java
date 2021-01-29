@@ -47,6 +47,8 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
     private TConContractchangesettlebillMapper settleMapper;
     @Autowired
     private TConContractwithouttextMapper noTextMapper;
+    @Autowired
+    private TConMarketprojectMapper marketprojectMapper;
 
 
     org.apache.axis.client.Service service = new org.apache.axis.client.Service();
@@ -119,11 +121,12 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
             obj.put("content", "回调单据easid不能为空");
             return obj;
         }
+
         String oaid = body.get("oaid").toString();
         String attlink = body.get("attlink").toString();
 //      01:审批通过,02:废弃,03:驳回,修订
         String result = body.get("result").toString();
-//      type 01:合同、02:合同付款申请单、03:无合同付款;04：供应商申请，05变更审批单，06变更确认单
+//      type 01:合同、02:合同付款申请单、03:无合同付款;04：供应商申请，05变更审批单，06变更确认单,07营销立项
         String type = body.get("type").toString();
         String easid = body.get("easid").toString();
 
@@ -140,6 +143,8 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
                 billType = "变更审批单";
             } else if (type.contains("06")) {
                 billType = "变更确认单";
+            } else if (type.contains("07")) {
+                billType = "营销立项单";
             }
         }
 
@@ -232,6 +237,9 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
                     } else if (type.contains("06")) {
 //                         删除单据里fsourcefunction存储的oaid
                         settleMapper.updateData(easid);
+                    } else if (type.contains("07")) {
+//                        删除单据里fsourcefunction存储的oaid
+                        marketprojectMapper.updateData(easid);
                     }
                 }
                 supplierapplyMapper.updateAcceptInfo(easid, acceptTime, 1, "success");

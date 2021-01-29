@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.EAS.mapper.TConMarketprojectMapper">
+    <update id="updateData">
+         update T_CON_ContractChangeSettleBill set FSTATE='1SAVED',FSOURCEFUNCTION=null where fid=#{easid}
+    </update>
 
     <select id="selectDatas" resultType="com.example.EAS.vo.MarketProjectVO">
         select m.fid as id,m.fnumber as num,m.FNAME as title,
@@ -9,21 +12,66 @@
         m.fauditorid as auditorId,m.fbizdate as bizDate,m.FAuditTime as auditTime,
         u.FNAME_L2 as creator,u.FNUMBER as creatorNum,
         u2.FNAME_L2 as auditor,u2.FNUMBER as auditorNum
-          from T_CON_MarketProject m
-          left join t_pm_user u on u.fid=m.FCREATORID
-          left join t_pm_user u2 on u2.fid=m.FAUDITORID
-          <where>
-              m.FORGUNITID=#{orgId,jdbcType=VARCHAR}
-              <if test="title!=null and title!=''">
-                 and m.FNAME like CONCAT(CONCAT('%',${title}),'%')
-              </if>
-              <if test="num!=null and num!=''">
-                 and m.fnumber like CONCAT(CONCAT('%',${num}),'%')
-              </if>
-              <if test="operationType!=null">
-                 and m.fstate='4AUDITTED'
-              </if>
-          </where>
-          order by m.FBOOKEDDATE desc,m.fnumber desc
+        from T_CON_MarketProject m
+        left join t_pm_user u on u.fid=m.FCREATORID
+        left join t_pm_user u2 on u2.fid=m.FAUDITORID
+        <where>
+            m.FORGUNITID=#{orgId,jdbcType=VARCHAR}
+            <if test="title!=null and title!=''">
+                and m.FNAME like CONCAT(CONCAT('%',${title}),'%')
+            </if>
+            <if test="num!=null and num!=''">
+                and m.fnumber like CONCAT(CONCAT('%',${num}),'%')
+            </if>
+            <if test="operationType!=null">
+                and m.fstate='4AUDITTED'
+            </if>
+        </where>
+        order by m.FBOOKEDDATE desc,m.fnumber desc
+    </select>
+    <select id="selectDataById" resultType="com.example.EAS.vo.MarketProjectVO">
+        select m.fid as id,m.fnumber as num,m.FNAME as title,m.FSELLPROJECTTXT as projectName,
+        m.FCONTROLUNITID as orgId,un.FNAME_L2 as orgName,m.FAMOUNT as amount,
+        m.FISSUB as isSub,m.FISJT as isJt,m.FBOOKEDDATE as bookDate,
+        m.FNW,
+        case when m.FNW='BIGRANGE' then '集团/事业部/城市公司'
+        when m.FNW='SMALLRANGE' then '项目部'
+        when m.FNW='ALLRANGE' then '集团/事业部/城市公司-项目部'
+        when m.FNW='NEIBU' then '内部关联公司来往类'
+        when m.FNW='WAIBU' then '外部供应商客户来往类'
+        end orgType,
+        m.FSOURCE,
+        case when m.FSOURCE='ZHLX' then '综合立项'
+        when m.FSOURCE='DXLX' then '单项立项'
+        end source,
+        m.FDESCRIPTION as description
+        from T_CON_MarketProject m
+        left join T_ORG_BaseUnit un on un.fid=m.FCONTROLUNITID
+        where m.fid=#{id}
+    </select>
+    <select id="selectCostAccounts" resultType="com.example.EAS.vo.CostAccountVO">
+        select en.FCOSTACCOUNTID as id,cost.FNAME_L2 as title,
+        cost.FNUMBER as num,cost.FLONGNUMBER as longNumber,
+        en.FTYPE,
+        case when en.FTYPE='CONTRACT' then '合同'
+        when en.FTYPE='NOTEXTCONTRACT' then '无文本'
+        end controlType,
+        en.FAMOUNT as amount
+        from T_CON_MARKETPROJECTCOSTENTRY en
+        left join T_FDC_CostAccount cost on cost.fid=en.FCOSTACCOUNTID
+        where en.FHEADID=#{mpId}
+        order by en.fseq
+    </select>
+    <select id="selectPriceUnits" resultType="com.example.EAS.vo.PriceUnitVO">
+        select en.FUNIT as unit,en.FSEQ as seq,en.FAMOUNT as amount,en.FREMARK as remark
+        from T_CON_MARKETPROJECTUNITENTRY en
+        where en.FHEADID=#{mpId}
+    </select>
+    <select id="selectSignSuppliers" resultType="com.example.EAS.vo.SupplierVO">
+        select sup.fid as id,sup.FNUMBER as num,sup.FNAME_L2 as title,
+        en.FAMOUNT as amount,en.FREMARK as remark
+        from T_BD_Supplier sup
+        left join T_CON_MARKETPROJECTENTRY en on sup.fid = en.FSUPPLIERID
+        where en.FHEADID=#{mpId}
     </select>
 </mapper>

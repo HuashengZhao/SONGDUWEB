@@ -41,4 +41,6 @@ public class CostAccountVO {
     //    立项金额
     @JsonSerialize(using = CustomBigDecimalSerialize.class, nullsUsing = CustomBigDecimalSerialize.class)
     private BigDecimal mpAmount;
+    @JsonSerialize(using = CustomBigDecimalSerialize.class, nullsUsing = CustomBigDecimalSerialize.class)
+    private BigDecimal amount;
 }

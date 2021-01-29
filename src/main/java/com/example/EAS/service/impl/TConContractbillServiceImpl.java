@@ -612,6 +612,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             call.setUseSOAPAction(true);
             SOAPHeaderElement header = new SOAPHeaderElement("http://login.webservice.bos.kingdee.com", "SessionId", sessionId);
             call.addHeader(header);
+            // TODO call.invoke
         }
         wsLoginUtil.logout(call);//登出
 //        接收返回eas信息

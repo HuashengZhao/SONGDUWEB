@@ -17,7 +17,7 @@ import java.util.HashMap;
 
 /**
  * <p>
- *  前端控制器
+ * 前端控制器
  * </p>
  *
  * @author watson
@@ -32,15 +32,34 @@ public class TConMarketprojectController {
 
     /**
      * 获取立项接口
+     *
      * @param body
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/getMarketProjects", method =  RequestMethod. POST, produces = "application/json;charset=UTF-8")
-    public R getMarketProjects(@RequestBody String  body) throws Exception {
+    @RequestMapping(value = "/getMarketProjects", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public R getMarketProjects(@RequestBody String body) throws Exception {
         HashMap<String, Object> result = new HashMap<>(10);
         MarketProjectVO vo = BodyDecodeUtil.decodeBody(body, MarketProjectVO.class);
-        MarketProjectVO marketProject= marketprojectService.getMarketProjects(vo);
+        MarketProjectVO marketProject = marketprojectService.getMarketProjects(vo);
+        result.put("data", marketProject);
+        result.put("msg", UtilMessage.GET_MSG_SUCCESS);
+        result.put("code", HttpStatus.SC_OK);
+        return R.ok(result);
+    }
+
+    /**
+     * 查看营销立项详情信息
+     *
+     * @param
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/viewMarketProject", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public R viewMarketProject(@RequestBody String body) throws Exception {
+        HashMap<String, Object> result = new HashMap<>(10);
+        MarketProjectVO vo = BodyDecodeUtil.decodeBody(body, MarketProjectVO.class);
+        MarketProjectVO marketProject = marketprojectService.viewMarketProject(vo);
         result.put("data", marketProject);
         result.put("msg", UtilMessage.GET_MSG_SUCCESS);
         result.put("code", HttpStatus.SC_OK);

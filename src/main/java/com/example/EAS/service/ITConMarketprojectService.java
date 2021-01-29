@@ -15,4 +15,7 @@ import com.example.EAS.vo.MarketProjectVO;
 public interface ITConMarketprojectService extends IService<TConMarketproject> {
 
     MarketProjectVO getMarketProjects(MarketProjectVO vo);
+
+    MarketProjectVO viewMarketProject(MarketProjectVO vo);
+
 }

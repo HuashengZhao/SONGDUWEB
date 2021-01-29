@@ -52,7 +52,7 @@ public class CodeGenerator {
         // 数据源配置
 
         DataSourceConfig dsc = new DataSourceConfig();
-        dsc.setUrl("jdbc:oracle:thin:@172.17.4.69:1521:easdb");
+        dsc.setUrl("jdbc:oracle:thin:@172.17.4.65:1521:easdb");
         dsc.setDriverName("oracle.jdbc.driver.OracleDriver");
         dsc.setUsername("kingdee");
         dsc.setPassword("kingdee");
