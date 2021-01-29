@@ -292,6 +292,10 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
                         TConContractchangesettlebill tConContractchangesettlebill = settleMapper.selectById(easid);
                         tConContractchangesettlebill.setFstate("2SUBMITTED");
                         settleMapper.updateById(tConContractchangesettlebill);
+                    } else if (type.contains("07")) {
+                        TConMarketproject tConMarketproject = marketprojectMapper.selectById(easid);
+                        tConMarketproject.setFstate("2SUBMITTED");
+                        marketprojectMapper.updateById(tConMarketproject);
                     }
                 }
                 supplierapplyMapper.updateAcceptInfo(easid, acceptTime, 1, "success");
@@ -345,6 +349,11 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
             object.put("submitOperation", "todo");
             object.put("auditOperation", "auditContractChangeSettleBill");
             object.put("deleteOperation", "todo");
+        }else if (type.contains("07")){
+            object.put("saveOperation", "todo");
+            object.put("submitOperation", "todo");
+            object.put("auditOperation", "auditMarketProject");
+            object.put("deleteOperation", "todo");
         }
         return object;
     }
@@ -388,6 +397,13 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
                 obj.put("code", "2");
                 obj.put("msg", "fault");
                 obj.put("content", "目标eas单据不存在");
+            }else if (type.contains("07")){
+                TConMarketproject tConMarketproject = marketprojectMapper.selectById(easId);
+                if (Util.isEmpty(tConMarketproject)){
+                    obj.put("code", "2");
+                    obj.put("msg", "fault");
+                    obj.put("content", "目标eas单据不存在");
+                }
             }
         }
         return obj;
