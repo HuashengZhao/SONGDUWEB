@@ -354,7 +354,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
             call.setReturnType(org.apache.axis.encoding.XMLType.XSD_STRING);
             call.setTimeout(Integer.valueOf(1000 * 600000 * 60));
             call.setMaintainSession(true);
-            call.setUseSOAPAction(true);
+//            call.setUseSOAPAction(true);
             SOAPHeaderElement header = new SOAPHeaderElement("http://login.webservice.bos.kingdee.com", "SessionId", sessionId);
             call.addHeader(header);
             try {
@@ -366,7 +366,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
             }
         }
 
-        wsLoginUtil.logout(call);//登出
+//        wsLoginUtil.logout(call);//登出
         JSONObject str = JSONObject.parseObject(result);
         String state = str.getString("result");
         if (Util.isNotEmpty(state) && state.contains("fault")) {
@@ -502,7 +502,7 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
             }
         }
 
-        wsLoginUtil.logout(call);//登出
+//        wsLoginUtil.logout(call);//登出
 
         JSONObject str = JSONObject.parseObject(result);
         String state = str.getString("result");

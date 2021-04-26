@@ -29,9 +29,9 @@ public class WSLoginUtil {
     //    登录websevice
     public JSONObject login() {
         long expire = redisUtil.getExpire(redisUtil.generateKey(CacheKeyConstant.EAS_LOGIN_WAITING));
-        if (Util.isNotEmpty(expire)&&expire>0) {
-            throw new com.example.EAS.util.ServiceException("当前操作正在执行，请等待三秒后重新操作！");
-        }
+//        if (Util.isNotEmpty(expire)&&expire>0) {
+//            throw new com.example.EAS.util.ServiceException("当前操作正在执行，请等待三秒后重新操作！");
+//        }
         JSONObject jsonObject = new JSONObject();
         try {
             call = (Call) service.createCall();
@@ -39,6 +39,7 @@ public class WSLoginUtil {
             e.printStackTrace();
         }
         url = mapper.selectEASLogin();
+
 //        再登录
         call.setOperationName("login");
         call.setTargetEndpointAddress(url);
@@ -51,6 +52,7 @@ public class WSLoginUtil {
         String s = call.toString();
         //登陆接口参数
         try {
+
             WSContext rs = (WSContext) call.invoke(new Object[]{"webservice", "webservice", "eas", "easdb", "L2", Integer.valueOf(2)}); //测试地址
 //            WSContext rs = (WSContext) call.invoke(new Object[]{"servicekd", "servicekd", "eas", "easdb", "L2", Integer.valueOf(2)});  ////正式地址
             sessionId = rs.getSessionId();
