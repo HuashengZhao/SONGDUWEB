@@ -51,8 +51,8 @@ public class WSLoginUtil {
         String s = call.toString();
         //登陆接口参数
         try {
-            WSContext rs = (WSContext) call.invoke(new Object[]{"webservice", "webservice", "eas", "easdb", "L2", Integer.valueOf(2)}); //测试地址
-//            WSContext rs = (WSContext) call.invoke(new Object[]{"servicekd", "servicekd", "eas", "easdb", "L2", Integer.valueOf(2)});  ////正式地址
+//            WSContext rs = (WSContext) call.invoke(new Object[]{"webservice", "webservice", "eas", "easdb", "L2", Integer.valueOf(2)}); //测试地址
+            WSContext rs = (WSContext) call.invoke(new Object[]{"servicekd", "servicekd", "eas", "easdb", "L2", Integer.valueOf(2)});  ////正式地址
             sessionId = rs.getSessionId();
             redisUtil.set(redisUtil.generateKey(CacheKeyConstant.EAS_LOGIN_WAITING), "point", 5);
             log.info("登录成功：" + sessionId);
@@ -72,8 +72,8 @@ public class WSLoginUtil {
         String url = mapper.selectEASLogin();
         call.setTargetEndpointAddress(url);
         try {
-            call.invoke(new Object[]{"webservice", "eas", "easdb", "L2"});//测试地址
-//            call.invoke(new Object[]{"servicekd", "eas", "easdb", "L2"});//正式地址
+//            call.invoke(new Object[]{"webservice", "eas", "easdb", "L2"});//测试地址
+            call.invoke(new Object[]{"servicekd", "eas", "easdb", "L2"});//正式地址
             log.info("登出成功");
         } catch (RemoteException e) {
             e.printStackTrace();
