@@ -354,19 +354,19 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
             call.setReturnType(org.apache.axis.encoding.XMLType.XSD_STRING);
             call.setTimeout(Integer.valueOf(1000 * 600000 * 60));
             call.setMaintainSession(true);
-            call.setUseSOAPAction(true);
+//            call.setUseSOAPAction(true);
             SOAPHeaderElement header = new SOAPHeaderElement("http://login.webservice.bos.kingdee.com", "SessionId", sessionId);
             call.addHeader(header);
             try {
                 result = (String) call.invoke(new Object[]{obj.toString()});
                 logger.info("新增供应商申请单返回结果:" + result);
             } catch (RemoteException e) {
-                e.printStackTrace();
                 throw new ServiceException(e.getMessage());
+            } finally {
+                wsLoginUtil.logout(call);
             }
         }
 
-        wsLoginUtil.logout(call);//登出
         JSONObject str = JSONObject.parseObject(result);
         String state = str.getString("result");
         if (Util.isNotEmpty(state) && state.contains("fault")) {
@@ -473,10 +473,9 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
             }
         }
         obj.put("attach", attach);
-//        调用eas登录获取sessionid
-        String result = null;
 
-        JSONObject login = wsLoginUtil.login();//        登录
+        String result = null;
+        JSONObject login = wsLoginUtil.login();
 
         String sessionId = login.getString("sessionId");
         Call call = (Call) login.get("call");
@@ -495,14 +494,13 @@ public class TConSupplierapplyServiceImpl extends ServiceImpl<TConSupplierapplyM
             call.addHeader(header);
             try {
                 result = (String) call.invoke(new Object[]{obj.toString()});
-                logger.info("修改供应商申请单返回结果:" + result);
             } catch (RemoteException e) {
-                e.printStackTrace();
                 throw new ServiceException(e.getMessage());
+            }finally {
+                wsLoginUtil.logout(call);
             }
         }
 
-        wsLoginUtil.logout(call);//登出
 
         JSONObject str = JSONObject.parseObject(result);
         String state = str.getString("result");

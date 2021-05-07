@@ -614,7 +614,7 @@ public class TConContractbillServiceImpl extends ServiceImpl<TConContractbillMap
             call.addHeader(header);
             // TODO call.invoke
         }
-        wsLoginUtil.logout(call);//登出
+//        wsLoginUtil.logout(call);//登出
 //        接收返回eas信息
         JSONObject object = JSONObject.parseObject(result);
         if (result != null && object.get("result") != null) {

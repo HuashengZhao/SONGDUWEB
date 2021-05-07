@@ -76,7 +76,7 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
     }
 
     /**
-     * oa审批后回调方法
+     * oa审批后回调方法b
      * 根据oa审批状态 修改eas单据状态
      * Oa审批通过 eas改成已审批,
      * oa审批驳回，eas改为已提交 此时可以修改并二次提交 二次提交时 携带oa原有id提交,
@@ -98,7 +98,7 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
         obj.put("code", "1");
         obj.put("msg", "success");
 //      请求参数
-        log.info(body.toString());
+        log.info("回调请求" + body);
 
         if (Util.isEmpty(body.get("type"))) {
             obj.put("code", "2");
@@ -123,7 +123,7 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
         }
 
         String oaid = body.get("oaid").toString();
-        String attlink = body.get("attlink").toString();
+//        String attlink = body.get("attlink").toString();
 //      01:审批通过,02:废弃,03:驳回,修订
         String result = body.get("result").toString();
 //      type 01:合同、02:合同付款申请单、03:无合同付款;04：供应商申请，05变更审批单，06变更确认单,07营销立项
@@ -162,27 +162,140 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("id", easid);
         String finalBillType = billType;
-        AsyncExecutor.executeTask(t -> {
-            String back = null;
-            String acceptType = null;
-            //       如果审核成功 调用eas审核方法
-            if (result.contains("01")) {
-                acceptType = "审核";
-                log.info("type为" + type + "流程调用了回调审批！");
+        if (type.contains("04")) {
+            JSONObject login = wsLoginUtil.login();
+            String sessionId = login.getString("sessionId");
+            Call call = (Call) login.get("call");
+
+            AsyncExecutor.executeTask(t -> {
+                String back = null;
+                String acceptType = null;
+                //       如果审核成功 调用eas审核方法
+                if (result.contains("01")) {
+                    acceptType = "审核";
+                    log.info("type为" + type + "流程调用了回调审批！");
+                    if (oaid != null && easid != null) {
+                        oaIdUtil.getString(easid, oaid);
+                    }
+                    supplierapplyMapper.insertAcceptInfo(easid, acceptTime, finalBillType, acceptType, 1);
+
+                    if (Util.isNotEmpty(sessionId)) {
+                        //清理
+                        call.clearOperation();
+                        String url = supplierapplyMapper.selectEASURL();
+                        call.setOperationName(auditOperation);    //接口方法
+                        call.setTargetEndpointAddress(url);   //对应接口地址
+                        call.addParameter("arg0", org.apache.axis.encoding.XMLType.XSD_STRING, javax.xml.rpc.ParameterMode.IN);
+                        call.setReturnType(org.apache.axis.encoding.XMLType.XSD_STRING);
+                        call.setTimeout(Integer.valueOf(1000 * 600000 * 60));
+                        call.setMaintainSession(true);
+                        call.setUseSOAPAction(true);
+                        SOAPHeaderElement header = new SOAPHeaderElement("http://login.webservice.bos.kingdee.com", "SessionId", sessionId);
+                        call.addHeader(header);
+                        try {
+                            back = (String) call.invoke(new Object[]{jsonObject.toString()});
+                        } catch (RemoteException e) {
+                            supplierapplyMapper.updateAcceptInfo(easid, acceptTime, 2, e.getMessage());
+                            throw new ServiceException("供应商回调审批报错，请联系金蝶开发，错误内容：" + e.getMessage());
+                        }
+                        if (Util.isNotEmpty(back)) {
+                            JSONObject backObj = JSONObject.parseObject(back);
+                            String resultBack = backObj.getString("result");
+                            if (Util.isNotEmpty(resultBack) && resultBack.contains("fault")) {
+                                String message = backObj.getString("message");
+                                supplierapplyMapper.updateAcceptInfo(easid, acceptTime, 2, message == null ? "eas审批时发生错误" : message);
+                            } else if (Util.isNotEmpty(resultBack) && resultBack.contains("success")) {
+                                supplierapplyMapper.updateAcceptInfo(easid, acceptTime, 1, "success");
+                            }
+                        } else {
+                            supplierapplyMapper.updateAcceptInfo(easid, acceptTime, 2, "eas审批时发生错误,审批调用无返回");
+                        }
+                    }
+                }
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                return true;
+            }, "1", "100,100");
+
+            wsLoginUtil.logout(call);
+            return obj;
+        }
+
+        String back = null;
+        String acceptType = null;
+        //       如果审核成功 调用eas审核方法
+        if (result.contains("01")) {
+            acceptType = "审核";
+            if (oaid != null && easid != null) {
+                oaIdUtil.getString(easid, oaid);
+            }
+            supplierapplyMapper.insertAcceptInfo(easid, acceptTime, finalBillType, acceptType, 1);
+            //        调用eas登录获取sessionid
+            JSONObject login = wsLoginUtil.login();
+            String sessionId = login.getString("sessionId");
+            Call call = (Call) login.get("call");
+            if (Util.isNotEmpty(sessionId)) {
+                //清理
+                call.clearOperation();
+                String url = supplierapplyMapper.selectEASURL();
+                call.setOperationName(auditOperation);
+                call.setTargetEndpointAddress(url);
+                call.addParameter("arg0", org.apache.axis.encoding.XMLType.XSD_STRING, javax.xml.rpc.ParameterMode.IN);
+                call.setReturnType(org.apache.axis.encoding.XMLType.XSD_STRING);
+                call.setTimeout(Integer.valueOf(1000 * 600000 * 60));
+                call.setMaintainSession(true);
+                call.setUseSOAPAction(true);
+                SOAPHeaderElement header = new SOAPHeaderElement("http://login.webservice.bos.kingdee.com", "SessionId", sessionId);
+                call.addHeader(header);
+                try {
+                    back = (String) call.invoke(new Object[]{jsonObject.toString()});
+                } catch (RemoteException e) {
+                    obj.put("code", "2");
+                    obj.put("msg", e.getMessage());
+                    supplierapplyMapper.updateAcceptInfo(easid, acceptTime, 2, e.getMessage());
+                    throw new ServiceException("回调审批报错，请联系金蝶开发，错误内容：" + e.getMessage());
+                } finally {
+                    wsLoginUtil.logout(call);
+                }
+                if (Util.isNotEmpty(back)) {
+                    JSONObject backObj = JSONObject.parseObject(back);
+                    String resultBack = backObj.getString("result");
+                    if (Util.isNotEmpty(resultBack) && resultBack.contains("fault")) {
+                        String message = backObj.getString("message");
+                        obj.put("code", "2");
+                        obj.put("msg", message == null ? "金蝶异常" : message);
+                        supplierapplyMapper.updateAcceptInfo(easid, acceptTime, 2, message == null ? "eas审批时发生错误" : message);
+                    } else if (Util.isNotEmpty(resultBack) && resultBack.contains("success")) {
+                        supplierapplyMapper.updateAcceptInfo(easid, acceptTime, 1, "success");
+                    }
+                } else {
+                    obj.put("code", "2");
+                    obj.put("msg", "eas审批时发生错误,审批调用无返回");
+                    supplierapplyMapper.updateAcceptInfo(easid, acceptTime, 2, "eas审批时发生错误,审批调用无返回");
+                }
+            }
+        }
+        try {
+//        如果oa作废 调用金蝶接口完成反审批
+
+            if (result.contains("02")) {
+                acceptType = "作废";
                 if (oaid != null && easid != null) {
-                    oaIdUtil.getString(easid, oaid);
+                    oaIdUtil.deleteId(easid, oaid);
                 }
                 supplierapplyMapper.insertAcceptInfo(easid, acceptTime, finalBillType, acceptType, 1);
-                //        调用eas登录获取sessionid
-                JSONObject login = wsLoginUtil.login();//       登录
+                JSONObject login = wsLoginUtil.login();
                 String sessionId = login.getString("sessionId");
                 Call call = (Call) login.get("call");
                 if (Util.isNotEmpty(sessionId)) {
                     //清理
                     call.clearOperation();
                     String url = supplierapplyMapper.selectEASURL();
-                    call.setOperationName(auditOperation);    //接口方法
-                    call.setTargetEndpointAddress(url);   //对应接口地址
+                    call.setOperationName("unAuditBill");
+                    call.setTargetEndpointAddress(url);
                     call.addParameter("arg0", org.apache.axis.encoding.XMLType.XSD_STRING, javax.xml.rpc.ParameterMode.IN);
                     call.setReturnType(org.apache.axis.encoding.XMLType.XSD_STRING);
                     call.setTimeout(Integer.valueOf(1000 * 600000 * 60));
@@ -190,128 +303,118 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
                     call.setUseSOAPAction(true);
                     SOAPHeaderElement header = new SOAPHeaderElement("http://login.webservice.bos.kingdee.com", "SessionId", sessionId);
                     call.addHeader(header);
+                    JSONObject unAuditData = new JSONObject();
+                    unAuditData.put("type", type);
+                    unAuditData.put("id", easid);
                     try {
-                        back = (String) call.invoke(new Object[]{jsonObject.toString()});
-                        log.info("新增供应商申请单返回结果:" + result);
+                        back = (String) call.invoke(new Object[]{unAuditData.toString()});
                     } catch (RemoteException e) {
-                        e.printStackTrace();
-                        String message = e.getMessage();
-                        supplierapplyMapper.updateAcceptInfo(easid, acceptTime, 2, message);
-                        throw new ServiceException(message);
+                        supplierapplyMapper.updateAcceptInfo(easid, acceptTime, 2, e.getMessage());
+                        throw new ServiceException("回调反审批报错 错误内容： " + e.getMessage());
+                    } finally {
+                        wsLoginUtil.logout(call);
                     }
                     if (Util.isNotEmpty(back)) {
                         JSONObject backObj = JSONObject.parseObject(back);
                         String resultBack = backObj.getString("result");
                         if (Util.isNotEmpty(resultBack) && resultBack.contains("fault")) {
                             String message = backObj.getString("message");
-                            supplierapplyMapper.updateAcceptInfo(easid, acceptTime, 2, message == null ? "eas审批时发生错误" : message);
+                            supplierapplyMapper.updateAcceptInfo(easid, acceptTime, 2, message == null ? "eas反审批时发生错误" : message);
                         } else if (Util.isNotEmpty(resultBack) && resultBack.contains("success")) {
                             supplierapplyMapper.updateAcceptInfo(easid, acceptTime, 1, "success");
                         }
                     } else {
-                        supplierapplyMapper.updateAcceptInfo(easid, acceptTime, 2, "eas审批时发生错误,审批调用无返回");
+                        supplierapplyMapper.updateAcceptInfo(easid, acceptTime, 2, "eas反审批时发生错误,调用无返回");
                     }
                 }
-                wsLoginUtil.logout(call);//登出
-            }
-            try {
-//        如果oa作废 修改状态为保存 删除easid 跟oaid的关联
-                if (result.contains("02")) {
-                    acceptType = "作废";
-                    log.info("type为" + type + "流程调用了回调作废！");
-                    if (oaid != null && easid != null) {
-                        oaIdUtil.deleteId(easid, oaid);
-                    }
-                    supplierapplyMapper.insertAcceptInfo(easid, acceptTime, finalBillType, acceptType, 1);
-                    if (type.contains("01")) {
-                        contractbillMapper.updateData(easid);
-                    } else if (type.contains("02")) {
-                        payrequestbillMapper.updateData(easid);
-                    } else if (type.contains("03")) {
-                        noTextMapper.updateData(easid);
-                    } else if (type.contains("04")) {
-                        supplierapplyMapper.updateData(easid);
-                    } else if (type.contains("05")) {
+
+                /*if (type.contains("01")) {
+                    contractbillMapper.updateData(easid);
+                } else if (type.contains("02")) {
+                    payrequestbillMapper.updateData(easid);
+                } else if (type.contains("03")) {
+                    noTextMapper.updateData(easid);
+                } else if (type.contains("04")) {
+                    supplierapplyMapper.updateData(easid);
+                } else if (type.contains("05")) {
 //                       删除单据里fsourcefunction存储的oaid
-                        auditMapper.updateData(easid);
-                    } else if (type.contains("06")) {
+                    auditMapper.updateData(easid);
+                } else if (type.contains("06")) {
 //                         删除单据里fsourcefunction存储的oaid
-                        settleMapper.updateData(easid);
-                    } else if (type.contains("07")) {
+                    settleMapper.updateData(easid);
+                } else if (type.contains("07")) {
 //                        删除单据里fsourcefunction存储的oaid
-                        marketprojectMapper.updateData(easid);
-                    }
-                }
-                supplierapplyMapper.updateAcceptInfo(easid, acceptTime, 1, "success");
-            } catch (Exception e) {
-                e.printStackTrace();
-                String message = e.getMessage();
-                supplierapplyMapper.updateAcceptInfo(easid, acceptTime, 2, message);
+                    marketprojectMapper.updateData(easid);
+                }*/
+
             }
+//            supplierapplyMapper.updateAcceptInfo(easid, acceptTime, 1, "success");
+        } catch (Exception e) {
+            e.printStackTrace();
+            String message = e.getMessage();
+            supplierapplyMapper.updateAcceptInfo(easid, acceptTime, 2, message);
+            obj.put("code", "2");
+            obj.put("msg", "作废异常");
+        }
 
 //        如果驳回 修改状态为已提交 并保留oaid
-            try {
-                if (result.contains("03")) {
-                    acceptType = "驳回";
-                    log.info("type为" + type + "流程调用了回调驳回！");
-                    supplierapplyMapper.insertAcceptInfo(easid, acceptTime, finalBillType, acceptType, 1);
-                    if (type.contains("01")) {
-                        if (oaid != null && easid != null) {
-                            oaIdUtil.getString(easid, oaid);
-                        }
-                        TConContractbill tConContractbill = contractbillMapper.selectById(easid);
-                        tConContractbill.setFstate("2SUBMITTED");
-                        contractbillMapper.updateById(tConContractbill);
-                    } else if (type.contains("02")) {
-                        if (oaid != null && easid != null) {
-                            oaIdUtil.getString(easid, oaid);
-                        }
-                        TConPayrequestbill tConPayrequestbill = payrequestbillMapper.selectById(easid);
-                        tConPayrequestbill.setFstate("2SUBMITTED");
-                        payrequestbillMapper.updateById(tConPayrequestbill);
-                    } else if (type.contains("03")) {
-                        if (oaid != null && easid != null) {
-                            oaIdUtil.getString(easid, oaid);
-                        }
-                        TConContractwithouttext tConContractwithouttext = noTextMapper.selectById(easid);
-                        tConContractwithouttext.setFstate("2SUBMITTED");
-                        noTextMapper.updateById(tConContractwithouttext);
-                    } else if (type.contains("04")) {
-                        if (oaid != null && easid != null) {
-                            oaIdUtil.getString(easid, oaid);
-                        }
-                        TConSupplierapply tConSupplierapply = supplierapplyMapper.selectById(easid);
-                        tConSupplierapply.setFstate("2SUBMITTED");
-                        supplierapplyMapper.updateById(tConSupplierapply);
-                    } else if (type.contains("05")) {
-                        TConChangeauditbill tConChangeauditbill = auditMapper.selectById(easid);
-                        tConChangeauditbill.setFstate("2SUBMITTED");
-                        tConChangeauditbill.setFchangestate("3Submit");
-                        auditMapper.updateById(tConChangeauditbill);
-                    } else if (type.contains("06")) {
-                        TConContractchangesettlebill tConContractchangesettlebill = settleMapper.selectById(easid);
-                        tConContractchangesettlebill.setFstate("2SUBMITTED");
-                        settleMapper.updateById(tConContractchangesettlebill);
-                    } else if (type.contains("07")) {
-                        TConMarketproject tConMarketproject = marketprojectMapper.selectById(easid);
-                        tConMarketproject.setFstate("2SUBMITTED");
-                        marketprojectMapper.updateById(tConMarketproject);
+        try {
+            if (result.contains("03")) {
+                acceptType = "驳回";
+                log.info("type为" + type + "流程调用了回调驳回！");
+                supplierapplyMapper.insertAcceptInfo(easid, acceptTime, finalBillType, acceptType, 1);
+                if (type.contains("01")) {
+                    if (oaid != null && easid != null) {
+                        oaIdUtil.getString(easid, oaid);
                     }
+                    TConContractbill tConContractbill = contractbillMapper.selectById(easid);
+                    tConContractbill.setFstate("2SUBMITTED");
+                    contractbillMapper.updateById(tConContractbill);
+                } else if (type.contains("02")) {
+                    if (oaid != null && easid != null) {
+                        oaIdUtil.getString(easid, oaid);
+                    }
+                    TConPayrequestbill tConPayrequestbill = payrequestbillMapper.selectById(easid);
+                    tConPayrequestbill.setFstate("2SUBMITTED");
+                    payrequestbillMapper.updateById(tConPayrequestbill);
+                } else if (type.contains("03")) {
+                    if (oaid != null && easid != null) {
+                        oaIdUtil.getString(easid, oaid);
+                    }
+                    TConContractwithouttext tConContractwithouttext = noTextMapper.selectById(easid);
+                    tConContractwithouttext.setFstate("2SUBMITTED");
+                    noTextMapper.updateById(tConContractwithouttext);
+                } else if (type.contains("04")) {
+                    if (oaid != null && easid != null) {
+                        oaIdUtil.getString(easid, oaid);
+                    }
+                    TConSupplierapply tConSupplierapply = supplierapplyMapper.selectById(easid);
+                    tConSupplierapply.setFstate("2SUBMITTED");
+                    supplierapplyMapper.updateById(tConSupplierapply);
+                } else if (type.contains("05")) {
+                    TConChangeauditbill tConChangeauditbill = auditMapper.selectById(easid);
+                    tConChangeauditbill.setFstate("2SUBMITTED");
+                    tConChangeauditbill.setFchangestate("3Submit");
+                    auditMapper.updateById(tConChangeauditbill);
+                } else if (type.contains("06")) {
+                    TConContractchangesettlebill tConContractchangesettlebill = settleMapper.selectById(easid);
+                    tConContractchangesettlebill.setFstate("2SUBMITTED");
+                    settleMapper.updateById(tConContractchangesettlebill);
+                } else if (type.contains("07")) {
+                    TConMarketproject tConMarketproject = marketprojectMapper.selectById(easid);
+                    tConMarketproject.setFstate("2SUBMITTED");
+                    marketprojectMapper.updateById(tConMarketproject);
                 }
-                supplierapplyMapper.updateAcceptInfo(easid, acceptTime, 1, "success");
-            } catch (Exception e) {
-                e.printStackTrace();
-                String message = e.getMessage();
-                supplierapplyMapper.updateAcceptInfo(easid, acceptTime, 2, message);
             }
+            supplierapplyMapper.updateAcceptInfo(easid, acceptTime, 1, "success");
+        } catch (Exception e) {
+            e.printStackTrace();
+            String message = e.getMessage();
+            supplierapplyMapper.updateAcceptInfo(easid, acceptTime, 2, message);
+            obj.put("code", "2");
+            obj.put("msg", "驳回异常");
+        }
 
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            return true;
-        }, "1", "100,100");
 
         return obj;
     }
@@ -349,7 +452,7 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
             object.put("submitOperation", "todo");
             object.put("auditOperation", "auditContractChangeSettleBill");
             object.put("deleteOperation", "todo");
-        }else if (type.contains("07")){
+        } else if (type.contains("07")) {
             object.put("saveOperation", "todo");
             object.put("submitOperation", "todo");
             object.put("auditOperation", "auditMarketProject");
@@ -397,9 +500,9 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
                 obj.put("code", "2");
                 obj.put("msg", "fault");
                 obj.put("content", "目标eas单据不存在");
-            }else if (type.contains("07")){
+            } else if (type.contains("07")) {
                 TConMarketproject tConMarketproject = marketprojectMapper.selectById(easId);
-                if (Util.isEmpty(tConMarketproject)){
+                if (Util.isEmpty(tConMarketproject)) {
                     obj.put("code", "2");
                     obj.put("msg", "fault");
                     obj.put("content", "目标eas单据不存在");

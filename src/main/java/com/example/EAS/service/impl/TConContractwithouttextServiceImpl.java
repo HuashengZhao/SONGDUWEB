@@ -358,8 +358,8 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
                                 cwTextBgVO.setExpenseTypeId(tBcExpensetype.getFid());
                             }
                         }
-                        if (entry.getFamount() != null) {
-                            cwTextBgVO.setAmount(new BigDecimal(entry.getFamount()));
+                        if (entry.getFrequestamount() != null) {
+                            cwTextBgVO.setAmount(new BigDecimal(entry.getFrequestamount()));
                         }
                     }
                     cwTextBgVOS.add(cwTextBgVO);
@@ -779,7 +779,7 @@ public class TConContractwithouttextServiceImpl extends ServiceImpl<TConContract
                 throw new ServiceException(e.getMessage());
             }
         }
-        wsLoginUtil.logout(call);//登出
+//        wsLoginUtil.logout(call);//登出
 //        接收返回eas信息
         JSONObject object = JSONObject.parseObject(result);
         if (result != null && object.get("result") != null) {
