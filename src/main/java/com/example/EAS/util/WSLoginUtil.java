@@ -1,7 +1,6 @@
 package com.example.EAS.util;
 
 import com.alibaba.fastjson.JSONObject;
-import com.example.EAS.constant.CacheKeyConstant;
 import com.example.EAS.dto.WSContext;
 import com.example.EAS.mapper.TConSupplierapplyMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +11,7 @@ import org.springframework.stereotype.Component;
 import javax.xml.namespace.QName;
 import javax.xml.rpc.ServiceException;
 import java.rmi.RemoteException;
+import java.time.LocalDateTime;
 
 @Slf4j
 @Component
@@ -27,9 +27,10 @@ public class WSLoginUtil {
     org.apache.axis.client.Call call = null;
 
     public JSONObject login() {
-        long expire = redisUtil.getExpire(redisUtil.generateKey(CacheKeyConstant.EAS_LOGIN_WAITING));
-        if (Util.isNotEmpty(expire) && expire > 0) {
-            throw new com.example.EAS.util.ServiceException("金蝶审批流程未结束，请稍后再试！");
+
+        String key = redisUtil.getString("easLogin");
+        if (Util.isNotEmpty(key)){
+            throw new com.example.EAS.util.ServiceException("請等待片刻，等上一個流程走完");
         }
         JSONObject jsonObject = new JSONObject();
         try {
@@ -50,12 +51,13 @@ public class WSLoginUtil {
         call.setMaintainSession(true);
 
         try {
-            WSContext rs = (WSContext) call.invoke(new Object[]{"webservice", "webservice", "eas", "easdb", "L2", Integer.valueOf(2)}); //测试地址
-//            WSContext rs = (WSContext) call.invoke(new Object[]{"servicekd", "servicekd", "eas", "easdb", "L2", Integer.valueOf(2)});  ////正式地址
+//            WSContext rs = (WSContext) call.invoke(new Object[]{"webservice", "webservice", "eas", "easdb", "L2", Integer.valueOf(2)}); //测试地址
+            WSContext rs = (WSContext) call.invoke(new Object[]{"servicekd", "servicekd", "eas", "easdb", "L2", Integer.valueOf(2)});  ////正式地址
             sessionId = rs.getSessionId();
-            redisUtil.set(redisUtil.generateKey(CacheKeyConstant.EAS_LOGIN_WAITING), sessionId, 1000 * 3600 * 24 * 10);
+            redisUtil.set("easLogin", 1, 1000 * 20);
             log.info("登录成功：" + sessionId);
         } catch (Exception e) {
+            mapper.insertAcceptInfo(e.getMessage(), LocalDateTime.now().toString(), "金蝶登录", "登录", 1);
             throw new com.example.EAS.util.ServiceException("登录金蝶失败，请联系管理：" + e.getMessage());
         }
         jsonObject.put("call", call);
@@ -65,17 +67,17 @@ public class WSLoginUtil {
 
 
     public void logout(Call call) {
-        redisUtil.del(redisUtil.generateKey(CacheKeyConstant.EAS_LOGIN_WAITING));
+        redisUtil.del("easLogin");
         call.clearOperation();
         call.setOperationName("logout");
         String url = mapper.selectEASLogin();
         call.setTargetEndpointAddress(url);
         try {
-            call.invoke(new Object[]{"webservice", "eas", "easdb", "L2"});//测试地址
-//            call.invoke(new Object[]{"servicekd", "eas", "easdb", "L2"});//正式地址
+//            call.invoke(new Object[]{"webservice", "eas", "easdb", "L2"});//测试地址
+            call.invoke(new Object[]{"servicekd", "eas", "easdb", "L2"});//正式地址
             log.info("登出成功");
         } catch (RemoteException e) {
-            e.printStackTrace();
+            mapper.insertAcceptInfo(e.getMessage(), LocalDateTime.now().toString(), "金蝶登出", "登出", 1);
             throw new com.example.EAS.util.ServiceException("登出金蝶失败，请联系管理：" + e.getMessage());
         }
     }

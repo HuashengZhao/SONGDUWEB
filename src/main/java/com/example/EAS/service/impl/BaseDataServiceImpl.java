@@ -6,10 +6,7 @@ import com.example.EAS.mapper.*;
 import com.example.EAS.model.*;
 import com.example.EAS.service.IBaseDataService;
 import com.example.EAS.thread.AsyncExecutor;
-import com.example.EAS.util.OaIdUtil;
-import com.example.EAS.util.ServiceException;
-import com.example.EAS.util.Util;
-import com.example.EAS.util.WSLoginUtil;
+import com.example.EAS.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.axis.client.Call;
 import org.apache.axis.message.SOAPHeaderElement;
@@ -30,7 +27,8 @@ import java.time.LocalDateTime;
 @Slf4j
 @Service
 public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> implements IBaseDataService {
-
+    @Autowired
+    private RedisUtil redisUtil;
     @Autowired
     private WSLoginUtil wsLoginUtil;
     @Autowired

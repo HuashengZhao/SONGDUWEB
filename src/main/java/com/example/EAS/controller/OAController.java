@@ -196,6 +196,16 @@ public class OAController {
         return R.ok(json);
     }
 
+    @RequestMapping(value = "/delKingdeeToken", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public R delKingdeeToken(@RequestBody LoginVO vo) throws Exception {
+        JSONObject json = new JSONObject();
+        redisUtil.del(redisUtil.generateKey(CacheKeyConstant.EAS_LOGIN_WAITING));
+        json.put("code", 1);
+        json.put("message", "success");
+        return R.ok(json);
+    }
+
+
     /**
      * 通过密文转为实体
      *

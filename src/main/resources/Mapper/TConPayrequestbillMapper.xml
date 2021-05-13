@@ -85,12 +85,13 @@
         bill.FPAYCONTENTTYPEID as payContentTypeId,pc.FNAME_L2 as payContentTypeName,
         bill.FPAYDATE as payDate,con.FSTARTDATE as startDate,con.FENDDATE as endDate,
         con.FTAXERQUA as taxerQua,con.FTAXERNUM as taxerNum,bank.FNUMBER as unionBankNum,
-        con.FSTARTDATE as startDate,con.FENDDATE as endDate,
+        con.FSTARTDATE as startDate,con.FENDDATE as endDate,bill.FSOURCE as source,
         bill.FEXCHANGERATE as exRate,bill.FGRTAMOUNT as grtAmount,bill.FApplierId as applierId,
         per.FNAME_L2 as applierName,ad.FNAME_L2 as useDepartMentName,
         com.FNAME_L2 as costCompanyName,cen.FNAME_L2 as costDeptName,
         con.forgtype as orgType,con.FISJT as isJT,bill.FCOMPLETEPRJAMT as thisAMT,
         con.FSETTLEAMT as settleAMT,bill.FDESCRIPTION as remark,bill.FLATESTPRICE as latestPrice,
+        bill.FTOTALSETTLEPRICE as totalSettlePrice,bill.FPAYTIMES as payTime,
         bill.FIsDifferPlace,
         case when bill.FIsDifferPlace=0 then '同城'
         when bill.FIsDifferPlace=1 then '异地'
@@ -121,6 +122,14 @@
         left join T_ORG_Company com on com.fid=bill.FCostedCompanyId
         left join T_ORG_BASEUNIT bu on bu.fid=bill.FCONTROLUNITID
         where bill.fid=#{id}
+    </select>
+    <select id="selectFamount" resultType="java.math.BigDecimal">
+        select sum(famount) as ljsqAmount from t_con_payrequestbill where fcontractid=#{contractId}
+    </select>
+    <select id="selectActualAmount" resultType="java.math.BigDecimal">
+        select sum(factualPayAmount) as factualPayAmount from t_cas_paymentbill
+        where fbillstatus=15 and fFdcPayReqID
+        in(select fid from t_con_payrequestbill where fcontractid=#{contractId})
     </select>
 
 </mapper>

@@ -29,6 +29,8 @@ public class PayRequestBillVO {
     private String creatorName;
     private String auditorId;
     private String auditorName;
+    //关联合同类型  0D6DD1F4 合同 3D9A5388 无文本
+    private String source;
 
     //    付款类别
     private String paymentTypeName;
@@ -43,7 +45,7 @@ public class PayRequestBillVO {
     private String supplierName;
     private String realSupplierId;
     private String realSupplierName;
-//    预算承担公司、
+    //    预算承担公司、
 //    部门
     private String costCompanyName;
     private String costDeptName;
@@ -90,13 +92,13 @@ public class PayRequestBillVO {
     @JsonFormat(pattern = "yyyy-MM-dd")
     @JsonDeserialize(using = DateJsonDeserializer.class)
     private LocalDateTime endDate;
-//    起止日期拼凑
+    //    起止日期拼凑
     private String startEndDate;
 
     //    银行
     private String recBank;
     private String recAccount;
-//    联行号
+    //    联行号
     private String unionBankNum;
     //    备注
     private String remark;
@@ -154,7 +156,7 @@ public class PayRequestBillVO {
     private String isDifPlace;
     //    是否加急
     private String urtDegree;
-//    是否提交付款
+    //    是否提交付款
     private Integer isPay;
 
     //    付款申请金额集合
@@ -180,4 +182,15 @@ public class PayRequestBillVO {
     private String identityId;
     private String identityName;
     private String foaposition;
+    //    合同结算金额
+    @JsonSerialize(using = CustomBigDecimalSerialize.class, nullsUsing = CustomBigDecimalSerialize.class)
+    private BigDecimal totalSettlePrice;
+    //    付款次数
+    private Long payTime;
+    @JsonSerialize(using = CustomBigDecimalSerialize.class, nullsUsing = CustomBigDecimalSerialize.class)
+    private BigDecimal fAmount;
+    //    hetong累计实付
+    private String factualPayAmount;
+    //    累计申请
+    private String ljsqAmount;
 }

@@ -68,7 +68,7 @@ public class TConPayrequestbillServiceImpl extends ServiceImpl<TConPayrequestbil
                 projectIdList.addAll(ids);
             }
         }
-        if(Util.isEmpty(projectIdList)) {
+        if (Util.isEmpty(projectIdList)) {
             return null;
         }
         vo.setProjectIds(projectIdList);
@@ -190,6 +190,31 @@ public class TConPayrequestbillServiceImpl extends ServiceImpl<TConPayrequestbil
         }
         PayRequestBillVO payRequestBillVO = mapper.selectDataById(vo);
         if (Util.isNotEmpty(payRequestBillVO)) {
+            BigDecimal latestPrice = payRequestBillVO.getLatestPrice();
+            BigDecimal ljsqAmount = mapper.selectFamount(payRequestBillVO.getContractId());
+            if (Util.isNotEmpty(latestPrice) && latestPrice.compareTo(BigDecimal.ZERO) != 0) {
+                if (Util.isNotEmpty(ljsqAmount) && ljsqAmount.compareTo(BigDecimal.ZERO) != 0) {
+                    BigDecimal a = ljsqAmount.divide(latestPrice, 2, BigDecimal.ROUND_HALF_UP).multiply(BigDecimal.valueOf(100));
+                    StringBuffer append = new StringBuffer().append(ljsqAmount).append("(").append(a).append("%)");
+                    payRequestBillVO.setLjsqAmount(append.toString());
+                }
+                BigDecimal factualPayAmount = mapper.selectActualAmount(payRequestBillVO.getContractId());
+                if (Util.isNotEmpty(factualPayAmount) && factualPayAmount.compareTo(BigDecimal.ZERO) != 0) {
+                    BigDecimal b = factualPayAmount.divide(latestPrice, 2, BigDecimal.ROUND_HALF_UP).multiply(BigDecimal.valueOf(100));
+                    StringBuffer append = new StringBuffer().append(ljsqAmount).append("(").append(b).append("%)");
+                    payRequestBillVO.setFactualPayAmount(append.toString());
+                }
+            }
+            String source = payRequestBillVO.getSource();
+            if (Util.isNotEmpty(source)) {
+                if (source.equals("3D9A5388")) {
+                    source = "WWB";
+                    payRequestBillVO.setSource(source);
+                } else if (source.equals("0D6DD1F4")) {
+                    source = "HT";
+                    payRequestBillVO.setSource(source);
+                }
+            }
             String foaposition = payRequestBillVO.getFoaposition();
             if (Util.isNotEmpty(foaposition)) {
                 String identityId = foaposition.split("\\.")[0];

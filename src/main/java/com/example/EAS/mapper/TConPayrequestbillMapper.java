@@ -3,6 +3,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.example.EAS.model.TConPayrequestbill;
 import com.example.EAS.vo.PayRequestBillVO;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -20,4 +21,8 @@ public interface TConPayrequestbillMapper extends BaseMapper<TConPayrequestbill>
     PayRequestBillVO selectDataById(PayRequestBillVO vo);
 
     void updateData(String easid);
+
+    BigDecimal selectFamount(String contractId);
+
+    BigDecimal selectActualAmount(String contractId);
 }
