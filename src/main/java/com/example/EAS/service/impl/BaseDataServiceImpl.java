@@ -160,7 +160,7 @@ public class BaseDataServiceImpl extends ServiceImpl<BaseDataMapper, BaseData> i
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("id", easid);
         String finalBillType = billType;
-        if (type.contains("04")) {
+        if (type.contains("10")) {
             JSONObject login = wsLoginUtil.login();
             String sessionId = login.getString("sessionId");
             Call call = (Call) login.get("call");
